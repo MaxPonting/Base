@@ -1,16 +1,15 @@
-#include "../include/allocator.h"
-#include "../include/array.h"
-#include "../include/smart_array.h"
-#include "../include/dynamic_array.h"
-#include "../include/string.h"
-#include "../include/vector2.h"
+#include "../include/allocator/allocator.h"
+#include "../include/array/array.h"
+#include "../include/array/smart_array.h"
+#include "../include/array/dynamic_array.h"
+#include "../include/string/string.h"
+#include "../include/vector/vector2.h"
 
 #include <time.h>
 #include <stdlib.h>
 
 const size_t ARRAY_STANDARD_SIZE = 1000000; // 1 MB
 const size_t ARRAY_PERFORMANCE_SIZE = 700000000; // 700 MB
-
 
 void test_array(Allocator* const allocator)
 {

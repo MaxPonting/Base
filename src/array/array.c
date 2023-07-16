@@ -1,4 +1,4 @@
-#include "../include/array.h"
+#include "../../include/array/array.h"
 
 void array_create(Array* const array, Allocator* const allocator, const size_t element_size, const size_t capacity)
 {

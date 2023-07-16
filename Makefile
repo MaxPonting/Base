@@ -1,18 +1,27 @@
+CC = gcc
+FLAGS = -Wall -Wextra
+DFLAGS = -g -ggdb -Og
+RFLAGS = -O3
+SRC = src/allocator/*.c src/array/*.c src/string/*.c
+TSRC = $(SRC) src/main.c
+
 test:
-	gcc -g -Wall -Wextra src/*.c -o bin/test/base.exe & cd bin/test & base.exe
+	$(CC) $(FLAGS) $(DFLAGS) $(TSRC) -o bin/test/base.exe & cd bin/test & base.exe
 
 performance:
-	gcc -O3 src/*.c -o bin/performance/base.exe & cd bin/performance & base.exe
+	$(CC) $(FLAGS) $(RFLAGS) $(TSRC) -o bin/performance/base.exe & cd bin/performance & base.exe
 
 debug:
-	gcc -g -c -Wall -Wextra src/*.c
+	$(CC) $(FLAGS) $(DFLAGS) $(SRC) -c $(SRC)
 	ar -rcs bin/debug/libBase.a *.o
-	mv *.o bin/debug
+	make clean
 
 release:
-	gcc -c -O3 src/*.c
+	$(CC) $(FLAGS) $(RFLAGS) $(SRC) -c $(SRC)
 	ar -rcs bin/release/libBase.a *.o
-	mv *.o bin/release
+	make clean
 
-rm:
-	rm *o
+clean:
+	del *.o 
+
+	

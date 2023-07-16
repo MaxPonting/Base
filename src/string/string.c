@@ -1,4 +1,4 @@
-#include "../include/string.h"
+#include "../../include/string/string.h"
 
 void string_create(String* const string, Allocator* const allocator, char* const c_string)
 {   

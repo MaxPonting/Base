@@ -1,4 +1,4 @@
-#include "../include/smart_array.h"
+#include "../../include/array/smart_array.h"
 
 #include <stdio.h>
 
