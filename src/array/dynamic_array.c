@@ -1,16 +1,23 @@
-#include "../../include/array/dynamic_array.h"
+#include "array/dynamic_array.h"
 
 #include <memory.h>
 #include <stdio.h>
 
 int reallocate(DynamicArray* dynamic_array);
 
-void dynamic_array_create(DynamicArray* const dynamic_array, size_t element_size, size_t capacity)
+int dynamic_array_create(DynamicArray* const dynamic_array, size_t element_size, size_t capacity)
 {
     dynamic_array->memory = malloc(capacity * element_size);
+    if (dynamic_array->memory == 0)
+    {
+        printf("Dynamic Array: Allocation failed");
+        return 1;
+    }
     dynamic_array->element_size = element_size;
     dynamic_array->capacity = capacity;
     dynamic_array->size = 0;
+
+    return 0;
 }
 
 void* dynamic_array_index(DynamicArray* const dynamic_array, const size_t index)
@@ -53,6 +60,13 @@ void dynamic_array_insert(DynamicArray* const dynamic_array, const void* const p
     memcpy(dynamic_array->memory + (index + 1) * dynamic_array->element_size, dynamic_array->memory + index * dynamic_array->element_size, dynamic_array->element_size * (dynamic_array->size - index));
     memcpy(dynamic_array->memory + index * dynamic_array->element_size, ptr, dynamic_array->element_size);
     dynamic_array->size++;
+}
+
+void dynamic_array_clear(DynamicArray* const dynamic_array)
+{
+    memset(dynamic_array->memory, 0, dynamic_array->size);
+
+    dynamic_array->size = 0;
 }
 
 void dynamic_array_delete(DynamicArray* const dynamic_array, const size_t index)

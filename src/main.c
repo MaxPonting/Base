@@ -1,107 +1,63 @@
-#include "../include/allocator/allocator.h"
-#include "../include/array/array.h"
-#include "../include/array/smart_array.h"
-#include "../include/array/dynamic_array.h"
-#include "../include/string/string.h"
-#include "../include/vector/vector2.h"
+#include "allocator/allocator.h"
+#include "graphics/window.h"
+#include "graphics/renderer.h"
+#include "graphics/resource_manager.h"
 
-#include <time.h>
-#include <stdlib.h>
-
-const size_t ARRAY_STANDARD_SIZE = 1000000; // 1 MB
-const size_t ARRAY_PERFORMANCE_SIZE = 700000000; // 700 MB
-
-void test_array(Allocator* const allocator)
-{
-    Array array;
-    array_create(&array, allocator, sizeof(Vector2), 20);
-
-    *((Vector2*)array_index(&array, 0)) = (Vector2){2, 7};
-    *((Vector2*)array_index(&array, 1)) = (Vector2){7, 12};
-
-    for (size_t i = 0; i < 20; i++)   
-    {
-       printf("(x: %f, y: %f)\n", ((Vector2*)array_index(&array, i))->x, ((Vector2*)array_index(&array, i))->y);
-    } 
-}
-
-void test_smart_array(Allocator* const allocator)
-{
-    SmartArray array;
-    smart_array_create(&array, allocator, sizeof(Vector2), 20);
-
-    smart_array_push(&array, &(Vector2){4, 7});
-    smart_array_push(&array, &(Vector2){3, 13});
-    smart_array_push(&array, &(Vector2){-78, 56});
-    smart_array_push(&array, &(Vector2){23, -5});
-
-    smart_array_insert(&array, &(Vector2){455, -342}, 0);
-
-    for (size_t i = 0; i < array.size; i++)   
-    {
-        printf("(x: %f, y: %f)\n", ((Vector2*)smart_array_index(&array, i))->x, ((Vector2*)smart_array_index(&array, i))->y);
-    } 
-    printf("Size:%I64d", array.size);
-}
-
-void test_dynamic_array()
-{
-    DynamicArray array;
-    dynamic_array_create(&array, sizeof(Vector2), 4);
-
-    dynamic_array_push(&array, &(Vector2){4, 7});
-    dynamic_array_push(&array, &(Vector2){3, 13});
-    dynamic_array_push(&array, &(Vector2){-78, 56});
-    dynamic_array_push(&array, &(Vector2){23, -5});
-
-    dynamic_array_insert(&array, &(Vector2){-32, 89}, 3);
-
-    for (size_t i = 0; i < array.size; i++)   
-    {
-        printf("(x: %f, y: %f)\n", ((Vector2*)dynamic_array_index(&array, i))->x, ((Vector2*)dynamic_array_index(&array, i))->y);
-    } 
-    printf("Size:%I64d\n", array.size);
-    printf("Capacity:%I64d\n", array.capacity);
-    printf("\n");
-
-    dynamic_array_destroy(&array);
-}
-
-void performance_smart_array(Allocator* const allocator)
-{
-    SmartArray array;
-    smart_array_create(&array, allocator, sizeof(char), ARRAY_PERFORMANCE_SIZE);
-
-    for (size_t i = 0; i < array.capacity - 1; i++)   
-    {
-        smart_array_push(&array, &(Vector2){rand(), rand()});
-    } 
-
-    clock_t start, end;
-    start = clock();
-
-    smart_array_insert(&array, &(Vector2){rand(), rand()}, 0);
-
-    end = clock();
-
-    printf("Time Taken Seconds: %f", ((double)(end - start)) / CLOCKS_PER_SEC);
-}
+const size_t ALLOCATOR_SIZE = 1000000; // 1 MB
 
 int main()
 {
     Allocator allocator;
-    allocator_create(&allocator, ARRAY_STANDARD_SIZE * sizeof(char));
+    if(!allocator_create(&allocator, ALLOCATOR_SIZE))
+        return 0;
 
-    //test_array(&allocator);
-    //test_smart_array(&allocator);
-    //test_dynamic_array();
+    Window window;
+    if(!window_create(&window, &allocator, "Base Window", 800, 600))
+        return 0;
 
-    //performance_smart_array(&allocator);
+    Renderer renderer;
+    if(!renderer_create(&renderer, &allocator, &window, 10))
+        return 0;
 
-    String string;
-    string_create(&string, &allocator, "Hello and welcome to my home");
+    ResourceManager resource_manager;
+    if(!resource_manager_create(&resource_manager, &allocator, 200, 2000))
+        return 0;
+    if(!resource_manager_load_shader(&resource_manager, "../../res/shader/vertex.vert", "../../res/shader/fragment.frag"))
+        return 0;
 
-    printf("String: %s", string.ptr);
+    Quad quad_1;
+    quad_1.position[0] = 0; quad_1.position[1] = 0;
+    quad_1.size[0] = 50; quad_1.size[1] = 50;
+    quad_1.rotation = 0;
+    quad_1.color[0] = 1; quad_1.color[3] = 1;
+    quad_1.layer = 0;
+
+    Quad quad_2;
+    quad_2.position[0] = 0; quad_2.position[1] = 0;
+    quad_2.size[0] = 100; quad_2.size[1] = 100;
+    quad_2.rotation = 0;
+    quad_2.color[1] = 1; quad_2.color[3] = 0.5f;
+    quad_2.layer = 0;
+
+    Batch batch;
+    if(!batch_create(&batch, &allocator, 10))
+        return 0;
+    if(!shader_create(&batch.shader, &renderer, resource_manager.vertex_buffer, resource_manager.fragment_buffer))
+        return 0;
+    if(!batch_push(&batch, &quad_1))
+        return 0;
+    if(!batch_push(&batch, &quad_2))
+        return 0;
+    
+    
+
+    while(!window_should_close(&window))
+    {   
+        window_poll_events(&window);
+        renderer_clear(&renderer);
+        renderer_draw(&renderer, &batch);
+        window_swap_buffers(&window);
+    }
 
     allocator_destroy(&allocator);
 }
