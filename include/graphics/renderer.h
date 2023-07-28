@@ -5,6 +5,7 @@
 #include "graphics/quad.h"
 #include "graphics/shader.h"
 #include "graphics/batch.h"
+#include "graphics/camera.h"
 #include "cglm/struct.h"
 
 typedef struct
@@ -21,12 +22,9 @@ typedef struct Renderer
     int max_quads_per_draw;
     RendererType type;
     Vertex* vertices;
-    mat4 model;
-    mat4 view;
-    mat4 projection;
 } Renderer;
 
 int renderer_create(Renderer* const renderer, Allocator* const allocator, const Window* const window, const int max_quads_per_draw);
 int renderer_destroy(Renderer* const renderer);
-int renderer_clear(Renderer* const renderer, Window* const window);
-int renderer_draw(Renderer* const renderer, Batch* const batch);
+int renderer_clear(Renderer* const renderer, Window* const window, Camera* const camera);
+int renderer_draw(Renderer* const renderer, Camera* const camera, Batch* const batch);

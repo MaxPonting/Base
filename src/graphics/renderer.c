@@ -61,10 +61,6 @@ int renderer_create(Renderer* const renderer, Allocator* const allocator, const 
         renderer->vertices = allocator_alloc(allocator, max_quads_per_draw * sizeof(Vertex) * 4);
         if (!renderer->vertices)       
             return 0;        
-
-        glm_mat4_identity(renderer->model);
-        glm_mat4_identity(renderer->view);
-        glm_ortho(-window->w / 2, window->w / 2, -window->h / 2, window->h / 2, -1.0f, 1.0f, renderer->projection);
     }
     else
     {
@@ -82,7 +78,7 @@ int renderer_destroy(Renderer* const renderer)
     return 1;
 }
 
-int renderer_clear(Renderer* const renderer, Window* const window)
+int renderer_clear(Renderer* const renderer, Window* const window, Camera* const camera)
 {
     if (renderer->type == RENDERER_TYPE_OPENGL)
     {   
@@ -92,7 +88,7 @@ int renderer_clear(Renderer* const renderer, Window* const window)
         window->h = height;
         glfwGetFramebufferSize(window->ptr, &width, &height);
         glViewport(0, 0, width, height);
-        glm_ortho(-width / 2, width / 2, -height / 2, height / 2, -1.0f, 1.0f, renderer->projection);
+        glm_ortho(-width / 2, width / 2, -height / 2, height / 2, -1.0f, 1.0f, camera->projection);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
@@ -104,8 +100,10 @@ int renderer_clear(Renderer* const renderer, Window* const window)
     return 1;
 }
 
-int renderer_draw(Renderer* const renderer, Batch* const batch)
+int renderer_draw(Renderer* const renderer, Camera* const camera, Batch* const batch)
 {
+    camera_set_mvp(camera);
+
     int count = batch_count(batch);
     if (count > renderer->max_quads_per_draw)
     {
@@ -170,21 +168,21 @@ int renderer_draw(Renderer* const renderer, Batch* const batch)
             printf("[ERROR][BASE/GRAPHICS/RENDERER/%d][\"uniform mat4 model\" is not defined in vertex shader]", __LINE__);
             return 0;
         }
-        glUniformMatrix4fv(location, 1, 0, (float*)renderer->model);
+        glUniformMatrix4fv(location, 1, 0, (float*)camera->model);
         location = glGetUniformLocation(batch->shader.program_id, "view");
         if (location == -1)
         {
             printf("[ERROR][BASE/GRAPHICS/RENDERER/%d][\"uniform mat4 view\" is not defined in vertex shader]", __LINE__);
             return 0;
         }
-        glUniformMatrix4fv(location, 1, 0, (float*)renderer->view);
+        glUniformMatrix4fv(location, 1, 0, (float*)camera->view);
         location = glGetUniformLocation(batch->shader.program_id, "projection");
         if (location == -1)
         {
             printf("[ERROR][BASE/GRAPHICS/RENDERER/%d][\"uniform mat4 projection\" is not defined in vertex shader]", __LINE__);
             return 0;
         }
-        glUniformMatrix4fv(location, 1, 0, (float*)renderer->projection);
+        glUniformMatrix4fv(location, 1, 0, (float*)camera->projection);
 
         glDrawElements(GL_TRIANGLES, count * 6, GL_UNSIGNED_INT, 0);
     }

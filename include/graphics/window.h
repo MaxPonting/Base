@@ -6,7 +6,7 @@
 
 typedef enum WindowType { WINDOW_TYPE_NULL, WINDOW_TYPE_GLFW } WindowType;
 
-typedef struct window
+typedef struct Window
 {
     void* ptr;
     int w, h;
