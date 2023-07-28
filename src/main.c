@@ -30,14 +30,18 @@ int main()
     quad_1.size[0] = 50; quad_1.size[1] = 50;
     quad_1.rotation = 0;
     quad_1.color[0] = 1; quad_1.color[3] = 1;
-    quad_1.layer = 0;
 
     Quad quad_2;
-    quad_2.position[0] = 0; quad_2.position[1] = 0;
+    quad_2.position[0] = 200; quad_2.position[1] = -100;
     quad_2.size[0] = 100; quad_2.size[1] = 100;
     quad_2.rotation = 0;
-    quad_2.color[1] = 1; quad_2.color[3] = 0.5f;
-    quad_2.layer = 0;
+    quad_2.color[1] = 1; quad_2.color[3] = 1;
+
+    Quad quad_3;
+    quad_3.position[0] = -300; quad_3.position[1] = 200;
+    quad_3.size[0] = 100; quad_3.size[1] = 100;
+    quad_3.rotation = 0;
+    quad_3.color[2] = 1; quad_3.color[3] = 1;
 
     Batch batch;
     if(!batch_create(&batch, &allocator, 10))
@@ -48,13 +52,13 @@ int main()
         return 0;
     if(!batch_push(&batch, &quad_2))
         return 0;
+    if(!batch_push(&batch, &quad_3))
+        return 0;
     
-    
-
     while(!window_should_close(&window))
     {   
         window_poll_events(&window);
-        renderer_clear(&renderer);
+        renderer_clear(&renderer, &window);
         renderer_draw(&renderer, &batch);
         window_swap_buffers(&window);
     }

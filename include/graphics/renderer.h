@@ -28,5 +28,5 @@ typedef struct Renderer
 
 int renderer_create(Renderer* const renderer, Allocator* const allocator, const Window* const window, const int max_quads_per_draw);
 int renderer_destroy(Renderer* const renderer);
-int renderer_clear(Renderer* const renderer);
+int renderer_clear(Renderer* const renderer, Window* const window);
 int renderer_draw(Renderer* const renderer, Batch* const batch);

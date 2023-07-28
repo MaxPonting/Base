@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-void GLAPIENTRY debug_callback_gl(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
+static void GLAPIENTRY debug_callback_gl(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 
 int renderer_create(Renderer* const renderer, Allocator* const allocator, const Window* const window, const int max_quads_per_draw)
 {
@@ -52,10 +52,6 @@ int renderer_create(Renderer* const renderer, Allocator* const allocator, const 
             count+=4;
         }
         
-        unsigned int indices2[] = {
-            0, 1, 2, 2, 3, 0
-        };
-
         glGenBuffers(1, &renderer->index_buffer_id);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer->index_buffer_id);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * max_quads_per_draw * 6, indices, GL_DYNAMIC_DRAW);
@@ -86,10 +82,16 @@ int renderer_destroy(Renderer* const renderer)
     return 1;
 }
 
-int renderer_clear(Renderer* const renderer)
+int renderer_clear(Renderer* const renderer, Window* const window)
 {
     if (renderer->type == RENDERER_TYPE_OPENGL)
-    {
+    {   
+        int width;
+        int height;
+        glfwGetFramebufferSize(window->ptr, &width, &height);
+        glViewport(0, 0, width, height);
+        glm_ortho(-width / 2, width / 2, -height / 2, height / 2, -1.0f, 1.0f, renderer->projection);
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
     else
@@ -153,7 +155,7 @@ int renderer_draw(Renderer* const renderer, Batch* const batch)
     return 1;
 }
 
-void GLAPIENTRY debug_callback_gl(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) 
+static void GLAPIENTRY debug_callback_gl(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) 
 {
     printf("[ERROR][GRAPHICS/RENDERER/OPENGL][%d][%s]\n", type, message);
 }
