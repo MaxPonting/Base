@@ -5,7 +5,8 @@
 typedef struct
 {   
     vec4 color;
+    vec3 rotation;
     vec2 position, size;
-    float rotation;
 } Quad;
 
+int quad_create(Quad* const quad);

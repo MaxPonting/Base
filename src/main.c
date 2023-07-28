@@ -26,16 +26,16 @@ int main()
         return 0;
 
     Quad quad_1;
+    quad_create(&quad_1);
     quad_1.position[0] = -350; quad_1.position[1] = 0;
     quad_1.size[0] = 20; quad_1.size[1] = 100;
-    quad_1.rotation = 0;
-    quad_1.color[0] = 1; quad_1.color[3] = 1;
+    quad_1.rotation[2] = 50;
+    quad_1.rotation[1] = 30;
 
     Quad quad_2;
+    quad_create(&quad_2);
     quad_2.position[0] = 350; quad_2.position[1] = 0;
     quad_2.size[0] = 20; quad_2.size[1] = 100;
-    quad_2.rotation = 0;
-    quad_2.color[1] = 1; quad_2.color[3] = 1;
 
     Batch batch;
     if(!batch_create(&batch, &allocator, 10))
@@ -60,11 +60,11 @@ int main()
         }
         if (window_get_key(&window, WINDOW_KEY_A) == WINDOW_KEY_PRESS)
         {
-            quad_1.rotation += 2.0f;
+            quad_1.rotation[0] += 2.0f;
         }
         if (window_get_key(&window, WINDOW_KEY_D) == WINDOW_KEY_PRESS)
         {
-            quad_1.rotation -= 2.0f;
+            quad_1.rotation[0] -= 2.0f;
         }
             
         if(!batch_push(&batch, &quad_1))

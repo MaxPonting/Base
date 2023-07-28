@@ -136,7 +136,19 @@ int renderer_draw(Renderer* const renderer, Batch* const batch)
 
                 glm_vec3_rotate(
                     rotated_vertices, 
-                    glm_rad(quad->rotation), 
+                    glm_rad(quad->rotation[0]), 
+                    (vec3){1.0f, 0.0f, 0.0f}
+                );
+
+                glm_vec3_rotate(
+                    rotated_vertices, 
+                    glm_rad(quad->rotation[1]), 
+                    (vec3){0.0f, 1.0f, 0.0f}
+                );
+
+                glm_vec3_rotate(
+                    rotated_vertices, 
+                    glm_rad(quad->rotation[2]), 
                     (vec3){0.0f, 0.0f, 1.0f}
                 );
 
