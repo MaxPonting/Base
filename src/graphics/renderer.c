@@ -86,8 +86,10 @@ int renderer_clear(Renderer* const renderer, Window* const window)
 {
     if (renderer->type == RENDERER_TYPE_OPENGL)
     {   
-        int width;
-        int height;
+        int width = 0;
+        int height = 0;
+        window->w = width;
+        window->h = height;
         glfwGetFramebufferSize(window->ptr, &width, &height);
         glViewport(0, 0, width, height);
         glm_ortho(-width / 2, width / 2, -height / 2, height / 2, -1.0f, 1.0f, renderer->projection);
@@ -124,14 +126,23 @@ int renderer_draw(Renderer* const renderer, Batch* const batch)
         
             for (int j = 0; j < 4; j++)
             {   
-                glm_vec2_rotate(
-                    renderer->vertices[i + j].position, 
+                renderer->vertices[i + j].position[0] *= quad->size[0];
+                renderer->vertices[i + j].position[1] *= quad->size[1];
+
+                vec3 rotated_vertices;
+                rotated_vertices[0] = renderer->vertices[i + j].position[0];
+                rotated_vertices[1] = renderer->vertices[i + j].position[1];
+                rotated_vertices[2] = 0;
+
+                glm_vec3_rotate(
+                    rotated_vertices, 
                     glm_rad(quad->rotation), 
                     (vec3){0.0f, 0.0f, 1.0f}
                 );
 
-                renderer->vertices[i + j].position[0] *= quad->size[0];
-                renderer->vertices[i + j].position[1] *= quad->size[1];
+                renderer->vertices[i + j].position[0] = rotated_vertices[0];
+                renderer->vertices[i + j].position[1] = rotated_vertices[1];
+
                 renderer->vertices[i + j].position[0] += quad->position[0];
                 renderer->vertices[i + j].position[1] += quad->position[1];         
             }         
@@ -140,9 +151,28 @@ int renderer_draw(Renderer* const renderer, Batch* const batch)
         glBufferSubData(GL_ARRAY_BUFFER, 0, count * sizeof(float) * sizeof(Vertex) * 4, renderer->vertices);
 
         glUseProgram(batch->shader.program_id);
-        glUniformMatrix4fv(glGetUniformLocation(batch->shader.program_id, "model"), 1, 0, (float*)renderer->model);
-        glUniformMatrix4fv(glGetUniformLocation(batch->shader.program_id, "view"), 1, 0, (float*)renderer->view);
-        glUniformMatrix4fv(glGetUniformLocation(batch->shader.program_id, "projection"), 1, 0, (float*)renderer->projection);
+
+        int location = glGetUniformLocation(batch->shader.program_id, "model");
+        if (location == -1)
+        {
+            printf("[ERROR][BASE/GRAPHICS/RENDERER/%d][\"uniform mat4 model\" is not defined in vertex shader]", __LINE__);
+            return 0;
+        }
+        glUniformMatrix4fv(location, 1, 0, (float*)renderer->model);
+        location = glGetUniformLocation(batch->shader.program_id, "view");
+        if (location == -1)
+        {
+            printf("[ERROR][BASE/GRAPHICS/RENDERER/%d][\"uniform mat4 view\" is not defined in vertex shader]", __LINE__);
+            return 0;
+        }
+        glUniformMatrix4fv(location, 1, 0, (float*)renderer->view);
+        location = glGetUniformLocation(batch->shader.program_id, "projection");
+        if (location == -1)
+        {
+            printf("[ERROR][BASE/GRAPHICS/RENDERER/%d][\"uniform mat4 projection\" is not defined in vertex shader]", __LINE__);
+            return 0;
+        }
+        glUniformMatrix4fv(location, 1, 0, (float*)renderer->projection);
 
         glDrawElements(GL_TRIANGLES, count * 6, GL_UNSIGNED_INT, 0);
     }
@@ -159,3 +189,4 @@ static void GLAPIENTRY debug_callback_gl(GLenum source, GLenum type, GLuint id, 
 {
     printf("[ERROR][GRAPHICS/RENDERER/OPENGL][%d][%s]\n", type, message);
 }
+

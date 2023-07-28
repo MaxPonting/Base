@@ -70,3 +70,11 @@ int window_should_close(Window* const window)
     else 
         return 0;
 }
+
+int window_get_key(Window* const window, const int key)
+{   
+    if (window->type == WINDOW_TYPE_GLFW)
+        return glfwGetKey(window->ptr, key) + 1;
+    else
+        return 0;
+}
