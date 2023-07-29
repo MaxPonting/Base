@@ -1,7 +1,6 @@
 #include "graphics/shader.h"
 #include "graphics/renderer.h"
-
-#include <glad/glad.h>
+#include "graphics/glad/glad.h"
 
 static int compile_shader_gl(unsigned int* const id, unsigned int type, const char* const source);
 

@@ -1,7 +1,6 @@
 #include "graphics/renderer.h"
-
-#include <glad/glad.h>
-#include <glfw/glfw3.h>
+#include "graphics/glad/glad.h"
+#include <graphics/glfw/glfw3.h>
 
 static void GLAPIENTRY debug_callback_gl(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 
@@ -55,6 +54,10 @@ int renderer_create(Renderer* const renderer, Allocator* const allocator, const 
         glGenBuffers(1, &renderer->index_buffer_id);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer->index_buffer_id);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * max_quads_per_draw * 6, indices, GL_DYNAMIC_DRAW);
+
+        glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
         renderer->type = RENDERER_TYPE_OPENGL;
         renderer->max_quads_per_draw = max_quads_per_draw;
@@ -163,6 +166,7 @@ int renderer_draw(Renderer* const renderer, Camera* const camera, Batch* const b
             }         
         }
 
+        glBindBuffer(GL_ARRAY_BUFFER, renderer->vertex_buffer_id);
         glBufferSubData(GL_ARRAY_BUFFER, 0, count * sizeof(float) * sizeof(Vertex) * 4, renderer->vertices);
 
         glUseProgram(batch->shader.program_id);
@@ -189,6 +193,7 @@ int renderer_draw(Renderer* const renderer, Camera* const camera, Batch* const b
         }
         glUniformMatrix4fv(location, 1, 0, (float*)camera->projection);
 
+        glBindVertexArray(renderer->vertex_array_id);
         glDrawElements(GL_TRIANGLES, count * 6, GL_UNSIGNED_INT, 0);
     }
     else
@@ -202,6 +207,6 @@ int renderer_draw(Renderer* const renderer, Camera* const camera, Batch* const b
 
 static void GLAPIENTRY debug_callback_gl(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) 
 {
-    printf("[ERROR][GRAPHICS/RENDERER/OPENGL][%d][%s]\n", type, message);
+    printf("[ERROR][GRAPHICS/RENDERER/OPENGL][SOURCE:%d][TYPE:%d][ID:%d][SEVERITY:%d][%s]\n", source, type, id, severity, message);
 }
 

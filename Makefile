@@ -12,45 +12,36 @@ SRC = src/allocator/*.c src/array/*.c src/string/*.c src/graphics/*.c
 TSRC = src/test.c 
 PSRC = src/performance.c
 
-# Build Include Directory
-BINC = -I include/ -I dep/glfw/include -I dep/glad/include 
-
-# Test Include Directory
-TINC = -I include/
-
-# Library Directories
-LIB = -L dep/glfw/lib -L dep/gdi32/lib -L dep/opengl32/lib -L dep/glad/lib 
-
-# Linker
-LINK = -lglfw3 -lgdi32 -lopengl32 -lglad
-
-# Builds
+# Include Directory
+INC = -I include/
 
 test:
 	make debug
-	$(CC) $(FLAGS) $(TFLAGS) $(TSRC) $(TINC) -L bin/debug/ -lbase -o bin/test/test.exe & cd bin/test & test.exe
+	$(CC) $(FLAGS) $(TFLAGS) $(TSRC) $(INC) -L bin/debug/ -lbase -o bin/test/test.exe & cd bin/test & test.exe
 
 performance:
 	make release
-	$(CC) $(FLAGS) $(RFLAGS) $(PSRC) $(TINC) -L bin/debug/ -lbase -o bin/performance/performance.exe & cd bin/performance & performance.exe
+	$(CC) $(FLAGS) $(RFLAGS) $(PSRC) $(INC) -L bin/debug/ -lbase -o bin/performance/performance.exe & cd bin/performance & performance.exe
 
 all:
 	make debug
 	make release
 
 debug:
-	$(CC) $(FLAGS) $(DFLAGS) -c $(SRC) $(BINC)
-	ar -x dep/glfw/lib/libglfw3.a
-	ar -x dep/gdi32/lib/libgdi32.a
-	ar -x dep/opengl32/lib/libopengl32.a
+	$(CC) $(FLAGS) $(DFLAGS) -c $(SRC) $(INC)
+	ar -x dep/libglfw3.a
+	ar -x dep/libgdi32.a
+	ar -x dep/libopengl32.a
+	ar -x dep/libglad.a
 	ar -rcs bin/debug/libbase.a *.o *.c.obj
 	make clean
 
 release:
-	$(CC) $(FLAGS) $(RFLAGS) -c $(SRC) $(BINC)
-	ar -x dep/glfw/lib/libglfw3.a
-	ar -x dep/gdi32/lib/libgdi32.a
-	ar -x dep/opengl32/lib/libopengl32.a
+	$(CC) $(FLAGS) $(RFLAGS) -c $(SRC) $(INC)
+	ar -x dep/libglfw3.a
+	ar -x dep/libgdi32.a
+	ar -x dep/libopengl32.a
+	ar -x dep/libglad.a
 	ar -rcs bin/release/libbase.a *.o *.c.obj
 	make clean
 

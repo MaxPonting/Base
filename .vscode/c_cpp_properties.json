@@ -3,9 +3,7 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/include",
-                "${workspaceFolder}/dep/glfw/include",
-                "${workspaceFolder}/dep/glad/include"
+                "${workspaceFolder}/include"
             ]
         }
     ],
