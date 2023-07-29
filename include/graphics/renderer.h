@@ -1,12 +1,12 @@
 #pragma once
 
-#include "allocator/allocator.h"
-#include "graphics/window.h"
-#include "graphics/quad.h"
-#include "graphics/shader.h"
-#include "graphics/batch.h"
-#include "graphics/camera.h"
+#include "../allocator/allocator.h"
 #include "cglm/struct.h"
+#include "window.h"
+#include "quad.h"
+#include "shader.h"
+#include "batch.h"
+#include "camera.h"
 
 typedef struct
 {

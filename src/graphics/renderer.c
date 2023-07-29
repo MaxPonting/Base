@@ -1,7 +1,7 @@
 #include "graphics/renderer.h"
 
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include <glfw/glfw3.h>
 
 static void GLAPIENTRY debug_callback_gl(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 
@@ -82,6 +82,11 @@ int renderer_clear(Renderer* const renderer, Window* const window, Camera* const
 {
     if (renderer->type == RENDERER_TYPE_OPENGL)
     {   
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+        glEnable(GL_DEBUG_OUTPUT);
+        glDebugMessageCallback(debug_callback_gl, 0);
+
         int width = 0;
         int height = 0;
         window->w = width;

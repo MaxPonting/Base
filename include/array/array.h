@@ -1,6 +1,6 @@
 #pragma once
 
-#include "allocator/allocator.h"
+#include "../allocator/allocator.h"
 #include <stdio.h>
 
 typedef struct

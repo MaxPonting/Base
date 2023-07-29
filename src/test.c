@@ -1,65 +1,80 @@
 #include "allocator/allocator.h"
-#include "array/array.h"
-#include "array/smart_array.h"
-#include "array/dynamic_array.h"
-#include "string/string.h"
-#include "vector/vector2.h"
+#include "graphics/window.h"
+#include "graphics/renderer.h"
+#include "graphics/resource_manager.h"
+#include "graphics/batch.h"
+#include "graphics/camera.h"
 
-#include <time.h>
-#include <stdlib.h>
+const size_t ALLOCATOR_SIZE = 1000000; // 1 MB
 
-void test_array(Allocator* const allocator)
+int main()
 {
-    Array array;
-    array_create(&array, allocator, sizeof(Vector2), 20);
+    Allocator allocator;
+    if(!allocator_create(&allocator, ALLOCATOR_SIZE))
+        return 0;
 
-    *((Vector2*)array_index(&array, 0)) = (Vector2){2, 7};
-    *((Vector2*)array_index(&array, 1)) = (Vector2){7, 12};
+    Window window;
+    if(!window_create(&window, &allocator, "Base Window", 800, 600))
+        return 0;
 
-    for (size_t i = 0; i < 20; i++)   
-    {
-       printf("(x: %f, y: %f)\n", ((Vector2*)array_index(&array, i))->x, ((Vector2*)array_index(&array, i))->y);
-    } 
-}
+    Renderer renderer;
+    if(!renderer_create(&renderer, &allocator, &window, 10))
+        return 0;
 
-void test_smart_array(Allocator* const allocator)
-{
-    SmartArray array;
-    smart_array_create(&array, allocator, sizeof(Vector2), 20);
+    Camera camera;
+    if(!camera_create(&camera, &window))
+        return 0;
 
-    smart_array_push(&array, &(Vector2){4, 7});
-    smart_array_push(&array, &(Vector2){3, 13});
-    smart_array_push(&array, &(Vector2){-78, 56});
-    smart_array_push(&array, &(Vector2){23, -5});
+    ResourceManager resource_manager;
+    if(!resource_manager_create(&resource_manager, &allocator, 200, 2000))
+        return 0;
+    if(!resource_manager_load_shader(&resource_manager, "../../res/shader/vertex.vert", "../../res/shader/fragment.frag"))
+        return 0;
 
-    smart_array_insert(&array, &(Vector2){455, -342}, 0);
+    Quad quad_1;
+    quad_create(&quad_1);
+    quad_1.position[0] = -350; quad_1.position[1] = 0;
+    quad_1.size[0] = 20; quad_1.size[1] = 100;
 
-    for (size_t i = 0; i < array.size; i++)   
-    {
-        printf("(x: %f, y: %f)\n", ((Vector2*)smart_array_index(&array, i))->x, ((Vector2*)smart_array_index(&array, i))->y);
-    } 
-    printf("Size:%I64d", array.size);
-}
+    Quad quad_2;
+    quad_create(&quad_2);
+    quad_2.position[0] = 350; quad_2.position[1] = 0;
+    quad_2.size[0] = 20; quad_2.size[1] = 100;
 
-void test_dynamic_array()
-{
-    DynamicArray array;
-    dynamic_array_create(&array, sizeof(Vector2), 4);
+    Batch batch;
+    if(!batch_create(&batch, &allocator, 10))
+        return 0;
+    if(!shader_create(&batch.shader, &renderer, resource_manager.vertex_buffer, resource_manager.fragment_buffer))
+        return 0;
+    
+    while(!window_should_close(&window))
+    {   
+        window_poll_events(&window);
+        renderer_clear(&renderer, &window, &camera);
 
-    dynamic_array_push(&array, &(Vector2){4, 7});
-    dynamic_array_push(&array, &(Vector2){3, 13});
-    dynamic_array_push(&array, &(Vector2){-78, 56});
-    dynamic_array_push(&array, &(Vector2){23, -5});
+        batch_clear(&batch);
 
-    dynamic_array_insert(&array, &(Vector2){-32, 89}, 3);
+        if (window_get_key(&window, WINDOW_KEY_W) == WINDOW_KEY_PRESS)        
+            camera.position[1] += 2.0f;
+        if (window_get_key(&window, WINDOW_KEY_S) == WINDOW_KEY_PRESS)        
+            camera.position[1] -= 2.0f;
+        if (window_get_key(&window, WINDOW_KEY_D) == WINDOW_KEY_PRESS)       
+            camera.position[0] += 2.0f;       
+        if (window_get_key(&window, WINDOW_KEY_A) == WINDOW_KEY_PRESS)       
+            camera.position[0] -= 2.0f;
+            
+        if(!batch_push(&batch, &quad_1))
+            return 0;
+        if(!batch_push(&batch, &quad_2))
+            return 0;
 
-    for (size_t i = 0; i < array.size; i++)   
-    {
-        printf("(x: %f, y: %f)\n", ((Vector2*)dynamic_array_index(&array, i))->x, ((Vector2*)dynamic_array_index(&array, i))->y);
-    } 
-    printf("Size:%I64d\n", array.size);
-    printf("Capacity:%I64d\n", array.capacity);
-    printf("\n");
+        if(!renderer_draw(&renderer, &camera, &batch))
+            return 0;
 
-    dynamic_array_destroy(&array);
+        window_swap_buffers(&window);
+    }
+
+    renderer_destroy(&renderer);
+    window_destroy(&window);
+    allocator_destroy(&allocator);
 }

@@ -1,6 +1,6 @@
 #include "graphics./window.h"
 
-#include <GLFW/glfw3.h>
+#include <glfw/glfw3.h>
 
 int window_create(Window* const window, Allocator* const allocator, char* const name, const int w, const int h)
 {

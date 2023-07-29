@@ -1,9 +1,9 @@
 #pragma once
 
-#include "allocator/allocator.h"
-#include "array/smart_array.h"
-#include "graphics/shader.h"
-#include "graphics/quad.h"
+#include "../allocator/allocator.h"
+#include "../array/smart_array.h"
+#include "shader.h"
+#include "quad.h"
 
 typedef struct
 {

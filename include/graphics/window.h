@@ -1,8 +1,8 @@
 #pragma once
 
-#include "platform/platform.h"
-#include "allocator/allocator.h"
-#include "string/string.h"
+#include "../platform/platform.h"
+#include "../allocator/allocator.h"
+#include "../string/string.h"
 
 typedef enum WindowType { WINDOW_TYPE_NULL, WINDOW_TYPE_GLFW } WindowType;
 

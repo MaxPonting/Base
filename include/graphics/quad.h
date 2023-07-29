@@ -1,6 +1,6 @@
 #pragma once
 
-#include "graphics/cglm/struct.h"
+#include "cglm/struct.h"
 
 typedef struct
 {   
