@@ -1,6 +1,7 @@
 #include "array/smart_array.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 int smart_array_create(SmartArray* const smart_array, Allocator* const allocator, size_t element_size, size_t capacity)
 {
@@ -31,7 +32,7 @@ int smart_array_push(SmartArray* const smart_array, const void* const ptr)
 {
     if (smart_array->size == smart_array->capacity)
     {   
-        printf("[WARNING][BASE/ARRAY/SMART_ARRAY/%d][Capacity reached, data was not pushed]\n", __LINE__);
+        printf("[WARNING][BASE/ARRAY/SMART_ARRAY/%d][Capacity reached, data was not pushed][Capacity: %I64d, Size: %I64d]\n", __LINE__, smart_array->capacity, smart_array->size);
         return 0;
     }
   
@@ -61,10 +62,48 @@ int smart_array_insert(SmartArray* const smart_array, const void* const ptr, con
 
     return 1;
 }
+
+int smart_array_sort(SmartArray* const smart_array, int(*compar)(const void*, const void*), const size_t start_index, const size_t end_index)
+{   
+    if (smart_array->size < 2)    
+    {   
+        printf("[MESSAGE][BASE/ARRAY/SMART_ARRAY/%d][Array not sorted, size is less 2]\n", __LINE__);
+        return 0;
+    }
+        
+    if (start_index >= smart_array->size)
+    {   
+        printf("[WARNING][BASE/ARRAY/SMART_ARRAY/%d][Array not sorted, start_index is larger than array size]\n", __LINE__);
+        return 0;
+    }
+
+    if (end_index >= smart_array->size)
+    {   
+        printf("[WARNING][BASE/ARRAY/SMART_ARRAY/%d][Array not sorted, end_index is larger than array size]\n", __LINE__);
+        return 0;
+    }
+
+    if (start_index > end_index)
+    {   
+        printf("[WARNING][BASE/ARRAY/SMART_ARRAY/%d][Array not sorted, start_index is larger than end_index]\n", __LINE__);
+        return 0;
+    }
+       
+    const size_t count = (end_index - start_index) + 1;
+
+    if (count < 2)
+    {
+        printf("[WARNING][BASE/ARRAY/SMART_ARRAY/%d][Array not sorted, count is less than 2]\n", __LINE__);
+        return 0;
+    }
+
+    qsort(smart_array->memory + start_index * smart_array->element_size, count, smart_array->element_size, compar);
+        
+    return 1;
+}
+
 int smart_array_clear(SmartArray* const smart_array)
 {
-    memset(smart_array->memory, 0, smart_array->size);
-
     smart_array->size = 0;
 
     return 1;

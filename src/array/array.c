@@ -5,13 +5,14 @@ int array_create(Array* const array, Allocator* const allocator, const size_t el
     array->memory = allocator_alloc(allocator, capacity * element_size);
     if (array->memory == 0)
     {
-        return 1;
+        printf("[ERROR][BASE/ARRAY/ARRAY/%d][Array allocation failed]\n", __LINE__);
+        return 0;
     }
 
     array->element_size = element_size;
     array->capacity = capacity;
 
-    return 0;
+    return 1;
 }
 
 void* array_index(Array* const array, const size_t index)

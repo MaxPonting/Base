@@ -4,9 +4,9 @@
 
 static int compile_shader_gl(unsigned int* const id, unsigned int type, const char* const source);
 
-int shader_create(Shader* const shader, const Renderer* const renderer, const char* const vertex_source, const char* const fragment_source)
+int shader_create(Shader* const shader, const Renderer renderer, const char* const vertex_source, const char* const fragment_source)
 {
-    if (renderer->type == RENDERER_TYPE_OPENGL)
+    if (renderer.type == RENDERER_TYPE_OPENGL)
     {
         shader->program_id = glCreateProgram();
         if(!compile_shader_gl(&shader->vertex_id, GL_VERTEX_SHADER, vertex_source))
@@ -31,7 +31,7 @@ int shader_create(Shader* const shader, const Renderer* const renderer, const ch
     return 1;
 }
 
-int shader_destroy(Shader* const shader, const Renderer* const renderer)
+int shader_destroy(Shader* const shader, const Renderer renderer)
 {
     if (shader->program_id == 0)
     {
@@ -39,7 +39,7 @@ int shader_destroy(Shader* const shader, const Renderer* const renderer)
         return 0;
     }
 
-    if (renderer->type == RENDERER_TYPE_OPENGL)
+    if (renderer.type == RENDERER_TYPE_OPENGL)
     {
         glDeleteProgram(shader->program_id);
     }
@@ -47,6 +47,32 @@ int shader_destroy(Shader* const shader, const Renderer* const renderer)
     {
         printf("[ERROR][BASE/GRAPHICS/SHADER/%d][Renderer type not supported]\n", __LINE__);
     }
+
+    return 1;
+}
+
+int shader_set_vec4(const Shader shader, const char* const name, const vec4 value)
+{
+    int location = glGetUniformLocation(shader.program_id, name);
+    if (location == -1)
+    {
+        return 0;
+    }
+
+    glUniform4f(location, value[0], value[1], value[2], value[3]);
+
+    return 1;
+}
+
+int shader_set_mat4(const Shader shader, const char* const name, const mat4 value)
+{
+    int location = glGetUniformLocation(shader.program_id, name);
+    if (location == -1)
+    {
+        return 0;
+    }
+
+    glUniformMatrix4fv(location, 1, 0, (float*)value);
 
     return 1;
 }

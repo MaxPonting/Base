@@ -2,26 +2,23 @@
 CC = gcc
 
 # Compiler Flags
-FLAGS = -Wall
+FLAGS = -Wall 
 TFLAGS = -g3 -ggdb
 DFLAGS = -g3 -ggdb -Wextra
-RFLAGS = -O3
+RFLAGS = -O3 -mwindows
 
 # Source Files
 SRC = src/allocator/*.c src/array/*.c src/string/*.c src/graphics/*.c 
 TSRC = src/test.c 
-PSRC = src/performance.c
 
 # Include Directory
 INC = -I include/
 
-test:
-	make debug
+test: 
 	$(CC) $(FLAGS) $(TFLAGS) $(TSRC) $(INC) -L bin/debug/ -lbase -o bin/test/test.exe & cd bin/test & test.exe
 
 performance:
-	make release
-	$(CC) $(FLAGS) $(RFLAGS) $(PSRC) $(INC) -L bin/debug/ -lbase -o bin/performance/performance.exe & cd bin/performance & performance.exe
+	$(CC) $(FLAGS) $(RFLAGS) $(TSRC) $(INC) -L bin/release/ -lbase -o bin/performance/performance.exe & cd bin/performance & performance.exe
 
 all:
 	make debug

@@ -64,8 +64,6 @@ void dynamic_array_insert(DynamicArray* const dynamic_array, const void* const p
 
 void dynamic_array_clear(DynamicArray* const dynamic_array)
 {
-    memset(dynamic_array->memory, 0, dynamic_array->size);
-
     dynamic_array->size = 0;
 }
 

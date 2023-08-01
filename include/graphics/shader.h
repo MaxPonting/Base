@@ -1,5 +1,7 @@
 #pragma once
 
+#include "cglm/struct.h"
+
 typedef struct
 {
     unsigned int program_id;
@@ -9,5 +11,8 @@ typedef struct
 
 typedef struct Renderer Renderer;
 
-int shader_create(Shader* const shader, const Renderer* const renderer, const char* const vertex_source, const char* const fragment_source);
-int shader_destroy(Shader* const shader, const Renderer* const renderer);
+int shader_create(Shader* const shader, const Renderer renderer, const char* const vertex_source, const char* const fragment_source);
+int shader_destroy(Shader* const shader, const Renderer renderer);
+
+int shader_set_vec4(const Shader shader, const char* const name, const vec4 value);
+int shader_set_mat4(const Shader shader, const char* const name, const mat4 value);

@@ -8,8 +8,8 @@ typedef struct Camera
 {   
     float rotation;
     vec2 position, scale;
-    mat4 model, view, projection;
+    mat4 view, projection;
 } Camera;
 
 int camera_create(Camera* const camera, const Window* const window);
-int camera_set_mvp(Camera* const camera);
+int camera_set_view(Camera* const camera);

@@ -8,7 +8,7 @@ int allocator_create(Allocator* const allocator, size_t capacity)
 
     if (allocator->memory == 0)
     {   
-        printf("[ERROR][BASE/ALLOCATOR/11][Creation failed]\n");
+        printf("[ERROR][BASE/ALLOCATOR/11][Allocation failed]\n");
         return 0;
     }
         
