@@ -19,7 +19,6 @@ int window_create(Window* const window, Allocator* const allocator, char* const 
         }
 
         glfwMakeContextCurrent(window->ptr);
-        glfwSwapInterval(1);
 
         window->w = w;
         window->h = h;
@@ -46,6 +45,30 @@ int window_swap_buffers(Window* const window)
 {
     if (window->type == WINDOW_TYPE_GLFW)
         glfwSwapBuffers(window->ptr);
+    else 
+        return 0;
+
+    return 1;
+}
+
+int window_vsync(Window* const window, const int value)
+{
+    if (window->type == WINDOW_TYPE_GLFW)
+        glfwSwapInterval(value);
+    else 
+        return 0;
+
+    return 1;
+}
+
+int window_set_size(Window* const window, const int width, const int height)
+{
+    if (window->type == WINDOW_TYPE_GLFW)
+    {
+        glfwSetWindowSize(window->ptr, width, height);
+        window->w = width;
+        window->h = height;
+    }
     else 
         return 0;
 

@@ -27,12 +27,6 @@ int resource_manager_load_shader(ResourceManager* const resource_manager, const 
     return 1;
 }
 
-int resource_manager_load_texture(ResourceManager* const resource_manager, const char* const file_path)
-{
-    printf("[ERROR][BASE/GRAPHICS/RESOURCE_MANAGER/%d][Texture loading not implemented]\n", __LINE__);
-    return 0;
-}
-
 static int load_shader_from_file(char* const line_buffer, const int line_size, char* const shader_buffer, const int shader_size, const char* const file_path)
 {
     FILE* file_stream;

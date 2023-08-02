@@ -17,6 +17,8 @@ typedef struct Window
 int window_create(Window* const window, Allocator* const allocator, char* const name, const int w, const int h);
 int window_destroy();
 int window_swap_buffers();
+int window_vsync(Window* const window, const int value);
+int window_set_size(Window* const window, const int width, const int height);
 int window_poll_events(Window* const window);
 int window_should_close(Window* const window);
 int window_get_key(Window* const window, const int key);

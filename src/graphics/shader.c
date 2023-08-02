@@ -51,7 +51,46 @@ int shader_destroy(Shader* const shader, const Renderer renderer)
     return 1;
 }
 
-int shader_set_vec4(const Shader shader, const char* const name, const vec4 value)
+int shader_set_1i(const Shader shader, const char* const name, const int value)
+{
+    int location = glGetUniformLocation(shader.program_id, name);
+    if (location == -1)
+    {
+        return 0;
+    }
+
+    glUniform1i(location, value);
+
+    return 1;
+}
+
+int shader_set_1iv(const Shader shader, const char* const name, const int* values, const int count)
+{
+    int location = glGetUniformLocation(shader.program_id, name);
+    if (location == -1)
+    {
+        return 0;
+    }
+
+    glUniform1iv(location, count, values);
+
+    return 1;
+}
+
+int shader_set_2f(const Shader shader, const char* const name, const vec2 value)
+{
+    int location = glGetUniformLocation(shader.program_id, name);
+    if (location == -1)
+    {
+        return 0;
+    }
+
+    glUniform2f(location, value[0], value[1]);
+
+    return 1;
+}
+
+int shader_set_4f(const Shader shader, const char* const name, const vec4 value)
 {
     int location = glGetUniformLocation(shader.program_id, name);
     if (location == -1)
