@@ -1,15 +1,19 @@
 #include "array/smart_array.h"
+#include "allocator/allocator.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-int smart_array_create(SmartArray* const smart_array, Allocator* const allocator, size_t element_size, size_t capacity)
+int32 smart_array_create(SmartArray* const smart_array, uint64 element_size, uint64 capacity)
 {
-    smart_array->memory = allocator_alloc(allocator, capacity * element_size);
+    smart_array->memory = allocator_alloc(capacity * element_size);
+
     if (smart_array->memory == 0)
     {
+        printf("[WARNING][BASE/ARRAY/SMART_ARRAY/%d][Creation failed]\n", __LINE__);
         return 0;
     }
+
     smart_array->element_size = element_size;
     smart_array->capacity = capacity;
     smart_array->size = 0;
@@ -17,7 +21,7 @@ int smart_array_create(SmartArray* const smart_array, Allocator* const allocator
     return 1;
 }
 
-void* smart_array_index(SmartArray* const smart_array, const size_t index)
+void* smart_array_index(SmartArray* const smart_array, const uint64 index)
 {
     if (index >= smart_array->size)
     {
@@ -28,7 +32,7 @@ void* smart_array_index(SmartArray* const smart_array, const size_t index)
     return &(smart_array->memory)[index * smart_array->element_size];
 }
 
-int smart_array_push(SmartArray* const smart_array, const void* const ptr)
+int32 smart_array_push(SmartArray* const smart_array, const void* const ptr)
 {
     if (smart_array->size == smart_array->capacity)
     {   
@@ -42,7 +46,7 @@ int smart_array_push(SmartArray* const smart_array, const void* const ptr)
     return 1;
 }
 
-int smart_array_insert(SmartArray* const smart_array, const void* const ptr, const size_t index)
+int32 smart_array_insert(SmartArray* const smart_array, const void* const ptr, const uint64 index)
 {
     if (smart_array->size == smart_array->capacity)
     {   
@@ -63,7 +67,7 @@ int smart_array_insert(SmartArray* const smart_array, const void* const ptr, con
     return 1;
 }
 
-int smart_array_sort(SmartArray* const smart_array, int(*compar)(const void*, const void*), const size_t start_index, const size_t end_index)
+int32 smart_array_sort(SmartArray* const smart_array, int(*compar)(const void*, const void*), const uint64 start_index, const uint64 end_index)
 {   
     if (smart_array->size < 2)    
     {   
@@ -89,7 +93,7 @@ int smart_array_sort(SmartArray* const smart_array, int(*compar)(const void*, co
         return 0;
     }
        
-    const size_t count = (end_index - start_index) + 1;
+    const uint64 count = (end_index - start_index) + 1;
 
     if (count < 2)
     {
@@ -102,14 +106,14 @@ int smart_array_sort(SmartArray* const smart_array, int(*compar)(const void*, co
     return 1;
 }
 
-int smart_array_clear(SmartArray* const smart_array)
+int32 smart_array_clear(SmartArray* const smart_array)
 {
     smart_array->size = 0;
 
     return 1;
 }
 
-int smart_array_delete(SmartArray* const smart_array, const size_t index)
+int32 smart_array_delete(SmartArray* const smart_array, const uint64 index)
 {
     if (smart_array->size == 0)
     {   

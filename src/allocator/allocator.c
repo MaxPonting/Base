@@ -2,43 +2,47 @@
 
 #include <stdio.h>
 
-int allocator_create(Allocator* const allocator, size_t capacity)
-{   
-    allocator->memory = (unsigned char*)malloc(capacity);
+static uint8* memory;
+static uint64 offset;
+static uint64 capacity;
 
-    if (allocator->memory == 0)
+int allocator_create(const uint64 c)
+{   
+    memory = (unsigned char*)malloc(c);
+
+    if (memory == 0)
     {   
         printf("[ERROR][BASE/ALLOCATOR/11][Allocation failed]\n");
         return 0;
     }
         
-    allocator->offset = 0;
-    allocator->capacity = capacity; 
+    offset = 0;
+    capacity = c; 
     
     return 1;
 }
 
-int allocator_destroy(Allocator* const allocator)
+int allocator_destroy()
 {
-    if (allocator->memory == 0)
+    if (memory == 0)
         return 0;
 
-    free(allocator->memory);
+    free(memory);
 
     return 1;
 }
 
-void* allocator_alloc(Allocator* const allocator, size_t capacity)
+void* allocator_alloc(const uint64 c)
 {
-    if (allocator->offset + capacity > allocator->capacity)
+    if (offset + c > capacity)
     {
         printf("[ERROR][BASE/ALLOCATOR/35][Capacity reached]\n");
         return 0;
     }
         
-    void* ptr = &allocator->memory[allocator->offset];
-    allocator->offset += capacity;
+    void* ptr = &memory[offset];
+    offset += c;
 
-    memset(ptr, 0, capacity);
+    memset(ptr, 0, c);
     return ptr;
 }

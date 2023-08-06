@@ -1,11 +1,13 @@
 #include "array/array.h"
+#include "allocator/allocator.h"
+#include "log/log.h"
 
-int array_create(Array* const array, Allocator* const allocator, const size_t element_size, const size_t capacity)
+int array_create(Array* const array, const uint64 element_size, const size_t capacity)
 {
-    array->memory = allocator_alloc(allocator, capacity * element_size);
+    array->memory = allocator_alloc(capacity * element_size);
     if (array->memory == 0)
     {
-        printf("[ERROR][BASE/ARRAY/ARRAY/%d][Array allocation failed]\n", __LINE__);
+        log_print(LOG_TYPE_ERROR, "BASE/ARRAY/ARRAY", "Array allocation failed", __LINE__);
         return 0;
     }
 
@@ -15,18 +17,26 @@ int array_create(Array* const array, Allocator* const allocator, const size_t el
     return 1;
 }
 
-void* array_index(Array* const array, const size_t index)
+void* array_index(Array* const array, const uint64 index)
 {
     if (index >= array->capacity)
     {
-        printf("Array: Cannot access index that is equal to or larger than capacity\n");
+        log_print(LOG_TYPE_ERROR, "BASE/ARRAY/ARRAY", "Index is larger than capacity", __LINE__);
         return 0;
     }
 
     return &(array->memory)[index * array->element_size];
 }
 
-void array_clear(Array* const array)
+int32 array_clear(Array* const array)
 {
+    if (array->memory == 0)
+    {
+        log_print(LOG_TYPE_ERROR, "BASE/ARRAY/ARRAY", "Array has not been allocated", __LINE__);
+        return 0;
+    }
+
     memset(array->memory, 0, array->capacity);
+
+    return 1;
 }

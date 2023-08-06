@@ -1,15 +1,13 @@
 #pragma once
 
-#include "../allocator/allocator.h"
-
-#include <stdio.h>
+#include "../type/type.h"
 
 typedef struct 
 {
     char* ptr;
-    size_t size;
+    uint64 size;
 } String;
 
-void string_create(String* const string, Allocator* const allocator, char* const c_string);
-void string_set(String* const string, char* const ptr, const size_t size);
-char string_index(String* const string, const size_t index);
+void string_create(String* const string, char* const c_string);
+void string_set(String* const string, char* const ptr, const uint64 size);
+char string_index(String* const string, const uint64 index);

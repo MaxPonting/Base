@@ -4,11 +4,12 @@ CC = gcc
 # Compiler Flags
 FLAGS = -Wall 
 TFLAGS = -g3 -ggdb
+PFLAGS = -O3
 DFLAGS = -g3 -ggdb -Wextra
 RFLAGS = -O3 -mwindows
 
 # Source Files
-SRC = src/allocator/*.c src/array/*.c src/string/*.c src/graphics/*.c 
+SRC = src/log/*.c src/allocator/*.c src/array/*.c src/string/*.c src/graphics/*.c src/file/*.c 
 TSRC = src/test.c 
 
 # Include Directory
@@ -18,7 +19,7 @@ test:
 	$(CC) $(FLAGS) $(TFLAGS) $(TSRC) $(INC) -L bin/debug/ -lbase -o bin/test/test.exe & cd bin/test & test.exe
 
 performance:
-	$(CC) $(FLAGS) $(RFLAGS) $(TSRC) $(INC) -L bin/release/ -lbase -o bin/performance/performance.exe & cd bin/performance & performance.exe
+	$(CC) $(FLAGS) $(PFLAGS) $(TSRC) $(INC) -L bin/release/ -lbase -o bin/performance/performance.exe & cd bin/performance & performance.exe
 
 all:
 	make debug

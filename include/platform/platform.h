@@ -1,7 +1,7 @@
 #pragma once
 
 #define PLATFORM_TYPE_WINDOWS 0
-#define PLATFORM_TYPE_MAC_OS 1
+#define PLATFORM_TYPE_MAC 1
 #define PLATFORM_TYPE_LINUX 2
 #define PLATFORM_TYPE_ANDROID 3
 #define PLATFORM_TYPE_IPHONE 4
@@ -12,7 +12,7 @@
 #elif defined(__APPLE__)
     #include "TargetConditionals.h"
     #if TARGET_OS_MAC
-        #define PLATFORM PLATFORM_TYPE_MAC_OS
+        #define PLATFORM PLATFORM_TYPE_MAC
     #elif TARGET_OS_IPHONE
         #define PLATFORM PLATFORM_TYPE_IPHONE
     #else   
