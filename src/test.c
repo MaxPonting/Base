@@ -2,6 +2,7 @@
 #include "graphics/window.h"
 #include "graphics/renderer.h"
 #include "graphics/shader.h"
+#include "graphics/camera.h"
 #include "file/file.h"
 
 #include <stdio.h>
@@ -32,16 +33,23 @@ int main()
         if(!shader_create(&shader, vertex_source, fragment_source))
             return 1;
     }
+
+    Camera camera;
+    if(!camera_create(&camera, (vec2){640, 360}))
+        return 0;
     
     while(!window_should_close())
     {
         window_poll_events();
 
-        renderer_start();
-        
-        // Render
+        if(!renderer_start(camera))
+            return 1;
 
-        renderer_end();
+        if(!renderer_draw_quad((vec2){0, 0}, (vec2){200, 200}, 0, (vec4){1.0f, 0.0f, 1.0f, 1.0f}))
+            return 1;
+        
+        if(!renderer_end())
+            return 1;
 
         window_swap_buffer();
     }

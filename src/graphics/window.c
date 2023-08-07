@@ -86,3 +86,16 @@ int32 window_poll_events()
 
     return 1;
 }
+
+int32 window_get_size(int32* const width, int32* const height)
+{
+    if (window == 0)
+    {
+        log_print(LOG_TYPE_ERROR, "BASE/GRAPHICS/WINDOW", "Window is null", __LINE__);
+        return 0;
+    }
+
+    glfwGetWindowSize(window, width, height);
+
+    return 1;
+}

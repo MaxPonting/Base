@@ -1,5 +1,12 @@
 {
     "files.associations": {
-        "xutility": "c"
+        "xutility": "c",
+        "array": "c",
+        "bit": "c",
+        "compare": "c",
+        "cstddef": "c",
+        "limits": "c",
+        "type_traits": "c",
+        "*.idl": "c"
     }
 }
