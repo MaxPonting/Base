@@ -2,7 +2,7 @@
 #include "allocator/allocator.h"
 #include "log/log.h"
 
-int array_create(Array* const array, const uint64 element_size, const size_t capacity)
+int array_create(Array* const array, const uint64 element_size, const uint64 capacity)
 {
     array->memory = allocator_alloc(capacity * element_size);
     if (array->memory == 0)

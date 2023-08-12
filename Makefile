@@ -2,14 +2,14 @@
 CC = gcc
 
 # Compiler Flags
-FLAGS = -Wall 
+FLAGS = -Wall
 TFLAGS = -g3 -ggdb
 PFLAGS = -O3
 DFLAGS = -g3 -ggdb -Wextra
 RFLAGS = -O3 -mwindows
 
 # Source Files
-SRC = src/log/*.c src/allocator/*.c src/array/*.c src/string/*.c src/graphics/*.c src/file/*.c 
+SRC = src/log/*.c src/allocator/*.c src/array/*.c src/string/*.c src/window/*.c src/opengl/*.c src/file/*.c 
 TSRC = src/test.c 
 
 # Include Directory

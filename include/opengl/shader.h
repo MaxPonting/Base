@@ -2,7 +2,6 @@
 
 #include "../type/type.h"
 #include "../vendor/glad/glad.h"
-#include "../graphics/uniform.h"
 
 typedef struct
 {
@@ -14,4 +13,3 @@ int32 shader_destroy(Shader* const shader);
 
 int32 shader_use(const Shader shader);
 
-int32 shader_uniform(Shader* const shader, const Uniform uniform);

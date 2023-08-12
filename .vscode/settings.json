@@ -7,6 +7,9 @@
         "cstddef": "c",
         "limits": "c",
         "type_traits": "c",
-        "*.idl": "c"
-    }
+        "*.idl": "c",
+        "shader.h": "c"
+    },
+    "zenMode.hideLineNumbers": false,
+    "zenMode.hideStatusBar": false
 }
