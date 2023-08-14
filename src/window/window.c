@@ -51,6 +51,19 @@ int32 window_destroy()
     return 1;
 };
 
+int32 window_set_size(const int32 width, const int32 height)
+{
+    if (s_window == 0)
+    {
+        log_print(LOG_TYPE_ERROR, "BASE/GRAPHICS/WINDOW", "Window is null", __LINE__);
+        return 0;
+    }
+
+    glfwSetWindowSize(s_window, width, height);
+
+    return 1;
+}
+
 int32 window_swap_buffer()
 {
     if (s_window == 0)
@@ -97,6 +110,19 @@ int32 window_is_active()
     return 1;
 }
 
+int32 window_get_ptr(void** ptr)
+{
+    if (s_window == 0)
+    {
+        log_print(LOG_TYPE_ERROR, "BASE/GRAPHICS/WINDOW", "Window is null", __LINE__);
+        return 0;
+    }
+    
+    *ptr = s_window;
+
+    return 1; 
+}
+
 int32 window_get_size(int32* const width, int32* const height)
 {
     if (s_window == 0)
@@ -109,3 +135,37 @@ int32 window_get_size(int32* const width, int32* const height)
 
     return 1;
 }
+
+WindowKeyState window_get_key(const WindowKey key)
+{
+    if (s_window == 0)
+    {
+        log_print(LOG_TYPE_ERROR, "BASE/WINDOW/WINDOW", "Window is null", __LINE__);
+        return WINDOW_KEY_STATE_NULL;
+    }
+
+    return glfwGetKey(s_window, key);
+}
+
+uint64 window_get_timer_value()
+{
+    if (s_window == 0)
+    {
+        log_print(LOG_TYPE_ERROR, "BASE/WINDOW/WINDOW", "Window is null", __LINE__);
+        return 0;
+    }
+
+    return glfwGetTimerValue(); 
+}
+
+uint64 window_get_timer_frequency()
+{
+    if (s_window == 0)
+    {
+        log_print(LOG_TYPE_ERROR, "BASE/WINDOW/WINDOW", "Window is null", __LINE__);
+        return WINDOW_KEY_STATE_NULL;
+    }
+
+    return glfwGetTimerFrequency();
+}
+
