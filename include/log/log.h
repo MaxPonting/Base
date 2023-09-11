@@ -1,11 +1,16 @@
 #pragma once
 
-typedef enum LogType 
-{ 
-    LOG_TYPE_MESSAGE, 
-    LOG_TYPE_WARNING, 
-    LOG_TYPE_ERROR 
-} 
-LogType;
+#include "../type/type.h"
 
-void log_print(const LogType log_type, const char* const module, const char* const log, const int line_number);
+namespace Base::Log
+{
+    typedef enum  
+    { 
+        TYPE_MESSAGE, 
+        TYPE_WARNING, 
+        TYPE_ERROR 
+    } Type; 
+
+    void Print(const char* const log, const Type type, const Int32 line, const char* const file);
+}
+

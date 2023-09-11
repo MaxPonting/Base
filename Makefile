@@ -1,5 +1,5 @@
 # Compiler
-CC = gcc
+CC = g++
 
 # Compiler Flags
 FLAGS = -Wall
@@ -9,8 +9,8 @@ DFLAGS = -g3 -ggdb -Wextra
 RFLAGS = -O3 -mwindows
 
 # Source Files
-SRC = src/log/*.c src/allocator/*.c src/array/*.c src/string/*.c src/window/*.c src/opengl/*.c src/file/*.c src/math/*.c src/nuklear/*.c
-TSRC = src/test.c 
+SRC = src/log/*.cpp src/allocator/*.cpp src/file/*.cpp src/math/*.cpp
+TSRC = src/main.cpp 
 
 # Include Directory
 INC = -I include/
@@ -27,20 +27,12 @@ all:
 
 debug:
 	$(CC) $(FLAGS) $(DFLAGS) -c $(SRC) $(INC)
-	ar -x dep/libglfw3.a
-	ar -x dep/libgdi32.a
-	ar -x dep/libopengl32.a
-	ar -x dep/libglad.a
-	ar -rcs bin/debug/libbase.a *.o *.c.obj
+	ar -rcs bin/debug/libbase.a *.o
 	make clean
 
 release:
 	$(CC) $(FLAGS) $(RFLAGS) -c $(SRC) $(INC)
-	ar -x dep/libglfw3.a
-	ar -x dep/libgdi32.a
-	ar -x dep/libopengl32.a
-	ar -x dep/libglad.a
-	ar -rcs bin/release/libbase.a *.o *.c.obj
+	ar -rcs bin/release/libbase.a *.o
 	make clean
 
 clean:

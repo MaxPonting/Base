@@ -1,17 +1,16 @@
 #pragma once
 
-typedef long long int64;
-typedef int int32;
-typedef short int16;
-typedef char int8;
+typedef long long Int64;
+typedef int Int32;
+typedef short Int16;
+typedef char Int8;
 
-typedef unsigned long long uint64;
-typedef unsigned int uint32;
-typedef unsigned short uint16;
-typedef unsigned char uint8;
+typedef unsigned long long UInt64;
+typedef unsigned int UInt32;
+typedef unsigned short UInt16;
+typedef unsigned char UInt8;
 
-typedef double float64;
-typedef float float32;
+typedef double Float64;
+typedef float Float32;
 
-
-
+typedef bool Bool;

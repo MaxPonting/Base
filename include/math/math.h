@@ -2,14 +2,20 @@
 
 #include "struct.h"
 
-float32 math_radians(const float32 degrees);
+namespace Base::Math
+{
+    const Float32 PI = 3.14159265359f;
 
-void math_mat4_identity(vec4* const mat);
-void math_mat3_identity(vec3* const mat);
-void math_mat2_identity(vec2* const mat);
+    Float32 Radians(const Float32 rotation);
 
-void math_orthographic(vec4* const mat, float32 left, float32 right, float32 bottom, float32 top, float32 near_z, float32 far_z);
+    void Mat4Identity(Mat4& mat);
+    void Mat3Identity(Mat3& mat);
+    void Mat2Identity(Mat2& mat);
 
-void math_mat4_transform_2d(vec4* const mat4, const vec2 translation, const vec2 scale, const float32 rotation);
+    void Orthographic(Mat4& mat, const Float32 left, const Float32 right, const Float32 bottom, const Float32 top, const Float32 near_z, const Float32 far_z);
 
-void math_rotate_vec2_2d(float32* const vec, const float32 rotation);
+    void Mat4Transform2D(Mat4& mat, const Vec2 translation, const Vec2 scale, const Float32 rotation);
+
+    void Vec2Rotate2D(Vec2& vec, const Float32 rotation);
+}
+

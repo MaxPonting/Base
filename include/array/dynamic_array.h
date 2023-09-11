@@ -1,19 +1,170 @@
 #pragma once
 
+#include "../type/type.h"
+#include "../log/log.h"
+#include "../allocator/allocator.h"
+
+#include <stdlib.h>
+#include <memory.h> 
 #include <malloc.h>
 
-typedef struct
+namespace Base
 {
-    unsigned char* memory;
-    size_t element_size;
-    size_t size;
-    size_t capacity;
-} DynamicArray;
+    template <typename T>
+    struct DynamicArray
+    {
+        T* memory;
+        Int32 count;
+        Int32 size;
 
-int dynamic_array_create(DynamicArray* const dynamic_array, size_t element_size, size_t capacity);
-void* dynamic_array_index(DynamicArray* const dynamic_array, const size_t index);
-void dynamic_array_push(DynamicArray* const dynamic_array, const void* const ptr);
-void dynamic_array_insert(DynamicArray* const dynamic_array, const void* const ptr, const size_t index);
-void dynamic_array_clear(DynamicArray* const dynamic_array);
-void dynamic_array_delete(DynamicArray* const dynamic_array, const size_t index);
-void dynamic_array_destroy(DynamicArray* const dynamic_array);
+        DynamicArray()
+        {
+            memory = 0;
+            count = 0;
+            size = 0;
+        }
+
+        DynamicArray(Int32 start_size)
+        {
+            memory = (T*)malloc(sizeof(T) * start_size);
+            count = 0;
+            size = start_size;
+        } 
+
+        ~DynamicArray()
+        {
+            if (memory == 0)
+                return;
+
+            free(memory);
+
+            memory = 0;
+        }
+
+        T& Item(const Int32 index)
+        {
+            if (index >= size)
+            {
+                Log::Print("Array index out of bounds", Log::TYPE_ERROR, __LINE__, __FILE__);
+                exit(0);
+            }
+            
+            return memory[index];
+        }
+
+        Int32 Push(const T value)
+        {
+            if(count == size)
+            {
+                T* temp = 0;
+                if (size >= 0)
+                {
+                    temp = (T*)realloc(memory, sizeof(T) * 2); 
+                    size = 2;
+                }
+                else 
+                {
+                    temp = (T*)realloc(memory, (UInt32)size * sizeof(T) * 2);
+                    size *= 2;
+                }
+
+                if (temp == 0)
+                {
+                    Log::Print("Array reallocation failed", Log::TYPE_ERROR, __LINE__, __FILE__);
+                    return 0;
+                } 
+
+                memory = temp;
+            }
+            
+            memory[count] = value;
+            count++;
+
+            return 1;
+        }
+
+        Int32 Insert(const T value, const Int32 index)
+        {
+            if(index >= size)
+            {
+                Log::Print("Array index out of bounds, value was not inserted", Log::TYPE_WARNING, __LINE__, __FILE__);
+                return 0;
+            }
+
+            if(count >= size)
+            {
+                T* temp = 0;
+                if (size <= 0)
+                {
+                    temp = (T*)realloc(memory, sizeof(T) * 2); 
+                    size = 2;
+                }
+                else 
+                {
+                    temp = (T*)realloc(memory, (UInt32)size * sizeof(T) * 2);
+                    size *= 2;
+                }
+
+                if (temp == 0)
+                {
+                    Log::Print("Array reallocation failed", Log::TYPE_ERROR, __LINE__, __FILE__);
+                    return 0;
+                } 
+
+                memory = temp;
+            }
+            
+            memcpy((UInt8*)memory + (index + 1) * sizeof(T), (UInt8*)memory + index * sizeof(T), sizeof(T) * (count - index));
+            memory[index] = value;
+            count++;
+
+            return 1;
+        }
+
+        Int32 Delete(const Int32 index)
+        {
+            if(count == 0)
+            {
+                Log::Print("Array count is 0, value was not deleted", Log::TYPE_WARNING, __LINE__, __FILE__);
+                return 0;
+            }
+
+            if(index >= size)
+            {
+                Log::Print("Array index out of bounds", Log::TYPE_WARNING, __LINE__, __FILE__);
+                return 0;
+            }
+
+            if(index >= count)
+            {
+                Log::Print("Array index is larger than array count", Log::TYPE_WARNING, __LINE__, __FILE__);
+                return 0;
+            }
+
+            memcpy((UInt8*)memory + index * sizeof(T), (UInt8*)memory + (index + 1) * sizeof(T), sizeof(T) * (count - index));
+            count--;
+
+            return 1;
+        }
+        
+        Int32 Sort(Int32(&compare)(const void*, const void*))
+        {
+            if(count < 2)
+            {
+                Log::Print("Array not sorted count is less than 2", Log::TYPE_MESSAGE, __LINE__, __FILE__);
+                return 1;
+            }
+
+            qsort(memory, count, sizeof(T), &compare);
+
+            return 1;
+        }
+
+        Int32 Clear()
+        {
+            count = 0;
+
+            return 1;
+        }
+    };
+}

@@ -2,4 +2,7 @@
 
 #include "../type/type.h"
 
-int32 file_read(const char* const file_path, char* const output, const uint64 size);
+namespace Base::File
+{
+    Int32 Read(const char* const file_path, char* const output, const Int32 size);
+}

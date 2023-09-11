@@ -1,11 +1,10 @@
 #pragma once
 
-#include <memory.h>
-#include <malloc.h>
-
 #include "../type/type.h"
 
-int32 allocator_create(uint64 capacity);
-int32 allocator_destroy();
-
-void* allocator_alloc(uint64 capacity);
+namespace Base::Allocator
+{
+    Int32 Create(const UInt64 size);
+    Int32 Destroy();
+    Int32 Allocate(const UInt64 size, void** ptr);
+}
