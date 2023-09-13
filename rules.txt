@@ -1,0 +1,24 @@
+C++ Features:
+
+These rules should be followed to keep programming style simple and C-like, while utilising useful features in C++.
+
+Only use these C++ features:
+
+1. Namespaces
+2. Templates
+3. References
+
+Only for array structs:
+
+4. Methods
+5. Constructor/Deconstructor
+
+An array struct is a struct that manages a memory block. 
+
+
+Functions:
+
+1. All functions should have an integer return type, where returing 0 is an error and returning 1 is a success. If the function cannot fail it should return void or return a useful value.
+2. All value parameters should be const.
+3. A parameter should not be a pointer, use a reference, except for memory allocation.
+

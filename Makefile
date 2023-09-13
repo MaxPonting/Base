@@ -3,39 +3,21 @@ CC = g++
 
 # Compiler Flags
 FLAGS = -Wall
-TFLAGS = -g3 -ggdb 
-PFLAGS = -O3
 DFLAGS = -g3 -ggdb -Wextra
-RFLAGS = -O3 -mwindows
+RFLAGS = -O3
 
-# Source Files
-SRC = src/log/*.cpp src/allocator/*.cpp src/file/*.cpp src/math/*.cpp
-TSRC = src/main.cpp 
+# Source File
+SRC = src/main.cpp 
 
 # Include Directory
 INC = -I include/
 
-test: 
-	$(CC) $(FLAGS) $(TFLAGS) $(TSRC) $(INC) -L bin/debug/ -lbase -o bin/test/test.exe & cd bin/test & test.exe
-
-performance:
-	$(CC) $(FLAGS) $(PFLAGS) $(TSRC) $(INC) -L bin/release/ -lbase -o bin/performance/performance.exe & cd bin/performance & performance.exe
-
-all:
-	make debug
-	make release
-
-debug:
-	$(CC) $(FLAGS) $(DFLAGS) -c $(SRC) $(INC)
-	ar -rcs bin/debug/libbase.a *.o
-	make clean
+debug: 
+	$(CC) $(FLAGS) $(DFLAGS) $(SRC) $(INC) -L bin/debug/ -o bin/debug/debug.exe & cd bin/debug & debug.exe
 
 release:
-	$(CC) $(FLAGS) $(RFLAGS) -c $(SRC) $(INC)
-	ar -rcs bin/release/libbase.a *.o
-	make clean
+	$(CC) $(FLAGS) $(RFLAGS) $(SRC) $(INC) -L bin/release/ -o bin/release/release.exe & cd bin/release & release.exe
 
-clean:
-	del *.o *.c.obj
+
 
 	
