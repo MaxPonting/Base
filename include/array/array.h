@@ -16,7 +16,14 @@ namespace Base
         T* memory;
         Int32 count;
         Int32 size;
-
+        
+        Array()
+        {
+            memory = 0;
+            count = 0;
+            size = 0;
+        };
+  
         Array(Int32 _size)
         {
             memory = 0;
@@ -24,7 +31,7 @@ namespace Base
 
             if(memory == 0)
             {
-                Log::Print("Allocator has not been created, exiting application", Log::TYPE_ERROR, __LINE__, __FILE__);
+                Log::Print("Allocator has not been created, exiting application", Log::Type::Error, __LINE__, __FILE__);
                 exit(0);
             }
 
@@ -36,7 +43,7 @@ namespace Base
         {
             if (index >= size)
             {
-                Log::Print("Array index out of bounds", Log::TYPE_ERROR, __LINE__, __FILE__);
+                Log::Print("Array index out of bounds", Log::Type::Error, __LINE__, __FILE__);
                 exit(0);
             }
             
@@ -47,7 +54,7 @@ namespace Base
         {
             if(count == size)
             {
-                Log::Print("Array size reached, value was not pushed", Log::TYPE_WARNING, __LINE__, __FILE__);
+                Log::Print("Array size reached, value was not pushed", Log::Type::Warning, __LINE__, __FILE__);
                 return 0;
             }
             
@@ -61,13 +68,13 @@ namespace Base
         {
             if(count == size || count == size - 1)
             {
-                Log::Print("Array size reached, value was not inserted", Log::TYPE_WARNING, __LINE__, __FILE__);
+                Log::Print("Array size reached, value was not inserted", Log::Type::Warning, __LINE__, __FILE__);
                 return 0;
             }
             
             if(index >= size)
             {
-                Log::Print("Array index out of bounds, value was not inserted", Log::TYPE_WARNING, __LINE__, __FILE__);
+                Log::Print("Array index out of bounds, value was not inserted", Log::Type::Warning, __LINE__, __FILE__);
                 return 0;
             }
 
@@ -82,19 +89,19 @@ namespace Base
         {
             if(count == 0)
             {
-                Log::Print("Array count is 0, value was not deleted", Log::TYPE_WARNING, __LINE__, __FILE__);
+                Log::Print("Array count is 0, value was not deleted", Log::Type::Warning, __LINE__, __FILE__);
                 return 0;
             }
 
             if(index >= size)
             {
-                Log::Print("Array index out of bounds", Log::TYPE_WARNING, __LINE__, __FILE__);
+                Log::Print("Array index out of bounds", Log::Type::Warning, __LINE__, __FILE__);
                 return 0;
             }
 
             if(index >= count)
             {
-                Log::Print("Array index is larger than array count", Log::TYPE_WARNING, __LINE__, __FILE__);
+                Log::Print("Array index is larger than array count", Log::Type::Warning, __LINE__, __FILE__);
                 return 0;
             }
 
@@ -108,7 +115,7 @@ namespace Base
         {
             if(count < 2)
             {
-                Log::Print("Array not sorted count is less than 2", Log::TYPE_MESSAGE, __LINE__, __FILE__);
+                Log::Print("Array not sorted count is less than 2", Log::Type::Message, __LINE__, __FILE__);
                 return 1;
             }
 
@@ -119,6 +126,7 @@ namespace Base
 
         Int32 Clear()
         {
+            memset(memory, 0, size * sizeof(T));
             count = 0;
 
             return 1;

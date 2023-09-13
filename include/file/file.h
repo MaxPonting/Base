@@ -13,7 +13,7 @@ namespace Base::File
 
         if(file_stream == 0)
         {
-            Log::Print("File failed to open", Log::TYPE_ERROR, __LINE__, __FILE__);
+            Log::Print("File failed to open", Log::Type::Error, __LINE__, __FILE__);
             return 0;
         }
 
@@ -23,7 +23,7 @@ namespace Base::File
         {
             if(count == size) 
             {
-                Log::Print("File failed to open", Log::TYPE_ERROR, __LINE__, __FILE__);
+                Log::Print("File failed to open", Log::Type::Error, __LINE__, __FILE__);
                 return 0;
             }
 

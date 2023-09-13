@@ -18,7 +18,7 @@ namespace Base::Allocator
 
         if (memory == 0)
         {
-            Log::Print("Memory allocation failed", Log::TYPE_ERROR, __LINE__, __FILE__);
+            Log::Print("Memory allocation failed", Log::Type::Error, __LINE__, __FILE__);
             return 0;
         }
 
@@ -32,7 +32,7 @@ namespace Base::Allocator
     {
         if (memory == 0)
         {
-            Log::Print("Linear allocator has no allocation", Log::TYPE_WARNING, __LINE__, __FILE__);
+            Log::Print("Linear allocator has no allocation", Log::Type::Warning, __LINE__, __FILE__);
             return 0;
         }
 
@@ -45,13 +45,13 @@ namespace Base::Allocator
     {
         if (memory == 0)
         {
-            Log::Print("Linear allocator has not been created", Log::TYPE_ERROR, __LINE__, __FILE__);
+            Log::Print("Linear allocator has not been created", Log::Type::Error, __LINE__, __FILE__);
             return 0;
         }
         
         if (offset + _size > size)
         {
-            Log::Print("Linear allocator is full", Log::TYPE_ERROR, __LINE__, __FILE__);
+            Log::Print("Linear allocator is full", Log::Type::Error, __LINE__, __FILE__);
             return 0;
         }
 
