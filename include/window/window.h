@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../platform/platform.h"
 #include "../type/type.h"
 #include "../log/log.h"
@@ -215,6 +217,11 @@ namespace Base::Window
             return false;
 
         return events.Item((Int32)event);
+    }
+
+    PROC GetGLProcAddress(LPCSTR name)
+    {
+        return wglGetProcAddress(name);
     }
 
 

@@ -11,5 +11,6 @@
         "shader.h": "c"
     },
     "zenMode.hideLineNumbers": false,
-    "zenMode.hideStatusBar": false
+    "zenMode.hideStatusBar": false,
+    "C_Cpp.dimInactiveRegions": true
 }

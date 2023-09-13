@@ -6,6 +6,7 @@
 #include <log/log.h>
 #include <math/math.h>
 #include <window/window.h>
+#include <opengl/opengl.h>
 
 #include <stdio.h>
 
@@ -23,6 +24,10 @@ Int32 main()
     Window::SetGLContext();
     Window::Show();
 
+    OpenGL::LoadProcedures();
+
+    glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
+
     while(running)
     {
         Window::PollEvents();
@@ -35,6 +40,8 @@ Int32 main()
 
         if(Window::GetEvent(Window::Event::SpaceKeyUp))
            Log::Print("Key Up", Log::Type::Message, __LINE__, __FILE__); 
+
+        glClear(GL_COLOR_BUFFER_BIT);
 
         Window::SwapBuffer();
     }
