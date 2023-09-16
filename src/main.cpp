@@ -1,18 +1,16 @@
-#define DEBUG
+#define BASE_DEBUG
 
 #include <allocator/allocator.h>
 #include <array/array.h>
 #include <array/dynamic_array.h>
 #include <log/log.h>
 #include <math/math.h>
-#include <window/window.h>
 #include <opengl/opengl.h>
+#include <window/window.h>
 
 #include <stdio.h>
 
 const static UInt64 ALLOCATION_SIZE = 1024 * 1024; // MB
-
-static bool running = true;
 
 Int32 main()
 {
@@ -20,28 +18,17 @@ Int32 main()
 
     Allocator::Create(ALLOCATION_SIZE);
 
-    Window::Create("Base Window", 1280, 720);
-    Window::SetGLContext();
+    if(!Window::Create("Base Window", 1280, 720))
+        return 1;
+        
     Window::Show();
 
-    OpenGL::LoadProcedures();
-
-    glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
-
-    while(running)
+    while(true)
     {
         Window::PollEvents();
 
         if(Window::GetEvent(Window::Event::Destroy))
-            running = false;
-
-        if(Window::GetEvent(Window::Event::SpaceKeyDown))
-           Log::Print("Key Down", Log::Type::Message, __LINE__, __FILE__); 
-
-        if(Window::GetEvent(Window::Event::SpaceKeyUp))
-           Log::Print("Key Up", Log::Type::Message, __LINE__, __FILE__); 
-
-        glClear(GL_COLOR_BUFFER_BIT);
+            break; 
 
         Window::SwapBuffer();
     }
@@ -49,6 +36,8 @@ Int32 main()
     Window::Destroy();
     
     Allocator::Destroy();
+
+    printf("App qutting\n");
 
     return 0;
 }

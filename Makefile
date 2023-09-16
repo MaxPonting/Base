@@ -1,3 +1,10 @@
+# Operating System
+ifeq ($(OS), Windows_NT)
+	DOS := Windows
+else
+	DOS := $(shell uname)
+endif
+
 # Compiler
 CC = g++
 
@@ -13,13 +20,43 @@ SRC = src/main.cpp
 INC = -I include/
 
 # Linker Files
+ifeq ($(DOS), Windows)
 LINK = -lopengl32 -lgdi32
+endif
+ifeq ($(DOS), Linux)
+LINK = -lX11
+endif
+
+# Windows
+ifeq ($(DOS), Windows)
+clean:
+	del /S bin\debug\*
+	del /S bin\release\*
 
 debug: 
-	$(CC) $(FLAGS) $(DFLAGS) $(SRC) $(INC) $(LINK) -o bin/debug/debug.exe & cd bin/debug & debug.exe
+	$(CC) $(FLAGS) $(DFLAGS) $(SRC) $(INC) $(LINK) -o bin/debug/windows.exe 
+	bin/debug/windows.exe
 
 release:
-	$(CC) $(FLAGS) $(RFLAGS) $(SRC) $(INC) $(LINK) -o bin/release/release.exe & cd bin/release & release.exe
+	$(CC) $(FLAGS) $(RFLAGS) $(SRC) $(INC) $(LINK) -o bin/release/windows.exe 
+	bin/release/windows.exe
+endif
+
+# Linux
+ifeq ($(DOS), Linux)
+clean:
+	rm -r bin/debug/*
+	rm -r bin/release/*
+
+debug:
+	$(CC) $(FLAGS) $(DFLAGS) $(SRC) $(INC) $(LINK) -o bin/debug/linux.exe 
+	bin/debug/linux.exe
+
+release:
+	$(CC) $(FLAGS) $(RFLAGS) $(SRC) $(INC) $(LINK) -o bin/release/linux.exe 
+	bin/release/linux.exe
+endif
+
 
 
 
