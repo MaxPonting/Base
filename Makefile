@@ -24,7 +24,7 @@ ifeq ($(DOS), Windows)
 LINK = -lopengl32 -lgdi32
 endif
 ifeq ($(DOS), Linux)
-LINK = -lX11
+LINK = -lGL -lX11
 endif
 
 # Windows

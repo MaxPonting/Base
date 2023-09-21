@@ -12,8 +12,74 @@ namespace Base::Window
     {
         Destroy,
         Resize,
-        SpaceKeyDown,
-        SpaceKeyUp,
+        MouseDown_Left,
+        MouseDown_Middle,
+        MouseDown_Right,
+        MouseUp_Left,
+        MouseUp_Middle,
+        MouseUp_Right,
+        KeyDown_Space,
+        KeyDown_A,
+        KeyDown_B,
+        KeyDown_C,
+        KeyDown_D,
+        KeyDown_E,
+        KeyDown_F,
+        KeyDown_G,
+        KeyDown_H,
+        KeyDown_I,
+        KeyDown_J,
+        KeyDown_K,
+        KeyDown_L,
+        KeyDown_M,
+        KeyDown_N,
+        KeyDown_O,
+        KeyDown_P,
+        KeyDown_Q,
+        KeyDown_R,
+        KeyDown_S,
+        KeyDown_T,
+        KeyDown_U,
+        KeyDown_V,
+        KeyDown_W,
+        KeyDown_X,
+        KeyDown_Y,
+        KeyDown_Z,
+        KeyDown_Up,
+        KeyDown_Down,
+        KeyDown_Left,
+        KeyDown_Right,
+        KeyUp_Space,
+        KeyUp_A,
+        KeyUp_B,
+        KeyUp_C,
+        KeyUp_D,
+        KeyUp_E,
+        KeyUp_F,
+        KeyUp_G,
+        KeyUp_H,
+        KeyUp_I,
+        KeyUp_J,
+        KeyUp_K,
+        KeyUp_L,
+        KeyUp_M,
+        KeyUp_N,
+        KeyUp_O,
+        KeyUp_P,
+        KeyUp_Q,
+        KeyUp_R,
+        KeyUp_S,
+        KeyUp_T,
+        KeyUp_U,
+        KeyUp_V,
+        KeyUp_W,
+        KeyUp_X,
+        KeyUp_Y,
+        KeyUp_Z,
+        KeyUp_Up,
+        KeyUp_Down,
+        KeyUp_Left,
+        KeyUp_Right,
         Count
     };
 
@@ -47,7 +113,85 @@ namespace Base::Window
         switch(wParam)
         {
         case VK_SPACE:
-            events.Item((Int32)Event::SpaceKeyDown) = true;
+            events.Item((Int32)Event::KeyDown_Space) = true;
+            break;
+        case 0x41:
+            events.Item((Int32)Event::KeyDown_A) = true;
+            break;
+        case 0x42:
+            events.Item((Int32)Event::KeyDown_B) = true;
+            break;
+        case 0x43:
+            events.Item((Int32)Event::KeyDown_C) = true;
+            break; 
+        case 0x44:
+            events.Item((Int32)Event::KeyDown_D) = true;
+            break;
+        case 0x45:
+            events.Item((Int32)Event::KeyDown_E) = true;
+            break;
+        case 0x46:
+            events.Item((Int32)Event::KeyDown_F) = true;
+            break; 
+        case 0x47:
+            events.Item((Int32)Event::KeyDown_G) = true;
+            break;
+        case 0x48:
+            events.Item((Int32)Event::KeyDown_H) = true;
+            break;
+        case 0x49:
+            events.Item((Int32)Event::KeyDown_I) = true;
+            break;
+        case 0x4A:
+            events.Item((Int32)Event::KeyDown_J) = true;
+            break;
+        case 0x4B:
+            events.Item((Int32)Event::KeyDown_K) = true;
+            break;
+        case 0x4C:
+            events.Item((Int32)Event::KeyDown_L) = true;
+            break;
+        case 0x4D:
+            events.Item((Int32)Event::KeyDown_M) = true;
+            break;
+        case 0x4E:
+            events.Item((Int32)Event::KeyDown_N) = true;
+            break;
+        case 0x4F:
+            events.Item((Int32)Event::KeyDown_O) = true;
+            break;
+        case 0x50:
+            events.Item((Int32)Event::KeyDown_P) = true;
+            break;
+        case 0x51:
+            events.Item((Int32)Event::KeyDown_Q) = true;
+            break;
+        case 0x52:
+            events.Item((Int32)Event::KeyDown_R) = true;
+            break;
+        case 0x53:
+            events.Item((Int32)Event::KeyDown_S) = true;
+            break;
+        case 0x54:
+            events.Item((Int32)Event::KeyDown_T) = true;
+            break;
+        case 0x55:
+            events.Item((Int32)Event::KeyDown_U) = true;
+            break;
+        case 0x56:
+            events.Item((Int32)Event::KeyDown_V) = true;
+            break;
+        case 0x57:
+            events.Item((Int32)Event::KeyDown_W) = true;
+            break;
+        case 0x58:
+            events.Item((Int32)Event::KeyDown_X) = true;
+            break;
+        case 0x59:
+            events.Item((Int32)Event::KeyDown_Y) = true;
+            break;
+        case 0x5A:
+            events.Item((Int32)Event::KeyDown_Z) = true;
             break;
         }
 
@@ -59,7 +203,85 @@ namespace Base::Window
         switch(wParam)
         {
         case VK_SPACE:
-            events.Item((Int32)Event::SpaceKeyUp) = true;
+            events.Item((Int32)Event::KeyUp_Space) = true;
+            break;
+        case 0x41:
+            events.Item((Int32)Event::KeyUp_A) = true;
+            break;
+        case 0x42:
+            events.Item((Int32)Event::KeyUp_B) = true;
+            break;
+        case 0x43:
+            events.Item((Int32)Event::KeyUp_C) = true;
+            break; 
+        case 0x44:
+            events.Item((Int32)Event::KeyUp_D) = true;
+            break;
+        case 0x45:
+            events.Item((Int32)Event::KeyUp_E) = true;
+            break;
+        case 0x46:
+            events.Item((Int32)Event::KeyUp_F) = true;
+            break; 
+        case 0x47:
+            events.Item((Int32)Event::KeyUp_G) = true;
+            break;
+        case 0x48:
+            events.Item((Int32)Event::KeyUp_H) = true;
+            break;
+        case 0x49:
+            events.Item((Int32)Event::KeyUp_I) = true;
+            break;
+        case 0x4A:
+            events.Item((Int32)Event::KeyUp_J) = true;
+            break;
+        case 0x4B:
+            events.Item((Int32)Event::KeyUp_K) = true;
+            break;
+        case 0x4C:
+            events.Item((Int32)Event::KeyUp_L) = true;
+            break;
+        case 0x4D:
+            events.Item((Int32)Event::KeyUp_M) = true;
+            break;
+        case 0x4E:
+            events.Item((Int32)Event::KeyUp_N) = true;
+            break;
+        case 0x4F:
+            events.Item((Int32)Event::KeyUp_O) = true;
+            break;
+        case 0x50:
+            events.Item((Int32)Event::KeyUp_P) = true;
+            break;
+        case 0x51:
+            events.Item((Int32)Event::KeyUp_Q) = true;
+            break;
+        case 0x52:
+            events.Item((Int32)Event::KeyUp_R) = true;
+            break;
+        case 0x53:
+            events.Item((Int32)Event::KeyUp_S) = true;
+            break;
+        case 0x54:
+            events.Item((Int32)Event::KeyUp_T) = true;
+            break;
+        case 0x55:
+            events.Item((Int32)Event::KeyUp_U) = true;
+            break;
+        case 0x56:
+            events.Item((Int32)Event::KeyUp_V) = true;
+            break;
+        case 0x57:
+            events.Item((Int32)Event::KeyUp_W) = true;
+            break;
+        case 0x58:
+            events.Item((Int32)Event::KeyUp_X) = true;
+            break;
+        case 0x59:
+            events.Item((Int32)Event::KeyUp_Y) = true;
+            break;
+        case 0x5A:
+            events.Item((Int32)Event::KeyUp_Z) = true;
             break;
         }
 
@@ -277,8 +499,8 @@ namespace Base::Window
             WGL_COLOR_BITS_ARB,         32,
             WGL_DEPTH_BITS_ARB,         24,
             WGL_STENCIL_BITS_ARB,       8,
-            WGL_SAMPLE_BUFFERS_ARB,     GL_TRUE,
-            WGL_SAMPLES_ARB,            4,
+            WGL_SAMPLE_BUFFERS_ARB,     GL_FALSE,
+            WGL_SAMPLES_ARB,            0,
             0
         };
 
@@ -382,11 +604,21 @@ namespace Base::Window
 #elif PLATFORM == PLATFORM_LINUX
 
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/keysymdef.h>
+#include <X11/XKBlib.h>
+#include <GL/glx.h>
 
-    Display* display;
-    Window window;
-    Screen* screen;
-    Int32 screenID;
+    typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
+
+    Display* display = NULL;
+    Window window = {};
+    Screen* screen = NULL;
+    Int32 screenID = 0;
+    Atom deleteMessage = 0;
+    XVisualInfo* visualInfo = NULL;
+    GLXContext context = {};
+    GLXFBConfig frameBuffer = {};
 
     Int32 Create(const char* name, const Int32 width, const Int32 height)
     {
@@ -399,18 +631,102 @@ namespace Base::Window
 
         screen = DefaultScreenOfDisplay(display);
         screenID = DefaultScreen(display);
-        window = XCreateSimpleWindow(display, RootWindowOfScreen(screen), 0, 0, width, height, 1, BlackPixel(display, screenID), WhitePixel(display, screenID));
+
+        if(!glXQueryExtension(display, 0, 0))
+        {
+            Log::Print("X server doesn't support GLX extension", Log::Type::Error, __LINE__, __FILE__);
+            return 1;
+        }
+
+        Int32 majorGLX, minorGLX;
+        glXQueryVersion(display, &majorGLX, &minorGLX);
+        if (majorGLX <= 1 && minorGLX < 2)
+        {
+            Log::Print("GLX 1.2 or greater is required", Log::Type::Error, __LINE__, __FILE__);
+            return 0;
+        }
+
+        Int32 glxAttributes[] = {
+            GLX_X_RENDERABLE,   true,
+            GLX_DRAWABLE_TYPE,  GLX_WINDOW_BIT,
+            GLX_RENDER_TYPE,    GLX_RGBA_BIT,
+            GLX_X_VISUAL_TYPE,  GLX_TRUE_COLOR, 
+            GLX_DEPTH_SIZE,     24,
+            GLX_STENCIL_SIZE,   8,
+            GLX_RED_SIZE,       8,
+            GLX_GREEN_SIZE,     8,
+            GLX_BLUE_SIZE,      8,
+            GLX_ALPHA_SIZE,     8,
+            GLX_DOUBLEBUFFER,   true,
+            None
+        };
+
+        Int32 frameBufferCount;
+        GLXFBConfig* frameBufferConfig = glXChooseFBConfig(display, DefaultScreen(display), glxAttributes, &frameBufferCount);
+        if (!frameBufferConfig)
+        {
+            Log::Print("Failed to retrieve framebuffer", Log::Type::Error, __LINE__, __FILE__);
+            return 0;
+        }
+        frameBuffer = frameBufferConfig[0];
+        XFree(frameBufferConfig);
+
+        visualInfo = glXGetVisualFromFBConfig(display, frameBuffer);
+        if (!visualInfo)
+        {
+            Log::Print("Failed to created visual info", Log::Type::Error, __LINE__, __FILE__);
+            return 0;
+        }
+
+        XSetWindowAttributes windowAttributes;
+        windowAttributes.border_pixel = BlackPixel(display, screenID);
+        windowAttributes.background_pixel = WhitePixel(display, screenID);
+        windowAttributes.override_redirect = true;
+        windowAttributes.colormap = XCreateColormap(display, RootWindow(display, screenID), visualInfo->visual, AllocNone);
+        windowAttributes.event_mask = StructureNotifyMask | KeyPressMask | KeyReleaseMask | KeymapStateMask;
+        window = XCreateWindow(display, RootWindow(display, screenID), 0, 0, width, height, 0, visualInfo->depth, InputOutput, visualInfo->visual, CWBackPixel | CWBorderPixel | CWColormap| CWEventMask, &windowAttributes);
+
+        XStoreName(display, window, name);
+
+        deleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", false);
+        XSetWMProtocols(display, window, &deleteMessage, 1);
 
         events = Array<Int8>((Int32)Event::Count);
 
         return 1;
     }
 
+    Int32 SetGLContext(const Int32 majorVersion, const Int32 minorVersion)
+    {
+        glXCreateContextAttribsARBProc glXCreateContextAttribsARB = 0;
+        glXCreateContextAttribsARB = (glXCreateContextAttribsARBProc)glXGetProcAddressARB((const UInt8*)"glXCreateContextAttribsARB");
+
+        if(!glXCreateContextAttribsARB)
+        {
+            Log::Print("'glXCreateContextAttribsARB()' was not found", Log::Type::Error, __LINE__, __FILE__);
+            return 0;
+        }
+
+        Int32 contextAttributes[] = {
+            GLX_CONTEXT_MAJOR_VERSION_ARB,      majorVersion,
+            GLX_CONTEXT_MINOR_VERSION_ARB,      minorVersion,
+            GLX_CONTEXT_PROFILE_MASK_ARB,   GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
+            None 
+        };
+
+        context = glXCreateContextAttribsARB(display, frameBuffer, 0, true, contextAttributes);
+        glXMakeCurrent(display, window, context);
+
+        return 1;
+    }
+
     Int32 Destroy()
     {
-        XDestroyWindow(display, window);
-        XFree(screen);
-        XCloseDisplay(display);
+        if(context)
+            glXDestroyContext(display, context);
+
+        if (display)
+            XCloseDisplay(display);
 
         return 1;
     }
@@ -423,6 +739,191 @@ namespace Base::Window
         return 1;
     }
 
+    Int32 ProcessKeyDown(XKeyEvent xkey)
+    {
+        KeySym keySym = XkbKeycodeToKeysym(display, xkey.keycode, 0, 1);
+
+        switch(keySym)
+        {
+        case XK_space:
+            events.Item((Int32)Event::KeyDown_Space) = true;
+            break;
+        case XK_A:
+            events.Item((Int32)Event::KeyDown_A) = true;
+            break;
+        case XK_B:
+            events.Item((Int32)Event::KeyDown_B) = true;
+            break;
+        case XK_C:
+            events.Item((Int32)Event::KeyDown_C) = true;
+            break; 
+        case XK_D:
+            events.Item((Int32)Event::KeyDown_D) = true;
+            break;
+        case XK_E:
+            events.Item((Int32)Event::KeyDown_E) = true;
+            break;
+        case XK_F:
+            events.Item((Int32)Event::KeyDown_F) = true;
+            break; 
+        case XK_G:
+            events.Item((Int32)Event::KeyDown_G) = true;
+            break;
+        case XK_H:
+            events.Item((Int32)Event::KeyDown_H) = true;
+            break;
+        case XK_I:
+            events.Item((Int32)Event::KeyDown_I) = true;
+            break;
+        case XK_J:
+            events.Item((Int32)Event::KeyDown_J) = true;
+            break;
+        case XK_K:
+            events.Item((Int32)Event::KeyDown_K) = true;
+            break;
+        case XK_L:
+            events.Item((Int32)Event::KeyDown_L) = true;
+            break;
+        case XK_M:
+            events.Item((Int32)Event::KeyDown_M) = true;
+            break;
+        case XK_N:
+            events.Item((Int32)Event::KeyDown_N) = true;
+            break;
+        case XK_O:
+            events.Item((Int32)Event::KeyDown_O) = true;
+            break;
+        case XK_P:
+            events.Item((Int32)Event::KeyDown_P) = true;
+            break;
+        case XK_Q:
+            events.Item((Int32)Event::KeyDown_Q) = true;
+            break;
+        case XK_R:
+            events.Item((Int32)Event::KeyDown_R) = true;
+            break;
+        case XK_S:
+            events.Item((Int32)Event::KeyDown_S) = true;
+            break;
+        case XK_T:
+            events.Item((Int32)Event::KeyDown_T) = true;
+            break;
+        case XK_U:
+            events.Item((Int32)Event::KeyDown_U) = true;
+            break;
+        case XK_V:
+            events.Item((Int32)Event::KeyDown_V) = true;
+            break;
+        case XK_W:
+            events.Item((Int32)Event::KeyDown_W) = true;
+            break;
+        case XK_X:
+            events.Item((Int32)Event::KeyDown_X) = true;
+            break;
+        case XK_Y:
+            events.Item((Int32)Event::KeyDown_Y) = true;
+            break;
+        case XK_Z:
+            events.Item((Int32)Event::KeyDown_Z) = true;
+            break;
+        }
+
+
+        return 1;
+    }
+
+    Int32 ProcessKeyUp(XKeyEvent xkey)
+    {
+        KeySym keySym = XkbKeycodeToKeysym(display, xkey.keycode, 0, xkey.state & ShiftMask ? 1 : 0);
+
+        switch(keySym)
+        {
+        case XK_space:
+            events.Item((Int32)Event::KeyUp_Space) = true;
+            break;
+        case XK_A:
+            events.Item((Int32)Event::KeyUp_A) = true;
+            break;
+        case XK_B:
+            events.Item((Int32)Event::KeyUp_B) = true;
+            break;
+        case XK_C:
+            events.Item((Int32)Event::KeyUp_C) = true;
+            break; 
+        case XK_D:
+            events.Item((Int32)Event::KeyUp_D) = true;
+            break;
+        case XK_E:
+            events.Item((Int32)Event::KeyUp_E) = true;
+            break;
+        case XK_F:
+            events.Item((Int32)Event::KeyUp_F) = true;
+            break; 
+        case XK_G:
+            events.Item((Int32)Event::KeyUp_G) = true;
+            break;
+        case XK_H:
+            events.Item((Int32)Event::KeyUp_H) = true;
+            break;
+        case XK_I:
+            events.Item((Int32)Event::KeyUp_I) = true;
+            break;
+        case XK_J:
+            events.Item((Int32)Event::KeyUp_J) = true;
+            break;
+        case XK_K:
+            events.Item((Int32)Event::KeyUp_K) = true;
+            break;
+        case XK_L:
+            events.Item((Int32)Event::KeyUp_L) = true;
+            break;
+        case XK_M:
+            events.Item((Int32)Event::KeyUp_M) = true;
+            break;
+        case XK_N:
+            events.Item((Int32)Event::KeyUp_N) = true;
+            break;
+        case XK_O:
+            events.Item((Int32)Event::KeyUp_O) = true;
+            break;
+        case XK_P:
+            events.Item((Int32)Event::KeyUp_P) = true;
+            break;
+        case XK_Q:
+            events.Item((Int32)Event::KeyUp_Q) = true;
+            break;
+        case XK_R:
+            events.Item((Int32)Event::KeyUp_R) = true;
+            break;
+        case XK_S:
+            events.Item((Int32)Event::KeyUp_S) = true;
+            break;
+        case XK_T:
+            events.Item((Int32)Event::KeyUp_T) = true;
+            break;
+        case XK_U:
+            events.Item((Int32)Event::KeyUp_U) = true;
+            break;
+        case XK_V:
+            events.Item((Int32)Event::KeyUp_V) = true;
+            break;
+        case XK_W:
+            events.Item((Int32)Event::KeyUp_W) = true;
+            break;
+        case XK_X:
+            events.Item((Int32)Event::KeyUp_X) = true;
+            break;
+        case XK_Y:
+            events.Item((Int32)Event::KeyUp_Y) = true;
+            break;
+        case XK_Z:
+            events.Item((Int32)Event::KeyUp_Z) = true;
+            break;
+        }
+
+        return 1;
+    }
+
     Int32 PollEvents()
     {
         events.Clear();
@@ -431,11 +932,30 @@ namespace Base::Window
 
         while(XPending(display) > 0)
         {
-            printf("Check event\n");
             XNextEvent(display, &event);
-            if (event.type == DestroyNotify)
+
+            switch(event.type)
             {
+            case ClientMessage:
+                if ((Atom)event.xclient.data.l[0] != deleteMessage)
+                    break;
                 events.Item((Int32)Event::Destroy) = true;
+                break;
+            case KeymapNotify:
+                XRefreshKeyboardMapping(&event.xmapping);
+                break;
+            case KeyPress:
+                ProcessKeyDown(event.xkey);               
+                break;
+            case KeyRelease:
+                if (XEventsQueued(display, QueuedAfterReading))
+                {
+                    XEvent nextEvent;
+                    XPeekEvent(display, &nextEvent);
+                    if (nextEvent.type == KeyPress && nextEvent.xkey.time == event.xkey.time && nextEvent.xkey.keycode == event.xkey.keycode)
+                        break;
+                }
+                ProcessKeyUp(event.xkey);
                 break;
             }
         }
@@ -445,6 +965,7 @@ namespace Base::Window
 
     Int32 SwapBuffer()
     {
+        glXSwapBuffers(display, window);
         return 1;
     }
 
