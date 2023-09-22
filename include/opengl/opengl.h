@@ -7,10 +7,6 @@
 #include <GL/gl.h>
 #include <GL/glext.h>
 PFNGLACTIVETEXTUREPROC glActiveTexture;
-PFNGLATTACHSHADERPROC glAttachShader;
-PFNGLBINDBUFFERPROC glBindBuffer;
-PFNGLBINDBUFFERBASEPROC glBindBufferBase;
-PFNGLBINDBUFFERSRANGEPROC glBindBufferRange;
 #elif PLATFORM == PLATFORM_LINUX
 #include <GL/gl.h>
 #include <GL/glext.h>
@@ -19,6 +15,27 @@ PFNGLBINDBUFFERSRANGEPROC glBindBufferRange;
 #include <OpenGl/glext.h>
 #endif
 
+PFNGLATTACHSHADERPROC glAttachShader;
+PFNGLBINDBUFFERPROC glBindBuffer;
+PFNGLBINDBUFFERBASEPROC glBindBufferBase;
+PFNGLBINDBUFFERSRANGEPROC glBindBufferRange;
+PFNGLBINDVERTEXARRAYPROC glBindVertexArray;
+PFNGLBUFFERDATAPROC glBufferData;
+PFNGLBUFFERSUBDATAPROC glBufferSubData;
+PFNGLCOMPILESHADERPROC glCompileShader;
+PFNGLCREATEPROGRAMPROC glCreateProgram;
+PFNGLCREATESHADERPROC glCreateShader;
+PFNGLDELETEBUFFERSPROC glDeleteBuffers;
+PFNGLDELETEPROGRAMPROC glDeleteProgram;
+PFNGLDELETESHADERPROC glDeleteShader;
+PFNGLDELETEVERTEXARRAYSPROC glDeleteVertexArrays;
+PFNGLDETACHSHADERPROC glDetachShader;
+PFNGLGENBUFFERSPROC glGenBuffers;
+PFNGLGENVERTEXARRAYSPROC glGenVertexArrays;
+PFNGLGENERATEMIPMAPPROC glGenerateMipmap;
+PFNGLSHADERSOURCEPROC glShaderSource;
+PFNGLLINKPROGRAMPROC glLinkProgram;
+PFNGLVALIDATEPROGRAMPROC glValidateProgram;
 
 namespace Base::Window
 {
@@ -29,8 +46,30 @@ namespace Base::OpenGL
 {
     Int32 LoadProcedures()
     {
+#if PLATFORM == PLATFORM_WINDOWS
+        glActiveTexture         = (PFNGLACTIVETEXTUREPROC)Window::GetGLProcAddress("glActiveTexture");
+#endif
+        glAttachShader          = (PFNGLATTACHSHADERPROC)Window::GetGLProcAddress("glAttachShader");
+        glBindBuffer            = (PFNGLBINDBUFFERPROC)Window::GetGLProcAddress("glBindBuffer");
+        glBindBufferBase        = (PFNGLBINDBUFFERBASEPROC)Window::GetGLProcAddress("glBindBufferBase");
+        glBindVertexArray       = (PFNGLBINDVERTEXARRAYPROC)Window::GetGLProcAddress("glBindVertexArray");
+        glBufferData            = (PFNGLBUFFERDATAPROC)Window::GetGLProcAddress("glBufferData");
+        glBufferSubData         = (PFNGLBUFFERSUBDATAPROC)Window::GetGLProcAddress("glBufferSubData");
+        glCompileShader         = (PFNGLCOMPILESHADERPROC)Window::GetGLProcAddress("glCompileShader");
+        glCreateProgram         = (PFNGLCREATEPROGRAMPROC)Window::GetGLProcAddress("glCreateProgram");
+        glCreateShader          = (PFNGLCREATESHADERPROC)Window::GetGLProcAddress("glCreateShader");
+        glDeleteBuffers         = (PFNGLDELETEBUFFERSPROC)Window::GetGLProcAddress("glDeleteBuffers");
+        glDeleteProgram         = (PFNGLDELETEPROGRAMPROC)Window::GetGLProcAddress("glDeleteProgram");
+        glDeleteShader          = (PFNGLDELETESHADERPROC)Window::GetGLProcAddress("glDeleteShader");
+        glDeleteVertexArrays    = (PFNGLDELETEVERTEXARRAYSPROC)Window::GetGLProcAddress("glDeleteVertexArrays");
+        glDetachShader          = (PFNGLDETACHSHADERPROC)Window::GetGLProcAddress("glDetachShader");
+        glGenBuffers            = (PFNGLGENBUFFERSPROC)Window::GetGLProcAddress("glGenBuffers");
+        glGenVertexArrays       = (PFNGLGENVERTEXARRAYSPROC)Window::GetGLProcAddress("glGenVertexArrays");
+        glGenerateMipmap        = (PFNGLGENERATEMIPMAPPROC)Window::GetGLProcAddress("glGenerateMipmap");
+        glShaderSource          = (PFNGLSHADERSOURCEPROC)Window::GetGLProcAddress("glShaderSource");
+        glLinkProgram           = (PFNGLLINKPROGRAMPROC)Window::GetGLProcAddress("glLinkProgram");
+        glValidateProgram       = (PFNGLVALIDATEPROGRAMPROC)Window::GetGLProcAddress("glValidateProgram");
 
-        
         return 1;
     }
 }

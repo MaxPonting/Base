@@ -6,6 +6,8 @@
 #include "../array/array.h"
 #include "../opengl/opengl.h"
 
+#include <string.h>
+
 namespace Base::Window
 {
     enum class Event
@@ -93,7 +95,9 @@ namespace Base::Window
         return events.Item((Int32)event);
     }
 
+
 #if PLATFORM == PLATFORM_WINDOWS
+
 
 #include <windows.h>
 #include <GL/wglext.h>
@@ -346,6 +350,9 @@ namespace Base::Window
             return 0;
         }
 
+        RECT clientRect = {0, 0, width, height};
+        AdjustWindowRect(&clientRect, WS_OVERLAPPEDWINDOW, false);
+
         hWindow = CreateWindowEx(
             WS_EX_APPWINDOW,
             "WindowClass",
@@ -353,8 +360,8 @@ namespace Base::Window
             WS_OVERLAPPEDWINDOW,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
-            width,
-            height,
+            clientRect.right - clientRect.left,
+            clientRect.bottom - clientRect.top,
             NULL,
             NULL,
             hInstance,
@@ -442,14 +449,32 @@ namespace Base::Window
 
         HDC hDummyDeviceContext = GetDC(hDummyWindow);
 
-        PIXELFORMATDESCRIPTOR desiredPixelFormat = {};
+        PIXELFORMATDESCRIPTOR desiredPixelFormat;
         desiredPixelFormat.nSize = sizeof(desiredPixelFormat);
         desiredPixelFormat.nVersion = 1;
         desiredPixelFormat.iPixelType = PFD_TYPE_RGBA;
         desiredPixelFormat.dwFlags = PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER;
         desiredPixelFormat.cColorBits = 32;
-        desiredPixelFormat.cAlphaBits = 8;
+        desiredPixelFormat.cRedBits = 0;
+        desiredPixelFormat.cRedShift = 0;
+        desiredPixelFormat.cGreenBits = 0;
+        desiredPixelFormat.cGreenShift = 0;
+        desiredPixelFormat.cBlueBits = 0;
+        desiredPixelFormat.cBlueShift = 0;
+        desiredPixelFormat.cAlphaBits = 0;
+        desiredPixelFormat.cAlphaShift = 0;
+        desiredPixelFormat.cAccumBits = 0;
+        desiredPixelFormat.cAccumRedBits = 0;
+        desiredPixelFormat.cAccumGreenBits = 0;
+        desiredPixelFormat.cAccumBlueBits = 0;
+        desiredPixelFormat.cAccumAlphaBits = 0;
+        desiredPixelFormat.cStencilBits = 8;
+        desiredPixelFormat.cAuxBuffers = 0;
+        desiredPixelFormat.bReserved = 0;
         desiredPixelFormat.cDepthBits = 24;
+        desiredPixelFormat.dwLayerMask = 0;
+        desiredPixelFormat.dwVisibleMask = 0;
+        desiredPixelFormat.dwVisibleMask = 0;
         desiredPixelFormat.iLayerType = PFD_MAIN_PLANE;
 
         Int32 pixelFormatIndex = ChoosePixelFormat(hDummyDeviceContext, &desiredPixelFormat);
@@ -479,7 +504,17 @@ namespace Base::Window
 
     Int64 GetGLProcAddress(const char* name)
     {
-        return (Int64)wglGetProcAddress(name);
+        PROC proc = wglGetProcAddress(name);
+
+        if(proc == NULL)
+        {
+            char buffer[50] = "Failed to retrieve procedure: ";
+            strncat_s(buffer, 50, name, strlen(name));
+            Log::Print(buffer, Log::Type::Warning, __LINE__, __FILE__);
+            return 0;
+        }
+
+        return (Int64)proc;
     }
 
     Int32 SetGLContext(const Int32 majorVersion, const Int32 minorVersion)
@@ -603,9 +638,9 @@ namespace Base::Window
 
 #elif PLATFORM == PLATFORM_LINUX
 
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <X11/keysymdef.h>
 #include <X11/XKBlib.h>
 #include <GL/glx.h>
 
@@ -694,6 +729,20 @@ namespace Base::Window
         events = Array<Int8>((Int32)Event::Count);
 
         return 1;
+    }
+
+    Int64 GetGLProcAddress(const char* name)
+    {
+        Int64 proc = (Int64)glXGetProcAddressARB((const UInt8*)name);
+
+        if(proc == 0)
+        {
+            char buffer[50] = "Failed to retrieve procedure: ";
+            Log::Print(buffer, Log::Type::Warning, __LINE__, __FILE__);
+            return 0;           
+        }
+
+        return (Int64)proc;
     }
 
     Int32 SetGLContext(const Int32 majorVersion, const Int32 minorVersion)
