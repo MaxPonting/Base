@@ -720,6 +720,7 @@ namespace Base::Window
         windowAttributes.colormap = XCreateColormap(display, RootWindow(display, screenID), visualInfo->visual, AllocNone);
         windowAttributes.event_mask = StructureNotifyMask | KeyPressMask | KeyReleaseMask | KeymapStateMask;
         window = XCreateWindow(display, RootWindow(display, screenID), 0, 0, width, height, 0, visualInfo->depth, InputOutput, visualInfo->visual, CWBackPixel | CWBorderPixel | CWColormap| CWEventMask, &windowAttributes);
+        XFree(visualInfo);
 
         XStoreName(display, window, name);
 
@@ -765,6 +766,8 @@ namespace Base::Window
 
         context = glXCreateContextAttribsARB(display, frameBuffer, 0, true, contextAttributes);
         glXMakeCurrent(display, window, context);
+
+        XSync(display, false);
 
         return 1;
     }

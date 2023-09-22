@@ -19,22 +19,16 @@ Int32 main()
 {
     using namespace Base;
 
-
     Allocator::Create(ALLOCATION_SIZE);
 
     if(!Window::Create("Base Window", 1280, 720))
         return 1; 
-
-    Int64 before = clock();
-
     if(!Window::SetGLContext(1, 0))
         return 1;
-
-    printf("Time taken(ms):%lld\n", (clock() - before) * 1000 / CLOCKS_PER_SEC);
+    if(!Window::Show())
+        return 1;
 
     OpenGL::LoadProcedures();
-
-    Window::Show();
 
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
@@ -58,9 +52,9 @@ Int32 main()
 
         glBegin(GL_QUADS);
             glColor3f(1., 1., 0.); glVertex3f(-.75, -.75, 0.);
-            glColor3f(0., 1., 0.); glVertex3f( .75, -.75, 0.);
-            glColor3f(0., 0., 1.); glVertex3f( .75,  .75, 0.);
-            glColor3f(1., 0., 0.); glVertex3f(-.75,  .75, 0.);
+            glColor3f(1., 1., 0.); glVertex3f( .75, -.75, 0.);
+            glColor3f(1., 1., 0.); glVertex3f( .75,  .75, 0.);
+            glColor3f(1., 1., 0.); glVertex3f(-.75,  .75, 0.);
         glEnd();
 
         Window::SwapBuffer();
