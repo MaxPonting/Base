@@ -21,7 +21,7 @@ Int32 main()
 
     Allocator::Create(ALLOCATION_SIZE);
 
-    if(!Window::Create("Base Window", 1280, 720))
+    if(!Window::Create("Base Window", Window::OutputType::Fullscreen, 1280, 720))
         return 1; 
     if(!Window::SetGLContext(1, 0))
         return 1;
@@ -30,7 +30,7 @@ Int32 main()
 
     OpenGL::LoadProcedures();
 
-    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);            
 
     while(true)
     {
@@ -39,14 +39,14 @@ Int32 main()
         if(Window::GetEvent(Window::Event::Destroy))
             break; 
 
-        if(Window::GetEvent(Window::Event::KeyDown_Space))
-            printf("Space\n");
+        if(Window::GetEvent(Window::Event::KeyDown_F))
+            //Window::SetOutputType(Window::OutputType::Fullscreen);
 
-        if(Window::GetEvent(Window::Event::KeyDown_A))
-            printf("A\n");
+        if(Window::GetEvent(Window::Event::KeyDown_B))
+            //Window::SetOutputType(Window::OutputType::BorderlessFullscreen);
 
-        if(Window::GetEvent(Window::Event::KeyDown_H))
-            printf("H\n");
+        if(Window::GetEvent(Window::Event::KeyDown_W))
+            //Window::SetOutputType(Window::OutputType::Windowed);
 
         glClear(GL_COLOR_BUFFER_BIT);        
 

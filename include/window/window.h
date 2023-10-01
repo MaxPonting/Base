@@ -14,6 +14,7 @@ namespace Base::Window
     {
         Destroy,
         Resize,
+        Move,
         MouseDown_Left,
         MouseDown_Middle,
         MouseDown_Right,
@@ -85,15 +86,26 @@ namespace Base::Window
         Count
     };
 
-    Array<Int8> events;
+    Array<Int8> windowEvents;
 
     Bool GetEvent(const Event event)
     {
         if (event == Event::Count)
             return false;
 
-        return events.Item((Int32)event);
+        return windowEvents.Item((Int32)event);
     }
+
+    enum class OutputType
+    {
+        Windowed,
+        Fullscreen,
+        BorderlessFullscreen
+    };
+
+    OutputType windowOutputType;
+
+    Int32 windowResolutionW = 0, windowResolutionH = 0;
 
 
 #if PLATFORM == PLATFORM_WINDOWS
@@ -104,6 +116,7 @@ namespace Base::Window
 
     PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB;
     PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB;
+    PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
     
     HINSTANCE hInstance = NULL;
     HWND hWindow = NULL;
@@ -111,91 +124,93 @@ namespace Base::Window
     HGLRC hGLContext = NULL;
 
     RECT windowRect = {};
+    Int32 windowX = 0, windowY = 0;
+    WINDOWPLACEMENT windowPlacement = {};
 
     Int32 ProcessKeyDown(WPARAM wParam)
     {
         switch(wParam)
         {
         case VK_SPACE:
-            events.Item((Int32)Event::KeyDown_Space) = true;
+            windowEvents.Item((Int32)Event::KeyDown_Space) = true;
             break;
         case 0x41:
-            events.Item((Int32)Event::KeyDown_A) = true;
+            windowEvents.Item((Int32)Event::KeyDown_A) = true;
             break;
         case 0x42:
-            events.Item((Int32)Event::KeyDown_B) = true;
+            windowEvents.Item((Int32)Event::KeyDown_B) = true;
             break;
         case 0x43:
-            events.Item((Int32)Event::KeyDown_C) = true;
+            windowEvents.Item((Int32)Event::KeyDown_C) = true;
             break; 
         case 0x44:
-            events.Item((Int32)Event::KeyDown_D) = true;
+            windowEvents.Item((Int32)Event::KeyDown_D) = true;
             break;
         case 0x45:
-            events.Item((Int32)Event::KeyDown_E) = true;
+            windowEvents.Item((Int32)Event::KeyDown_E) = true;
             break;
         case 0x46:
-            events.Item((Int32)Event::KeyDown_F) = true;
+            windowEvents.Item((Int32)Event::KeyDown_F) = true;
             break; 
         case 0x47:
-            events.Item((Int32)Event::KeyDown_G) = true;
+            windowEvents.Item((Int32)Event::KeyDown_G) = true;
             break;
         case 0x48:
-            events.Item((Int32)Event::KeyDown_H) = true;
+            windowEvents.Item((Int32)Event::KeyDown_H) = true;
             break;
         case 0x49:
-            events.Item((Int32)Event::KeyDown_I) = true;
+            windowEvents.Item((Int32)Event::KeyDown_I) = true;
             break;
         case 0x4A:
-            events.Item((Int32)Event::KeyDown_J) = true;
+            windowEvents.Item((Int32)Event::KeyDown_J) = true;
             break;
         case 0x4B:
-            events.Item((Int32)Event::KeyDown_K) = true;
+            windowEvents.Item((Int32)Event::KeyDown_K) = true;
             break;
         case 0x4C:
-            events.Item((Int32)Event::KeyDown_L) = true;
+            windowEvents.Item((Int32)Event::KeyDown_L) = true;
             break;
         case 0x4D:
-            events.Item((Int32)Event::KeyDown_M) = true;
+            windowEvents.Item((Int32)Event::KeyDown_M) = true;
             break;
         case 0x4E:
-            events.Item((Int32)Event::KeyDown_N) = true;
+            windowEvents.Item((Int32)Event::KeyDown_N) = true;
             break;
         case 0x4F:
-            events.Item((Int32)Event::KeyDown_O) = true;
+            windowEvents.Item((Int32)Event::KeyDown_O) = true;
             break;
         case 0x50:
-            events.Item((Int32)Event::KeyDown_P) = true;
+            windowEvents.Item((Int32)Event::KeyDown_P) = true;
             break;
         case 0x51:
-            events.Item((Int32)Event::KeyDown_Q) = true;
+            windowEvents.Item((Int32)Event::KeyDown_Q) = true;
             break;
         case 0x52:
-            events.Item((Int32)Event::KeyDown_R) = true;
+            windowEvents.Item((Int32)Event::KeyDown_R) = true;
             break;
         case 0x53:
-            events.Item((Int32)Event::KeyDown_S) = true;
+            windowEvents.Item((Int32)Event::KeyDown_S) = true;
             break;
         case 0x54:
-            events.Item((Int32)Event::KeyDown_T) = true;
+            windowEvents.Item((Int32)Event::KeyDown_T) = true;
             break;
         case 0x55:
-            events.Item((Int32)Event::KeyDown_U) = true;
+            windowEvents.Item((Int32)Event::KeyDown_U) = true;
             break;
         case 0x56:
-            events.Item((Int32)Event::KeyDown_V) = true;
+            windowEvents.Item((Int32)Event::KeyDown_V) = true;
             break;
         case 0x57:
-            events.Item((Int32)Event::KeyDown_W) = true;
+            windowEvents.Item((Int32)Event::KeyDown_W) = true;
             break;
         case 0x58:
-            events.Item((Int32)Event::KeyDown_X) = true;
+            windowEvents.Item((Int32)Event::KeyDown_X) = true;
             break;
         case 0x59:
-            events.Item((Int32)Event::KeyDown_Y) = true;
+            windowEvents.Item((Int32)Event::KeyDown_Y) = true;
             break;
         case 0x5A:
-            events.Item((Int32)Event::KeyDown_Z) = true;
+            windowEvents.Item((Int32)Event::KeyDown_Z) = true;
             break;
         }
 
@@ -207,85 +222,85 @@ namespace Base::Window
         switch(wParam)
         {
         case VK_SPACE:
-            events.Item((Int32)Event::KeyUp_Space) = true;
+            windowEvents.Item((Int32)Event::KeyUp_Space) = true;
             break;
         case 0x41:
-            events.Item((Int32)Event::KeyUp_A) = true;
+            windowEvents.Item((Int32)Event::KeyUp_A) = true;
             break;
         case 0x42:
-            events.Item((Int32)Event::KeyUp_B) = true;
+            windowEvents.Item((Int32)Event::KeyUp_B) = true;
             break;
         case 0x43:
-            events.Item((Int32)Event::KeyUp_C) = true;
+            windowEvents.Item((Int32)Event::KeyUp_C) = true;
             break; 
         case 0x44:
-            events.Item((Int32)Event::KeyUp_D) = true;
+            windowEvents.Item((Int32)Event::KeyUp_D) = true;
             break;
         case 0x45:
-            events.Item((Int32)Event::KeyUp_E) = true;
+            windowEvents.Item((Int32)Event::KeyUp_E) = true;
             break;
         case 0x46:
-            events.Item((Int32)Event::KeyUp_F) = true;
+            windowEvents.Item((Int32)Event::KeyUp_F) = true;
             break; 
         case 0x47:
-            events.Item((Int32)Event::KeyUp_G) = true;
+            windowEvents.Item((Int32)Event::KeyUp_G) = true;
             break;
         case 0x48:
-            events.Item((Int32)Event::KeyUp_H) = true;
+            windowEvents.Item((Int32)Event::KeyUp_H) = true;
             break;
         case 0x49:
-            events.Item((Int32)Event::KeyUp_I) = true;
+            windowEvents.Item((Int32)Event::KeyUp_I) = true;
             break;
         case 0x4A:
-            events.Item((Int32)Event::KeyUp_J) = true;
+            windowEvents.Item((Int32)Event::KeyUp_J) = true;
             break;
         case 0x4B:
-            events.Item((Int32)Event::KeyUp_K) = true;
+            windowEvents.Item((Int32)Event::KeyUp_K) = true;
             break;
         case 0x4C:
-            events.Item((Int32)Event::KeyUp_L) = true;
+            windowEvents.Item((Int32)Event::KeyUp_L) = true;
             break;
         case 0x4D:
-            events.Item((Int32)Event::KeyUp_M) = true;
+            windowEvents.Item((Int32)Event::KeyUp_M) = true;
             break;
         case 0x4E:
-            events.Item((Int32)Event::KeyUp_N) = true;
+            windowEvents.Item((Int32)Event::KeyUp_N) = true;
             break;
         case 0x4F:
-            events.Item((Int32)Event::KeyUp_O) = true;
+            windowEvents.Item((Int32)Event::KeyUp_O) = true;
             break;
         case 0x50:
-            events.Item((Int32)Event::KeyUp_P) = true;
+            windowEvents.Item((Int32)Event::KeyUp_P) = true;
             break;
         case 0x51:
-            events.Item((Int32)Event::KeyUp_Q) = true;
+            windowEvents.Item((Int32)Event::KeyUp_Q) = true;
             break;
         case 0x52:
-            events.Item((Int32)Event::KeyUp_R) = true;
+            windowEvents.Item((Int32)Event::KeyUp_R) = true;
             break;
         case 0x53:
-            events.Item((Int32)Event::KeyUp_S) = true;
+            windowEvents.Item((Int32)Event::KeyUp_S) = true;
             break;
         case 0x54:
-            events.Item((Int32)Event::KeyUp_T) = true;
+            windowEvents.Item((Int32)Event::KeyUp_T) = true;
             break;
         case 0x55:
-            events.Item((Int32)Event::KeyUp_U) = true;
+            windowEvents.Item((Int32)Event::KeyUp_U) = true;
             break;
         case 0x56:
-            events.Item((Int32)Event::KeyUp_V) = true;
+            windowEvents.Item((Int32)Event::KeyUp_V) = true;
             break;
         case 0x57:
-            events.Item((Int32)Event::KeyUp_W) = true;
+            windowEvents.Item((Int32)Event::KeyUp_W) = true;
             break;
         case 0x58:
-            events.Item((Int32)Event::KeyUp_X) = true;
+            windowEvents.Item((Int32)Event::KeyUp_X) = true;
             break;
         case 0x59:
-            events.Item((Int32)Event::KeyUp_Y) = true;
+            windowEvents.Item((Int32)Event::KeyUp_Y) = true;
             break;
         case 0x5A:
-            events.Item((Int32)Event::KeyUp_Z) = true;
+            windowEvents.Item((Int32)Event::KeyUp_Z) = true;
             break;
         }
 
@@ -297,12 +312,17 @@ namespace Base::Window
         switch (uMsg)
         {
         case WM_DESTROY:
-            events.Item((Int32)Event::Destroy) = true;
+            windowEvents.Item((Int32)Event::Destroy) = true;
             PostQuitMessage(0);
             return 0;
         case WM_SIZE:
-            events.Item((Int32)Event::Resize) = true;
+            windowEvents.Item((Int32)Event::Resize) = true;
             GetClientRect(hWindow, &windowRect);
+            break;
+        case WM_MOVE:
+            windowEvents.Item((Int32)Event::Move) = true;
+            windowX = LOWORD(lParam);
+            windowY = HIWORD(lParam);
             break;
         case WM_PAINT:
             static PAINTSTRUCT paintStruct;
@@ -320,8 +340,10 @@ namespace Base::Window
         return DefWindowProc(hWnd, uMsg, wParam, lParam);
     }
 
-    Int32 Create(const char* name, const Int32 width, const Int32 height)
+    Int32 Create(const char* name, const OutputType outputType, const Int32 width, const Int32 height)
     {
+        windowEvents = Array<Int8>((Int32)Event::Count);
+
         hInstance = GetModuleHandle(NULL);        
         if(!hInstance)
         {
@@ -350,23 +372,74 @@ namespace Base::Window
             return 0;
         }
 
-        RECT clientRect = {0, 0, width, height};
-        AdjustWindowRect(&clientRect, WS_OVERLAPPEDWINDOW, false);
+        windowOutputType = outputType;
 
-        hWindow = CreateWindowEx(
-            WS_EX_APPWINDOW,
-            "WindowClass",
-            name,
-            WS_OVERLAPPEDWINDOW,
-            CW_USEDEFAULT,
-            CW_USEDEFAULT,
-            clientRect.right - clientRect.left,
-            clientRect.bottom - clientRect.top,
-            NULL,
-            NULL,
-            hInstance,
-            NULL
-        );
+        if(outputType == OutputType::Windowed)
+        {
+            RECT clientRect = {0, 0, width, height};
+            AdjustWindowRect(&clientRect, WS_OVERLAPPEDWINDOW, false);
+        
+            hWindow = CreateWindowEx(
+                WS_EX_APPWINDOW,
+                "WindowClass",
+                name,
+                WS_OVERLAPPEDWINDOW,
+                CW_USEDEFAULT,
+                CW_USEDEFAULT,
+                clientRect.right - clientRect.left,
+                clientRect.bottom - clientRect.top,
+                NULL,
+                NULL,
+                hInstance,
+                NULL
+           );
+        }
+        else if(outputType == OutputType::Fullscreen)
+        {
+            DEVMODE devMode;
+            EnumDisplaySettings(NULL, 0, &devMode);
+            devMode.dmPelsWidth = width;
+            devMode.dmPelsHeight = height;
+            devMode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
+
+            ChangeDisplaySettings(&devMode, CDS_FULLSCREEN);
+
+            hWindow = CreateWindowEx(
+                WS_EX_APPWINDOW,
+                "WindowClass",
+                name,
+                WS_POPUP | WS_VISIBLE,
+                CW_USEDEFAULT,
+                CW_USEDEFAULT,
+                width,
+                height,
+                NULL,
+                NULL,
+                hInstance,
+                NULL
+           );
+        }
+        else if(outputType == OutputType::BorderlessFullscreen)
+        {
+            HMONITOR hMonitor = MonitorFromWindow(hWindow, MONITOR_DEFAULTTOPRIMARY);
+            MONITORINFO monitorInfo = { sizeof(monitorInfo) };
+            GetMonitorInfo(hMonitor, &monitorInfo);
+
+            hWindow = CreateWindowEx(
+                WS_EX_APPWINDOW,
+                "WindowClass",
+                name,
+                WS_POPUP | WS_VISIBLE,
+                monitorInfo.rcMonitor.left,
+                monitorInfo.rcMonitor.top,
+                monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left,
+                monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top,
+                NULL,
+                NULL,
+                hInstance,
+                NULL
+           );
+        }
 
         if(!hWindow)
         {
@@ -381,7 +454,9 @@ namespace Base::Window
             return 0;
         }
 
-        events = Array<Int8>((Int32)Event::Count);
+        GetWindowPlacement(hWindow, &windowPlacement);
+
+        printf("Created Window\n");
 
         return 1;
     }
@@ -494,6 +569,7 @@ namespace Base::Window
 
         wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)GetGLProcAddress("wglChoosePixelFormatARB");
         wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)GetGLProcAddress("wglCreateContextAttribsARB");
+        wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)GetGLProcAddress("wglSwapIntervalEXT");
 
         wglDeleteContext(hDummyGLContext);
         ReleaseDC(hDummyWindow, hDummyDeviceContext);
@@ -575,6 +651,8 @@ namespace Base::Window
             Log::Print("Failed to create OpenGL context", Log::Type::Error, __LINE__, __FILE__);
             return 0;
         }
+
+        wglSwapIntervalEXT(1);
  
         return 1;
     }
@@ -600,7 +678,7 @@ namespace Base::Window
             return 0;
         }
 
-        events.Clear();
+        windowEvents.Clear();
 
         MSG msg = {};
         while (PeekMessage(&msg, hWindow, 0, 0, PM_REMOVE) > 0)
@@ -625,6 +703,75 @@ namespace Base::Window
         return 1;
     }
 
+    Int32 SetOutputType(const OutputType outputType)
+    {
+        if(windowOutputType == outputType)
+            return 1;
+
+        if(outputType == OutputType::Windowed)
+        {
+            SetWindowLong(hWindow, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+            SetWindowPlacement(hWindow, &windowPlacement);
+            SetWindowPos(hWindow, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+            ChangeDisplaySettings(NULL, CDS_RESET);
+            windowOutputType = OutputType::Windowed;
+        }
+        else if(outputType == OutputType::Fullscreen)
+        {
+            if(windowOutputType == OutputType::Windowed)
+                GetWindowPlacement(hWindow, &windowPlacement);
+
+            DEVMODE devMode;
+            EnumDisplaySettings(NULL, 0, &devMode);
+            devMode.dmPelsWidth = windowRect.right - windowRect.left;
+            devMode.dmPelsHeight = windowRect.bottom - windowRect.top;
+            devMode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
+
+            DWORD dWordStyle = GetWindowLong(hWindow, GWL_STYLE);
+            SetWindowLong(hWindow, GWL_STYLE, dWordStyle & ~WS_OVERLAPPEDWINDOW);
+            SetWindowPos(hWindow, HWND_TOP,
+                   0, 
+                   0,
+                   devMode.dmPelsWidth,
+                   devMode.dmPelsHeight,
+                   SWP_NOOWNERZORDER | SWP_FRAMECHANGED
+            );
+            ChangeDisplaySettings(&devMode, CDS_FULLSCREEN);
+            windowOutputType = OutputType::Fullscreen;
+        }
+        else if(outputType == OutputType::BorderlessFullscreen)
+        {
+            if(windowOutputType == OutputType::Windowed)
+                GetWindowPlacement(hWindow, &windowPlacement);
+
+            DWORD dWordStyle = GetWindowLong(hWindow, GWL_STYLE);
+            HMONITOR hMonitor = MonitorFromWindow(hWindow, MONITOR_DEFAULTTOPRIMARY);
+            if(!hMonitor)
+            {
+                Log::Print("Failed to retrieve monitor", Log::Type::Error, __LINE__, __FILE__);
+                return 0;
+            }
+            MONITORINFO monitorInfo = { sizeof(monitorInfo) };
+            if(!GetMonitorInfo(hMonitor, &monitorInfo))
+            {
+                Log::Print("Failed to retrieve monitor info", Log::Type::Error, __LINE__, __FILE__);
+                return 0;
+            }
+            SetWindowLong(hWindow, GWL_STYLE, dWordStyle & ~WS_OVERLAPPEDWINDOW);
+            SetWindowPos(hWindow, HWND_TOP,
+                   monitorInfo.rcMonitor.left, 
+                   monitorInfo.rcMonitor.top,
+                   monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left,
+                   monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top,
+                   SWP_NOOWNERZORDER | SWP_FRAMECHANGED
+            );
+            ChangeDisplaySettings(NULL, CDS_RESET);
+            windowOutputType = OutputType::BorderlessFullscreen;
+        }
+
+        return 1;
+    }
+
     Int32 GetWidth()
     {
         return windowRect.right - windowRect.left;
@@ -633,6 +780,16 @@ namespace Base::Window
     Int32 GetHeight()
     {
         return windowRect.bottom - windowRect.top;
+    }
+
+    Int32 GetX()
+    {
+        return windowX;
+    }
+
+    Int32 GetY()
+    {
+        return windowY;
     }
 
 
@@ -655,7 +812,248 @@ namespace Base::Window
     GLXContext context = {};
     GLXFBConfig frameBuffer = {};
 
-    Int32 Create(const char* name, const Int32 width, const Int32 height)
+    Int32 windowX = 0, windowY = 0, windowWidth = 0, windowHeight = 0;
+
+    Int32 ProcessKeyDown(XKeyEvent xkey)
+    {
+        KeySym keySym = XkbKeycodeToKeysym(display, xkey.keycode, 0, 1);
+
+        switch(keySym)
+        {
+        case XK_space:
+            windowEvents.Item((Int32)Event::KeyDown_Space) = true;
+            break;
+        case XK_A:
+            windowEvents.Item((Int32)Event::KeyDown_A) = true;
+            break;
+        case XK_B:
+            windowEvents.Item((Int32)Event::KeyDown_B) = true;
+            break;
+        case XK_C:
+            windowEvents.Item((Int32)Event::KeyDown_C) = true;
+            break; 
+        case XK_D:
+            windowEvents.Item((Int32)Event::KeyDown_D) = true;
+            break;
+        case XK_E:
+            windowEvents.Item((Int32)Event::KeyDown_E) = true;
+            break;
+        case XK_F:
+            windowEvents.Item((Int32)Event::KeyDown_F) = true;
+            break; 
+        case XK_G:
+            windowEvents.Item((Int32)Event::KeyDown_G) = true;
+            break;
+        case XK_H:
+            windowEvents.Item((Int32)Event::KeyDown_H) = true;
+            break;
+        case XK_I:
+            windowEvents.Item((Int32)Event::KeyDown_I) = true;
+            break;
+        case XK_J:
+            windowEvents.Item((Int32)Event::KeyDown_J) = true;
+            break;
+        case XK_K:
+            windowEvents.Item((Int32)Event::KeyDown_K) = true;
+            break;
+        case XK_L:
+            windowEvents.Item((Int32)Event::KeyDown_L) = true;
+            break;
+        case XK_M:
+            windowEvents.Item((Int32)Event::KeyDown_M) = true;
+            break;
+        case XK_N:
+            windowEvents.Item((Int32)Event::KeyDown_N) = true;
+            break;
+        case XK_O:
+            windowEvents.Item((Int32)Event::KeyDown_O) = true;
+            break;
+        case XK_P:
+            windowEvents.Item((Int32)Event::KeyDown_P) = true;
+            break;
+        case XK_Q:
+            windowEvents.Item((Int32)Event::KeyDown_Q) = true;
+            break;
+        case XK_R:
+            windowEvents.Item((Int32)Event::KeyDown_R) = true;
+            break;
+        case XK_S:
+            windowEvents.Item((Int32)Event::KeyDown_S) = true;
+            break;
+        case XK_T:
+            windowEvents.Item((Int32)Event::KeyDown_T) = true;
+            break;
+        case XK_U:
+            windowEvents.Item((Int32)Event::KeyDown_U) = true;
+            break;
+        case XK_V:
+            windowEvents.Item((Int32)Event::KeyDown_V) = true;
+            break;
+        case XK_W:
+            windowEvents.Item((Int32)Event::KeyDown_W) = true;
+            break;
+        case XK_X:
+            windowEvents.Item((Int32)Event::KeyDown_X) = true;
+            break;
+        case XK_Y:
+            windowEvents.Item((Int32)Event::KeyDown_Y) = true;
+            break;
+        case XK_Z:
+            windowEvents.Item((Int32)Event::KeyDown_Z) = true;
+            break;
+        }
+
+
+        return 1;
+    }
+
+    Int32 ProcessKeyUp(XKeyEvent xkey)
+    {
+        KeySym keySym = XkbKeycodeToKeysym(display, xkey.keycode, 0, xkey.state & ShiftMask ? 1 : 0);
+
+        switch(keySym)
+        {
+        case XK_space:
+            windowEvents.Item((Int32)Event::KeyUp_Space) = true;
+            break;
+        case XK_A:
+            windowEvents.Item((Int32)Event::KeyUp_A) = true;
+            break;
+        case XK_B:
+            windowEvents.Item((Int32)Event::KeyUp_B) = true;
+            break;
+        case XK_C:
+            windowEvents.Item((Int32)Event::KeyUp_C) = true;
+            break; 
+        case XK_D:
+            windowEvents.Item((Int32)Event::KeyUp_D) = true;
+            break;
+        case XK_E:
+            windowEvents.Item((Int32)Event::KeyUp_E) = true;
+            break;
+        case XK_F:
+            windowEvents.Item((Int32)Event::KeyUp_F) = true;
+            break; 
+        case XK_G:
+            windowEvents.Item((Int32)Event::KeyUp_G) = true;
+            break;
+        case XK_H:
+            windowEvents.Item((Int32)Event::KeyUp_H) = true;
+            break;
+        case XK_I:
+            windowEvents.Item((Int32)Event::KeyUp_I) = true;
+            break;
+        case XK_J:
+            windowEvents.Item((Int32)Event::KeyUp_J) = true;
+            break;
+        case XK_K:
+            windowEvents.Item((Int32)Event::KeyUp_K) = true;
+            break;
+        case XK_L:
+            windowEvents.Item((Int32)Event::KeyUp_L) = true;
+            break;
+        case XK_M:
+            windowEvents.Item((Int32)Event::KeyUp_M) = true;
+            break;
+        case XK_N:
+            windowEvents.Item((Int32)Event::KeyUp_N) = true;
+            break;
+        case XK_O:
+            windowEvents.Item((Int32)Event::KeyUp_O) = true;
+            break;
+        case XK_P:
+            windowEvents.Item((Int32)Event::KeyUp_P) = true;
+            break;
+        case XK_Q:
+            windowEvents.Item((Int32)Event::KeyUp_Q) = true;
+            break;
+        case XK_R:
+            windowEvents.Item((Int32)Event::KeyUp_R) = true;
+            break;
+        case XK_S:
+            windowEvents.Item((Int32)Event::KeyUp_S) = true;
+            break;
+        case XK_T:
+            windowEvents.Item((Int32)Event::KeyUp_T) = true;
+            break;
+        case XK_U:
+            windowEvents.Item((Int32)Event::KeyUp_U) = true;
+            break;
+        case XK_V:
+            windowEvents.Item((Int32)Event::KeyUp_V) = true;
+            break;
+        case XK_W:
+            windowEvents.Item((Int32)Event::KeyUp_W) = true;
+            break;
+        case XK_X:
+            windowEvents.Item((Int32)Event::KeyUp_X) = true;
+            break;
+        case XK_Y:
+            windowEvents.Item((Int32)Event::KeyUp_Y) = true;
+            break;
+        case XK_Z:
+            windowEvents.Item((Int32)Event::KeyUp_Z) = true;
+            break;
+        }
+
+        return 1;
+    }
+
+
+    Int32 PollEvents()
+    {
+        windowEvents.Clear();
+
+        XEvent event;
+
+        while(XPending(display) > 0)
+        {
+            XNextEvent(display, &event);
+
+            switch(event.type)
+            {
+            case ClientMessage:
+                if ((Atom)event.xclient.data.l[0] != deleteMessage)
+                    break;
+                windowEvents.Item((Int32)Event::Destroy) = true;
+                break;
+            case ConfigureNotify:
+                if(windowX != event.xconfigure.x || windowY != event.xconfigure.y)
+                {
+                    windowX = event.xconfigure.x;
+                    windowY = event.xconfigure.y;
+                    windowEvents.Item((Int32)Event::Move) = true;
+                }
+                if(windowWidth != event.xconfigure.width || windowHeight != event.xconfigure.height)
+                {
+                    windowWidth = event.xconfigure.width;
+                    windowHeight = event.xconfigure.height;
+                    windowEvents.Item((Int32)Event::Resize) = true;
+                }
+                break;
+            case KeymapNotify:
+                XRefreshKeyboardMapping(&event.xmapping);
+                break;
+            case KeyPress:
+                ProcessKeyDown(event.xkey);               
+                break;
+            case KeyRelease:
+                if (XEventsQueued(display, QueuedAfterReading))
+                {
+                    XEvent nextEvent;
+                    XPeekEvent(display, &nextEvent);
+                    if (nextEvent.type == KeyPress && nextEvent.xkey.time == event.xkey.time && nextEvent.xkey.keycode == event.xkey.keycode)
+                        break;
+                }
+                ProcessKeyUp(event.xkey);
+                break;
+            }
+        }
+
+        return 1;
+    }
+
+    Int32 Create(const char* name, const OutputType outputType, const Int32 width, const Int32 height)
     {
         display = XOpenDisplay(NULL);
         if (!display)
@@ -722,12 +1120,51 @@ namespace Base::Window
         window = XCreateWindow(display, RootWindow(display, screenID), 0, 0, width, height, 0, visualInfo->depth, InputOutput, visualInfo->visual, CWBackPixel | CWBorderPixel | CWColormap| CWEventMask, &windowAttributes);
         XFree(visualInfo);
 
+        if(outputType == OutputType::Fullscreen || outputType == OutputType::BorderlessFullscreen)
+        {
+            Atom wmState = XInternAtom(display, "_NET_WM_STATE", false);
+            Atom wmFullscreen = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", false);
+            XEvent event;
+            memset(&event, 0, sizeof(event));
+            event.type = ClientMessage;
+            event.xclient.window = window;
+            event.xclient.message_type = wmState;
+            event.xclient.format = 32;
+            event.xclient.data.l[0] = 1;
+            event.xclient.data.l[1] = wmFullscreen;
+            event.xclient.data.l[2] = 0;
+            XSendEvent(display, DefaultRootWindow(display), false, SubstructureRedirectMask | SubstructureNotifyMask, &event);
+
+            Atom wmFullscreenMonitors = XInternAtom(display, "_NET_WM_FULLSCREEN_MONITORS", false);
+            memset(&event, 0, sizeof(event));
+            event.type = ClientMessage;
+            event.xclient.window = window;
+            event.xclient.message_type = wmFullscreenMonitors;
+            event.xclient.format = 32;
+            event.xclient.data.l[0] = 0; /* your topmost monitor number */
+            event.xclient.data.l[1] = 0; /* bottommost */
+            event.xclient.data.l[2] = 0; /* leftmost */
+            event.xclient.data.l[3] = 1; /* rightmost */
+            event.xclient.data.l[4] = 0; /* source indication */
+            XSendEvent(display, DefaultRootWindow(display), false, SubstructureRedirectMask | SubstructureNotifyMask, &event);
+
+            XMapWindow(display, window);
+        }
+
         XStoreName(display, window, name);
 
         deleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", false);
         XSetWMProtocols(display, window, &deleteMessage, 1);
 
-        events = Array<Int8>((Int32)Event::Count);
+        windowEvents = Array<Int8>((Int32)Event::Count);
+
+        XWindowAttributes attributes; 
+        XGetWindowAttributes(display, window, &attributes);
+
+        windowX = attributes.x;
+        windowY = attributes.y;
+        windowWidth = attributes.width;
+        windowHeight = attributes.height;
 
         return 1;
     }
@@ -791,236 +1228,36 @@ namespace Base::Window
         return 1;
     }
 
-    Int32 ProcessKeyDown(XKeyEvent xkey)
-    {
-        KeySym keySym = XkbKeycodeToKeysym(display, xkey.keycode, 0, 1);
-
-        switch(keySym)
-        {
-        case XK_space:
-            events.Item((Int32)Event::KeyDown_Space) = true;
-            break;
-        case XK_A:
-            events.Item((Int32)Event::KeyDown_A) = true;
-            break;
-        case XK_B:
-            events.Item((Int32)Event::KeyDown_B) = true;
-            break;
-        case XK_C:
-            events.Item((Int32)Event::KeyDown_C) = true;
-            break; 
-        case XK_D:
-            events.Item((Int32)Event::KeyDown_D) = true;
-            break;
-        case XK_E:
-            events.Item((Int32)Event::KeyDown_E) = true;
-            break;
-        case XK_F:
-            events.Item((Int32)Event::KeyDown_F) = true;
-            break; 
-        case XK_G:
-            events.Item((Int32)Event::KeyDown_G) = true;
-            break;
-        case XK_H:
-            events.Item((Int32)Event::KeyDown_H) = true;
-            break;
-        case XK_I:
-            events.Item((Int32)Event::KeyDown_I) = true;
-            break;
-        case XK_J:
-            events.Item((Int32)Event::KeyDown_J) = true;
-            break;
-        case XK_K:
-            events.Item((Int32)Event::KeyDown_K) = true;
-            break;
-        case XK_L:
-            events.Item((Int32)Event::KeyDown_L) = true;
-            break;
-        case XK_M:
-            events.Item((Int32)Event::KeyDown_M) = true;
-            break;
-        case XK_N:
-            events.Item((Int32)Event::KeyDown_N) = true;
-            break;
-        case XK_O:
-            events.Item((Int32)Event::KeyDown_O) = true;
-            break;
-        case XK_P:
-            events.Item((Int32)Event::KeyDown_P) = true;
-            break;
-        case XK_Q:
-            events.Item((Int32)Event::KeyDown_Q) = true;
-            break;
-        case XK_R:
-            events.Item((Int32)Event::KeyDown_R) = true;
-            break;
-        case XK_S:
-            events.Item((Int32)Event::KeyDown_S) = true;
-            break;
-        case XK_T:
-            events.Item((Int32)Event::KeyDown_T) = true;
-            break;
-        case XK_U:
-            events.Item((Int32)Event::KeyDown_U) = true;
-            break;
-        case XK_V:
-            events.Item((Int32)Event::KeyDown_V) = true;
-            break;
-        case XK_W:
-            events.Item((Int32)Event::KeyDown_W) = true;
-            break;
-        case XK_X:
-            events.Item((Int32)Event::KeyDown_X) = true;
-            break;
-        case XK_Y:
-            events.Item((Int32)Event::KeyDown_Y) = true;
-            break;
-        case XK_Z:
-            events.Item((Int32)Event::KeyDown_Z) = true;
-            break;
-        }
-
-
-        return 1;
-    }
-
-    Int32 ProcessKeyUp(XKeyEvent xkey)
-    {
-        KeySym keySym = XkbKeycodeToKeysym(display, xkey.keycode, 0, xkey.state & ShiftMask ? 1 : 0);
-
-        switch(keySym)
-        {
-        case XK_space:
-            events.Item((Int32)Event::KeyUp_Space) = true;
-            break;
-        case XK_A:
-            events.Item((Int32)Event::KeyUp_A) = true;
-            break;
-        case XK_B:
-            events.Item((Int32)Event::KeyUp_B) = true;
-            break;
-        case XK_C:
-            events.Item((Int32)Event::KeyUp_C) = true;
-            break; 
-        case XK_D:
-            events.Item((Int32)Event::KeyUp_D) = true;
-            break;
-        case XK_E:
-            events.Item((Int32)Event::KeyUp_E) = true;
-            break;
-        case XK_F:
-            events.Item((Int32)Event::KeyUp_F) = true;
-            break; 
-        case XK_G:
-            events.Item((Int32)Event::KeyUp_G) = true;
-            break;
-        case XK_H:
-            events.Item((Int32)Event::KeyUp_H) = true;
-            break;
-        case XK_I:
-            events.Item((Int32)Event::KeyUp_I) = true;
-            break;
-        case XK_J:
-            events.Item((Int32)Event::KeyUp_J) = true;
-            break;
-        case XK_K:
-            events.Item((Int32)Event::KeyUp_K) = true;
-            break;
-        case XK_L:
-            events.Item((Int32)Event::KeyUp_L) = true;
-            break;
-        case XK_M:
-            events.Item((Int32)Event::KeyUp_M) = true;
-            break;
-        case XK_N:
-            events.Item((Int32)Event::KeyUp_N) = true;
-            break;
-        case XK_O:
-            events.Item((Int32)Event::KeyUp_O) = true;
-            break;
-        case XK_P:
-            events.Item((Int32)Event::KeyUp_P) = true;
-            break;
-        case XK_Q:
-            events.Item((Int32)Event::KeyUp_Q) = true;
-            break;
-        case XK_R:
-            events.Item((Int32)Event::KeyUp_R) = true;
-            break;
-        case XK_S:
-            events.Item((Int32)Event::KeyUp_S) = true;
-            break;
-        case XK_T:
-            events.Item((Int32)Event::KeyUp_T) = true;
-            break;
-        case XK_U:
-            events.Item((Int32)Event::KeyUp_U) = true;
-            break;
-        case XK_V:
-            events.Item((Int32)Event::KeyUp_V) = true;
-            break;
-        case XK_W:
-            events.Item((Int32)Event::KeyUp_W) = true;
-            break;
-        case XK_X:
-            events.Item((Int32)Event::KeyUp_X) = true;
-            break;
-        case XK_Y:
-            events.Item((Int32)Event::KeyUp_Y) = true;
-            break;
-        case XK_Z:
-            events.Item((Int32)Event::KeyUp_Z) = true;
-            break;
-        }
-
-        return 1;
-    }
-
-    Int32 PollEvents()
-    {
-        events.Clear();
-
-        XEvent event;
-
-        while(XPending(display) > 0)
-        {
-            XNextEvent(display, &event);
-
-            switch(event.type)
-            {
-            case ClientMessage:
-                if ((Atom)event.xclient.data.l[0] != deleteMessage)
-                    break;
-                events.Item((Int32)Event::Destroy) = true;
-                break;
-            case KeymapNotify:
-                XRefreshKeyboardMapping(&event.xmapping);
-                break;
-            case KeyPress:
-                ProcessKeyDown(event.xkey);               
-                break;
-            case KeyRelease:
-                if (XEventsQueued(display, QueuedAfterReading))
-                {
-                    XEvent nextEvent;
-                    XPeekEvent(display, &nextEvent);
-                    if (nextEvent.type == KeyPress && nextEvent.xkey.time == event.xkey.time && nextEvent.xkey.keycode == event.xkey.keycode)
-                        break;
-                }
-                ProcessKeyUp(event.xkey);
-                break;
-            }
-        }
-
-        return 1;
-    }
-
     Int32 SwapBuffer()
     {
         glXSwapBuffers(display, window);
         return 1;
     }
 
+    Int32 SetFullScreen()
+    {
+        return 1;
+    }
+
+    Int32 GetWidth()
+    {
+        return windowWidth;
+    }
+
+    Int32 GetHeight()
+    {
+        return windowHeight;
+    }
+        
+    Int32 GetX()
+    {
+        return windowX;
+    }
+
+    Int32 GetY()
+    {
+        return windowY;
+    }
 
 #elif PLATFORM == PLATFORM_MAC
 #endif
