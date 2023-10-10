@@ -21,7 +21,7 @@ Int32 main()
 
     Allocator::Create(ALLOCATION_SIZE);
 
-    if(!Window::Create("Base Window", Window::OutputType::Fullscreen, 1280, 720))
+    if(!Window::Create("Base Window", Window::OutputType::Windowed, 1280, 720))
         return 1; 
     if(!Window::SetGLContext(1, 0))
         return 1;
@@ -32,6 +32,7 @@ Int32 main()
 
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);            
 
+    
     while(true)
     {
         Window::PollEvents();
@@ -40,13 +41,13 @@ Int32 main()
             break; 
 
         if(Window::GetEvent(Window::Event::KeyDown_F))
-            //Window::SetOutputType(Window::OutputType::Fullscreen);
+            Window::SetOutputType(Window::OutputType::Fullscreen);
 
         if(Window::GetEvent(Window::Event::KeyDown_B))
-            //Window::SetOutputType(Window::OutputType::BorderlessFullscreen);
+            Window::SetOutputType(Window::OutputType::BorderlessFullscreen);
 
         if(Window::GetEvent(Window::Event::KeyDown_W))
-            //Window::SetOutputType(Window::OutputType::Windowed);
+            Window::SetOutputType(Window::OutputType::Windowed);
 
         glClear(GL_COLOR_BUFFER_BIT);        
 

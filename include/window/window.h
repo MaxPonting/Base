@@ -105,9 +105,6 @@ namespace Base::Window
 
     OutputType windowOutputType;
 
-    Int32 windowResolutionW = 0, windowResolutionH = 0;
-
-
 #if PLATFORM == PLATFORM_WINDOWS
 
 
@@ -1122,33 +1119,18 @@ namespace Base::Window
 
         if(outputType == OutputType::Fullscreen || outputType == OutputType::BorderlessFullscreen)
         {
-            Atom wmState = XInternAtom(display, "_NET_WM_STATE", false);
-            Atom wmFullscreen = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", false);
-            XEvent event;
-            memset(&event, 0, sizeof(event));
-            event.type = ClientMessage;
-            event.xclient.window = window;
-            event.xclient.message_type = wmState;
-            event.xclient.format = 32;
-            event.xclient.data.l[0] = 1;
-            event.xclient.data.l[1] = wmFullscreen;
-            event.xclient.data.l[2] = 0;
-            XSendEvent(display, DefaultRootWindow(display), false, SubstructureRedirectMask | SubstructureNotifyMask, &event);
+            Atom wmState   = XInternAtom (display, "_NET_WM_STATE", true );
+            Atom wmFullscreen = XInternAtom (display, "_NET_WM_STATE_FULLSCREEN", true );
 
-            Atom wmFullscreenMonitors = XInternAtom(display, "_NET_WM_FULLSCREEN_MONITORS", false);
-            memset(&event, 0, sizeof(event));
-            event.type = ClientMessage;
-            event.xclient.window = window;
-            event.xclient.message_type = wmFullscreenMonitors;
-            event.xclient.format = 32;
-            event.xclient.data.l[0] = 0; /* your topmost monitor number */
-            event.xclient.data.l[1] = 0; /* bottommost */
-            event.xclient.data.l[2] = 0; /* leftmost */
-            event.xclient.data.l[3] = 1; /* rightmost */
-            event.xclient.data.l[4] = 0; /* source indication */
-            XSendEvent(display, DefaultRootWindow(display), false, SubstructureRedirectMask | SubstructureNotifyMask, &event);
+            XChangeProperty(display, window, wmState, 1, 32, PropModeReplace, (unsigned char *)&wmFullscreen, 1);
 
             XMapWindow(display, window);
+
+            windowOutputType = OutputType::BorderlessFullscreen;
+        }
+        else if(outputType == OutputType::Windowed)
+        {
+            windowOutputType = OutputType::Windowed;
         }
 
         XStoreName(display, window, name);
@@ -1234,8 +1216,27 @@ namespace Base::Window
         return 1;
     }
 
-    Int32 SetFullScreen()
+    Int32 SetOutputType(const OutputType outputType)
     {
+        if(outputType == windowOutputType)
+            return 1;
+        
+        Atom wmState   = XInternAtom (display, "_NET_WM_STATE", true );
+        Atom wmFullscreen = XInternAtom (display, "_NET_WM_STATE_FULLSCREEN", true );
+
+        XEvent xev;
+        xev.type = ClientMessage;
+        xev.xclient.window = window;
+        xev.xclient.message_type = wmState;
+        xev.xclient.format = 32;
+        xev.xclient.data.l[0] = (outputType == OutputType::Windowed) ? 0 : 1;
+        xev.xclient.data.l[1] = wmFullscreen;
+        xev.xclient.data.l[2] = 0;
+
+        XSendEvent(display, DefaultRootWindow(display), False, SubstructureNotifyMask, &xev); 
+
+        windowOutputType = outputType;
+
         return 1;
     }
 
