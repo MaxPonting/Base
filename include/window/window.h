@@ -381,8 +381,8 @@ namespace Base::Window
                 "WindowClass",
                 name,
                 WS_OVERLAPPEDWINDOW,
-                CW_USEDEFAULT,
-                CW_USEDEFAULT,
+                200,
+                200,
                 clientRect.right - clientRect.left,
                 clientRect.bottom - clientRect.top,
                 NULL,
@@ -451,9 +451,16 @@ namespace Base::Window
             return 0;
         }
 
+        GetClientRect(hWindow, &windowRect);
+
         GetWindowPlacement(hWindow, &windowPlacement);
 
-        printf("Created Window\n");
+        if(windowOutputType == OutputType::Fullscreen)
+        {
+            RECT rect = {200, 200, width + 200, height + 200};
+            AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
+            windowPlacement.rcNormalPosition = rect;
+        }
 
         return 1;
     }
@@ -765,6 +772,65 @@ namespace Base::Window
             ChangeDisplaySettings(NULL, CDS_RESET);
             windowOutputType = OutputType::BorderlessFullscreen;
         }
+
+        return 1;
+    }
+    
+    Int32 SetSize(const Int32 width, const Int32 height)
+    {
+        if(windowOutputType == OutputType::BorderlessFullscreen)
+        {
+            Log::Print("Cannot change size when output type is 'Borderless Fullscreen'", Log::Type::Warning, __LINE__, __FILE__);
+            return 1;
+        }
+        
+        RECT rect = {windowX, windowY, width, height};
+        AdjustWindowRect(&rect, windowOutputType == OutputType::Windowed ? WS_OVERLAPPEDWINDOW : WS_POPUP | WS_VISIBLE, false);
+       
+        SetWindowPos(hWindow, windowOutputType == OutputType::Windowed ? NULL : HWND_TOP,
+            rect.left,
+            rect.top,
+            rect.right - rect.left,
+            rect.bottom - rect.top,
+            SWP_NOOWNERZORDER | SWP_FRAMECHANGED 
+        );
+
+        if(windowOutputType == OutputType::Fullscreen)
+        {
+            DEVMODE devMode;
+            EnumDisplaySettings(NULL, 0, &devMode);
+            devMode.dmPelsWidth = rect.right - rect.left;
+            devMode.dmPelsHeight = rect.bottom - rect.top;
+            devMode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
+
+            ChangeDisplaySettings(&devMode, CDS_FULLSCREEN);
+
+            RECT rect = {200, 200, width + 200, height + 200};
+            AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
+            windowPlacement.rcNormalPosition = rect;
+        }
+
+        return 1;
+    }
+
+    Int32 SetPosition(const Int32 x, const Int32 y)
+    {
+        if(windowOutputType != OutputType::Windowed)
+        {
+            Log::Print("Cannot change position when output type is not 'Windowed'", Log::Type::Warning, __LINE__, __FILE__);
+            return 1;
+        }
+
+        RECT rect = {x, y, (windowRect.right - windowRect.left) + x, (windowRect.bottom - windowRect.top) + y};
+        AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
+
+        SetWindowPos(hWindow, NULL, 
+            rect.left,
+            rect.top,
+            rect.right - rect.left,
+            rect.bottom - rect.top,
+            SWP_NOOWNERZORDER | SWP_FRAMECHANGED 
+        );
 
         return 1;
     }
