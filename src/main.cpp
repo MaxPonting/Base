@@ -28,7 +28,7 @@ Int32 main()
 
     Allocator::Create(ALLOCATION_SIZE);
 
-    if(!Window::Create("Base Window", Window::OutputType::Windowed, 1280, 720))
+    if(!Window::Create("Base Window", Window::OutputType::Windowed, 1920, 1080))
         return 1; 
     if(!Window::SetGLContext(1, 0))
         return 1;
@@ -58,25 +58,8 @@ Int32 main()
         if(Window::GetEvent(Window::Event::Destroy))
             break; 
 
-        if(Window::GetEvent(Window::Event::KeyDown_M))
-            Window::SetPosition(500, 500);
-
-        if(Window::GetEvent(Window::Event::Move))
-        {
-            printf("X:%d, Y:%d\n", Window::GetX(), Window::GetY());
-        }
-
-        if(Window::GetEvent(Window::Event::KeyDown_W))
-        {
-            Window::SetOutputType(Window::OutputType::Windowed);
-            printf("W:%d, H:%d\n", Window::GetWidth(), Window::GetHeight());
-        }
-
-        if(Window::GetEvent(Window::Event::KeyDown_S))
-        {
-            Window::SetSize(1920, 1080);
-            glViewport(0, 0, 1920, 1080);
-        }
+        if(Window::GetEvent(Window::Event::Resize))
+            glViewport(0, 0, Window::GetWidth(), Window::GetHeight());        
 
         glClear(GL_COLOR_BUFFER_BIT);        
 

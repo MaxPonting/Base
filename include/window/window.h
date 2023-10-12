@@ -1306,6 +1306,32 @@ namespace Base::Window
         return 1;
     }
 
+    Int32 SetSize(const Int32 width, const Int32 height)
+    {
+        if(windowOutputType != OutputType::Windowed)
+        {
+            Log::Print("Cannot change size of window when output type is not 'Windowed'", Log::Type::Warning, __LINE__, __FILE__);
+            return 1;
+        }
+
+        XResizeWindow(display, window, width, height);
+
+        return 1;
+    }
+
+    Int32 SetPosition(const Int32 x, const Int32 y)
+    {
+        if(windowOutputType != OutputType::Windowed)
+        {
+            Log::Print("Cannot change size of window when output type is not 'Windowed'", Log::Type::Warning, __LINE__, __FILE__);
+            return 1;
+        }
+
+        XMoveWindow(display, window, x, y);
+
+        return 1;
+    }
+
     Int32 GetWidth()
     {
         return windowWidth;
