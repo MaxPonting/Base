@@ -3,6 +3,7 @@
 #include <allocator/allocator.h>
 #include <log/log.h>
 #include <file/file.h>
+#include <math/math.h>
 #include <opengl/opengl.h>
 #include <opengl/shader.h>
 #include <opengl/program.h>
@@ -21,6 +22,7 @@ const static Float32 VERTICES[] = {
 typedef struct
 {
     UInt32 vertexArrayObject, vertexBufferObject, programObject;
+    Mat4 viewMatrix, projectionMatrix;
 } Global;
 
 Global global;
@@ -33,7 +35,7 @@ Int32 main()
 
     if(!Window::Create("Base Window", Window::OutputType::Windowed, 1280, 720))
         return 1; 
-    if(!Window::SetGLContext(1, 0))
+    if(!Window::SetGLContext(3, 3))
         return 1;
     if(!Window::Show())
         return 1;
@@ -68,6 +70,14 @@ Int32 main()
         OpenGL::Shader::Destroy(shaderObjects[1]);
     }
 
+    OpenGL::Program::Bind(global.programObject);
+
+    Math::Mat4Identity(global.viewMatrix);
+    Math::Mat4Identity(global.projectionMatrix);
+
+    OpenGL::Program::SetUniformMatrix4FV(global.programObject, "uView", global.viewMatrix);
+    OpenGL::Program::SetUniformMatrix4FV(global.programObject, "uProjection", global.projectionMatrix);
+
     while(true)
     {
         Window::PollEvents();
@@ -79,10 +89,12 @@ Int32 main()
             glViewport(0, 0, Window::GetWidth(), Window::GetHeight());        
 
         glClear(GL_COLOR_BUFFER_BIT);        
+        glDrawArrays(GL_TRIANGLES, 0, 6);
 
         Window::SwapBuffer();
     }
 
+    OpenGL::Program::Destroy(global.programObject);
     glDeleteVertexArrays(1, &global.vertexArrayObject);
     glDeleteBuffers(1, &global.vertexBufferObject);
     

@@ -13,7 +13,7 @@ namespace Base::Math
         return rotation * (PI / 180.0f);
     }
 
-    void Mat4Identity(Mat4& mat)
+    void Mat4Identity(Mat4 mat)
     {
         mat[0][0] = 1;
         mat[0][1] = 0;
@@ -36,7 +36,7 @@ namespace Base::Math
         mat[3][3] = 1;
     }
     
-    void Mat3Identity(Mat3& mat)
+    void Mat3Identity(Mat3 mat)
     {
         mat[0][0] = 1;
         mat[0][1] = 0;
@@ -51,7 +51,7 @@ namespace Base::Math
         mat[2][2] = 1;
     }
 
-    void Mat2Identity(Mat2& mat)
+    void Mat2Identity(Mat2 mat)
     {
         mat[0][0] = 1;
         mat[0][1] = 0;
@@ -60,7 +60,7 @@ namespace Base::Math
         mat[1][1] = 1;
     }
 
-    void Orthographic(Mat4& mat, const Float32 left, const Float32 right, const Float32 bottom, const Float32 top, const Float32 near_z, const Float32 far_z)
+    void Orthographic(Mat4 mat, const Float32 left, const Float32 right, const Float32 bottom, const Float32 top, const Float32 near_z, const Float32 far_z)
     {
         mat[0][0] = 2 / (right - left);
         mat[0][1] = 0;
@@ -83,7 +83,7 @@ namespace Base::Math
         mat[3][3] = 1;
     }
 
-    void Mat4Transform2D(Mat4& mat4, const Vec2 translation, const Vec2 scale, const Float32 rotation)
+    void Mat4Transform2D(Mat4 mat4, const Vec2 translation, const Vec2 scale, const Float32 rotation)
     {
         mat4[3][0] = translation[0]; 
         mat4[3][1] = translation[1]; 
@@ -97,7 +97,7 @@ namespace Base::Math
         mat4[1][1] = scale[1] * cos;
     }
 
-    void Vec2Rotate2D(Vec2& vec, const Float32 rotation)
+    void Vec2Rotate2D(Vec2 vec, const Float32 rotation)
     {
         const Float32 cos = cosf(rotation);
         const Float32 sin = sinf(rotation);

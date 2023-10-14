@@ -21,4 +21,64 @@ namespace Base::OpenGL::Program
 
         return 1;
     }
+
+    Int32 Bind(const UInt32 programObject)
+    {
+        glUseProgram(programObject);
+
+        return 1;
+    }
+
+    Int32 SetUniform1I(const UInt32 programObject, const char* const uniformName, const Int32 value)
+    {
+        Int32 location = glGetUniformLocation(programObject, uniformName);
+        if(location == -1)
+        {
+            Log::Print("Cannot find uniform location", Log::Type::Error, __LINE__, __FILE__);
+            return 0;
+        }
+        glUniform1i(location, value);
+
+        return 1;
+    }
+
+    Int32 SetUniform1F(const UInt32 programObject, const char* const uniformName, const Float32 value)
+    {
+        Int32 location = glGetUniformLocation(programObject, uniformName);
+        if(location == -1)
+        {
+            Log::Print("Cannot find uniform location", Log::Type::Error, __LINE__, __FILE__);
+            return 0;
+        }
+        glUniform1f(location, value);
+
+        return 1;
+    }
+
+    Int32 SetUniform3F(const UInt32 programObject, const char* const uniformName, const Vec3 value)
+    {
+        Int32 location = glGetUniformLocation(programObject, uniformName);
+        if(location == -1)
+        {
+            Log::Print("Cannot find uniform location", Log::Type::Error, __LINE__, __FILE__);
+            return 0;
+        }
+        glUniform3f(location, value[0], value[1], value[2]);
+
+        return 1;
+    }
+
+    Int32 SetUniformMatrix4FV(const UInt32 programObject, const char* const uniformName, const Mat4 value)
+    {
+        Int32 location = glGetUniformLocation(programObject, uniformName);
+        if(location == -1)
+        {
+            Log::Print("Cannot find uniform location", Log::Type::Error, __LINE__, __FILE__);
+            return 0;
+        }
+        glUniformMatrix4fv(location, 1, 0, (Float32*)value);
+
+        return 1;
+    }
+
 }

@@ -43,6 +43,7 @@ PFNGLUNIFORM1IPROC glUniform1i;
 PFNGLUNIFORM1FPROC glUniform1f;
 PFNGLUNIFORM3FPROC glUniform3f;
 PFNGLUNIFORMMATRIX4FVPROC glUniformMatrix4fv;
+PFNGLUSEPROGRAMPROC glUseProgram;
 PFNGLVALIDATEPROGRAMPROC glValidateProgram;
 PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer;
 
@@ -85,6 +86,7 @@ namespace Base::OpenGL
         glUniform1f                 = (PFNGLUNIFORM1FPROC)Window::GetGLProcAddress("glUniform1f");
         glUniform3f                 = (PFNGLUNIFORM3FPROC)Window::GetGLProcAddress("glUniform3f");
         glUniformMatrix4fv          = (PFNGLUNIFORMMATRIX4FVPROC)Window::GetGLProcAddress("glUniformMatrix4fv");
+        glUseProgram                = (PFNGLUSEPROGRAMPROC)Window::GetGLProcAddress("glUseProgram");
         glValidateProgram           = (PFNGLVALIDATEPROGRAMPROC)Window::GetGLProcAddress("glValidateProgram");
         glVertexAttribPointer       = (PFNGLVERTEXATTRIBPOINTERPROC)Window::GetGLProcAddress("glVertexAttribPointer");
 

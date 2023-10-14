@@ -39,57 +39,5 @@ namespace Base::OpenGL::Shader
 
         return 1;
     }
-
-    Int32 SetUniform1I(const UInt32 shaderObject, const char* const uniformName, const Int32 value)
-    {
-        Int32 location = glGetUniformLocation(shaderObject, uniformName);
-        if(!location)
-        {
-            Log::Print("Cannot find uniform location", Log::Type::Error, __LINE__, __FILE__);
-            return 0;
-        }
-        glUniform1i(location, value);
-
-        return 1;
-    }
-
-    Int32 SetUniform1F(const UInt32 shaderObject, const char* const uniformName, const Float32 value)
-    {
-        Int32 location = glGetUniformLocation(shaderObject, uniformName);
-        if(!location)
-        {
-            Log::Print("Cannot find uniform location", Log::Type::Error, __LINE__, __FILE__);
-            return 0;
-        }
-        glUniform1f(location, value);
-
-        return 1;
-    }
-
-    Int32 SetUniform3F(const UInt32 shaderObject, const char* const uniformName, const Vec3 value)
-    {
-        Int32 location = glGetUniformLocation(shaderObject, uniformName);
-        if(!location)
-        {
-            Log::Print("Cannot find uniform location", Log::Type::Error, __LINE__, __FILE__);
-            return 0;
-        }
-        glUniform3f(location, value[0], value[1], value[2]);
-
-        return 1;
-    }
-
-    Int32 SetUniformMatrix4FV(const UInt32 shaderObject, const char* const uniformName, const Mat4 value)
-    {
-        Int32 location = glGetUniformLocation(shaderObject, uniformName);
-        if(!location)
-        {
-            Log::Print("Cannot find uniform location", Log::Type::Error, __LINE__, __FILE__);
-            return 0;
-        }
-        glUniformMatrix4fv(location, 1, 0, (Float32*)value);
-
-        return 1;
-    }
 }
 
