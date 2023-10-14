@@ -9,8 +9,8 @@ endif
 CC = g++
 
 # Compiler Flags
-FLAGS = -Wall
-DFLAGS = -g3 -ggdb -Wextra -Wno-cast-function-type
+FLAGS = -Wall -Wextra -Wno-cast-function-type
+DFLAGS = -g3 -ggdb 
 RFLAGS = -O3
 
 # Source File

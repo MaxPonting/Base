@@ -60,4 +60,26 @@ namespace Base::Allocator
         memset(*_ptr, 0, _size);
         return 1;
     }
+
+    Int32 Deallocate(const UInt64 _size)
+    {
+        if (memory == 0)
+        {
+            Log::Print("Linear allocator has not been created", Log::Type::Error, __LINE__, __FILE__);
+            return 0;
+        }
+
+        if (offset == 0)
+        {
+            Log::Print("Linear allocator is empty", Log::Type::Warning, __LINE__, __FILE__);
+            return 0;
+        }
+
+        if((Int64)offset - (Int64)_size < 0)
+            offset = 0;
+        else 
+            offset -= _size;
+
+        return 1;
+    }
 }

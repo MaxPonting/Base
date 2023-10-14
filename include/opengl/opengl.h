@@ -34,8 +34,15 @@ PFNGLENABLEVERTEXATTRIBARRAYPROC glEnableVertexAttribArray;
 PFNGLGENBUFFERSPROC glGenBuffers;
 PFNGLGENVERTEXARRAYSPROC glGenVertexArrays;
 PFNGLGENERATEMIPMAPPROC glGenerateMipmap;
+PFNGLGETSHADERIVPROC glGetShaderiv;
+PFNGLGETSHADERINFOLOGPROC glGetShaderInfoLog;
+PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
 PFNGLSHADERSOURCEPROC glShaderSource;
 PFNGLLINKPROGRAMPROC glLinkProgram;
+PFNGLUNIFORM1IPROC glUniform1i;
+PFNGLUNIFORM1FPROC glUniform1f;
+PFNGLUNIFORM3FPROC glUniform3f;
+PFNGLUNIFORMMATRIX4FVPROC glUniformMatrix4fv;
 PFNGLVALIDATEPROGRAMPROC glValidateProgram;
 PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer;
 
@@ -69,8 +76,15 @@ namespace Base::OpenGL
         glGenBuffers                = (PFNGLGENBUFFERSPROC)Window::GetGLProcAddress("glGenBuffers");
         glGenVertexArrays           = (PFNGLGENVERTEXARRAYSPROC)Window::GetGLProcAddress("glGenVertexArrays");
         glGenerateMipmap            = (PFNGLGENERATEMIPMAPPROC)Window::GetGLProcAddress("glGenerateMipmap");
+        glGetShaderiv               = (PFNGLGETSHADERIVPROC)Window::GetGLProcAddress("glGetShaderiv");
+        glGetShaderInfoLog          = (PFNGLGETSHADERINFOLOGPROC)Window::GetGLProcAddress("glGetShaderInfoLog");
+        glGetUniformLocation        = (PFNGLGETUNIFORMLOCATIONPROC)Window::GetGLProcAddress("glGetUniformLocation");
         glShaderSource              = (PFNGLSHADERSOURCEPROC)Window::GetGLProcAddress("glShaderSource");
         glLinkProgram               = (PFNGLLINKPROGRAMPROC)Window::GetGLProcAddress("glLinkProgram");
+        glUniform1i                 = (PFNGLUNIFORM1IPROC)Window::GetGLProcAddress("glUniform1i");
+        glUniform1f                 = (PFNGLUNIFORM1FPROC)Window::GetGLProcAddress("glUniform1f");
+        glUniform3f                 = (PFNGLUNIFORM3FPROC)Window::GetGLProcAddress("glUniform3f");
+        glUniformMatrix4fv          = (PFNGLUNIFORMMATRIX4FVPROC)Window::GetGLProcAddress("glUniformMatrix4fv");
         glValidateProgram           = (PFNGLVALIDATEPROGRAMPROC)Window::GetGLProcAddress("glValidateProgram");
         glVertexAttribPointer       = (PFNGLVERTEXATTRIBPOINTERPROC)Window::GetGLProcAddress("glVertexAttribPointer");
 

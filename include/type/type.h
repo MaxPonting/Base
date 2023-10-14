@@ -14,3 +14,4 @@ typedef double Float64;
 typedef float Float32;
 
 typedef bool Bool;
+typedef char Char;

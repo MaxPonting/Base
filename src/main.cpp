@@ -2,7 +2,10 @@
 
 #include <allocator/allocator.h>
 #include <log/log.h>
+#include <file/file.h>
 #include <opengl/opengl.h>
+#include <opengl/shader.h>
+#include <opengl/program.h>
 #include <window/window.h>
 
 #include <stdio.h>
@@ -17,7 +20,7 @@ const static Float32 VERTICES[] = {
 
 typedef struct
 {
-    UInt32 vertexArrayObject, vertexBufferObject;
+    UInt32 vertexArrayObject, vertexBufferObject, programObject;
 } Global;
 
 Global global;
@@ -28,7 +31,7 @@ Int32 main()
 
     Allocator::Create(ALLOCATION_SIZE);
 
-    if(!Window::Create("Base Window", Window::OutputType::Windowed, 1920, 1080))
+    if(!Window::Create("Base Window", Window::OutputType::Windowed, 1280, 720))
         return 1; 
     if(!Window::SetGLContext(1, 0))
         return 1;
@@ -37,7 +40,7 @@ Int32 main()
 
     OpenGL::LoadProcedures();
 
-    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);            
+    glClearColor(0.1f, 0.1f, 0.1f, 0.1f);            
 
     glGenVertexArrays(1, &global.vertexArrayObject);
     glBindVertexArray(global.vertexArrayObject);
@@ -49,7 +52,21 @@ Int32 main()
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, 0, sizeof(Float32) * 2, 0);
 
-    printf("W:%d, H:%d\n", Window::GetWidth(), Window::GetHeight());
+    {
+        char vertexShaderSource[256];
+        char fragmentShaderSource[256];
+        File::Read("res/shader/colour.vert", vertexShaderSource, sizeof(vertexShaderSource)); 
+        File::Read("res/shader/colour.frag", fragmentShaderSource, sizeof(fragmentShaderSource));
+
+        UInt32 shaderObjects[2];
+        shaderObjects[0] = OpenGL::Shader::Create(vertexShaderSource, OpenGL::Shader::Type::Vertex);
+        shaderObjects[1] = OpenGL::Shader::Create(fragmentShaderSource, OpenGL::Shader::Type::Fragment);
+
+        global.programObject = OpenGL::Program::Create(shaderObjects, 2);
+
+        OpenGL::Shader::Destroy(shaderObjects[0]);
+        OpenGL::Shader::Destroy(shaderObjects[1]);
+    }
 
     while(true)
     {
@@ -62,12 +79,6 @@ Int32 main()
             glViewport(0, 0, Window::GetWidth(), Window::GetHeight());        
 
         glClear(GL_COLOR_BUFFER_BIT);        
-
-        glBegin(GL_TRIANGLES);
-        glColor3f(0.8, 0.2, 0.3); glVertex2f(-1, -1); 
-        glColor3f(0.8, 0.2, 0.3); glVertex2f(0, 1);
-        glColor3f(0.8, 0.2, 0.3); glVertex2f(1, -1);
-        glEnd();
 
         Window::SwapBuffer();
     }

@@ -5,13 +5,12 @@
 
 namespace Base::File
 {
-    Int32 Read(const char* const file_path, char* const output, const Int32 size);
     Int32 Read(const char* const file_path, char* const output, const Int32 size)
     {
         FILE* file_stream;
         file_stream = fopen(file_path, "r");
 
-        if(file_stream == 0)
+        if(!file_stream)
         {
             Log::Print("File failed to open", Log::Type::Error, __LINE__, __FILE__);
             return 0;
@@ -23,7 +22,7 @@ namespace Base::File
         {
             if(count == size) 
             {
-                Log::Print("File failed to open", Log::Type::Error, __LINE__, __FILE__);
+                Log::Print("File is too big", Log::Type::Warning, __LINE__, __FILE__);
                 return 0;
             }
 
