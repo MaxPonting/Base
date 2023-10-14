@@ -26,8 +26,7 @@ namespace Base
   
         Array(Int32 _size)
         {
-            memory = 0;
-            Allocator::Allocate(_size, (void**)&memory);
+            memory = (T*)Allocator::Allocate(_size);
 
             if(memory == 0)
             {

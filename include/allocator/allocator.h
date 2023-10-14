@@ -2,6 +2,7 @@
 
 #include "../log/log.h"
 #include "../type/type.h"
+#include "../platform/platform.h"
 
 #include <memory.h>
 #include <malloc.h>
@@ -41,7 +42,7 @@ namespace Base::Allocator
         return 1;
     }
 
-    Int32 Allocate(const UInt64 _size, void** _ptr)
+    void* Allocate(const UInt64 _size)
     {
         if (memory == 0)
         {
@@ -51,14 +52,21 @@ namespace Base::Allocator
         
         if (offset + _size > size)
         {
-            Log::Print("Linear allocator is full", Log::Type::Error, __LINE__, __FILE__);
+            char log[256];
+#if PLATFORM == PLATFORM_WINDOWS
+            sprintf(log, "Linear allocator is full, Size:%I64u, Offset:%I64u, New Offset:%I64u", size, offset, offset + _size);
+#elif PLATFORM == PLATFORM_LINUX || PLATFORM_MAC
+            sprintf(log, "Linear allocator is full, Size:%llu, Offset:%llu, New Offset:%llu", size, offset, offset + _size);
+#endif
+            Log::Print(log, Log::Type::Error, __LINE__, __FILE__);
             return 0;
         }
 
-        *_ptr = &memory[offset];
+        void* ptr = &memory[offset];
         offset += _size;
-        memset(*_ptr, 0, _size);
-        return 1;
+        memset(ptr, 0, _size);
+
+        return ptr;
     }
 
     Int32 Deallocate(const UInt64 _size)

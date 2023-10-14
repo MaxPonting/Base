@@ -1,3 +1,5 @@
+#pragma once
+
 #include "opengl.h"
 
 namespace Base::OpenGL::Program

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "opengl.h"
 #include "../type/type.h"
 #include "../log/log.h"
