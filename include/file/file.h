@@ -5,37 +5,63 @@
 
 namespace Base::File
 {
-    Int32 Read(const char* const file_path, char* const output, const Int32 size)
+    Int32 ReadText(const Char* const filePath, Char* const output, const UInt64 outputSize)
     {
-        FILE* file_stream;
-        file_stream = fopen(file_path, "r");
+        FILE* fileStream;
+        fileStream = fopen(filePath, "r");
 
-        if(!file_stream)
+        if(!fileStream)
         {
             Log::Print("File failed to open", Log::Type::Error, __LINE__, __FILE__);
             return 0;
         }
 
-        Int32 count = 0;
+        UInt64 count = 0;
 
         while(1)
         {
-            if(count == size) 
+            if(count == outputSize) 
             {
                 Log::Print("File is too big", Log::Type::Warning, __LINE__, __FILE__);
                 return 0;
             }
 
-            output[count] = fgetc(file_stream);
+            output[count] = fgetc(fileStream);
             count++;
 
-            if(feof(file_stream))
+            if(feof(fileStream))
             {
                 break;
             }
         }
 
         output[count - 1] = '\0';
+
+        fclose(fileStream);
+
+        return 1;
+    }
+
+    Int32 ReadBinary(const Char* filePath, Char* const output, const UInt64 outputSize)
+    {
+        FILE* fileStream;
+        fileStream = fopen(filePath, "r");
+
+        if(!fileStream)
+        {
+            Log::Print("File failed to open", Log::Type::Error, __LINE__, __FILE__);
+            return 0;
+        }
+
+        UInt64 count = fread(output, sizeof(Char) * outputSize, 1, fileStream);
+
+        if(count != 0) 
+        {
+            Log::Print("File is too big", Log::Type::Warning, __LINE__, __FILE__);
+            return 0;
+        }
+
+        fclose(fileStream);
 
         return 1;
     }

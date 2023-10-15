@@ -3,12 +3,13 @@
 #include <allocator/allocator.h>
 #include <log/log.h>
 #include <file/file.h>
+#include <file/png.h>
 #include <math/math.h>
 #include <opengl/opengl.h>
 #include <opengl/shader.h>
 #include <opengl/program.h>
 #include <window/window.h>
-#include <renderer/renderer2D.h>
+#include <png.h>
 
 #include <stdio.h>
 #include <time.h>
@@ -30,7 +31,8 @@ Int32 main()
 
     OpenGL::LoadProcedures();
 
-    Renderer2D::Create(1);
+    Char* png = (Char*)Allocator::Allocate(sizeof(Char) * 8);
+    PNG::Read("res/texture/test.png", png, 8);
 
     while(true)
     {
