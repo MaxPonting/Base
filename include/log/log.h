@@ -2,7 +2,10 @@
 
 #include "../type/type.h"
 
+#ifdef BASE_DEBUG
 #include <stdio.h>
+#include <stdarg.h>
+#endif
 
 namespace Base::Log
 {
@@ -22,10 +25,14 @@ namespace Base::Log
     };
 #endif
 
-    void Print(const char* const log, const Type type, const Int32 line, const char* const file)
+    void Print(const char* const log, const Type type, const Int32 line, const char* const file, ...)
     {
 #ifdef BASE_DEBUG
-        printf("[%s][%s/%d][%s]\n", s_types[(Int32)type], file, line, log);
+        printf("[%s][%s/%d][", s_types[(Int32)type], file, line);
+        va_list argumentList;
+        va_start(argumentList, file);
+        vprintf(log, argumentList);
+        printf("]\n");
 #endif
     }
 }

@@ -13,5 +13,10 @@ typedef unsigned char UInt8;
 typedef double Float64;
 typedef float Float32;
 
-typedef bool Bool;
 typedef char Char;
+typedef unsigned char UChar;
+
+typedef unsigned char Byte;
+
+typedef bool Bool;
+

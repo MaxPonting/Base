@@ -2,14 +2,13 @@
 
 #include <allocator/allocator.h>
 #include <log/log.h>
-#include <file/file.h>
-#include <file/png.h>
+#include <io/file.h>
+#include <io/png.h>
 #include <math/math.h>
 #include <opengl/opengl.h>
 #include <opengl/shader.h>
 #include <opengl/program.h>
 #include <window/window.h>
-#include <png.h>
 
 #include <stdio.h>
 #include <time.h>
@@ -31,8 +30,9 @@ Int32 main()
 
     OpenGL::LoadProcedures();
 
-    Char* png = (Char*)Allocator::Allocate(sizeof(Char) * 8);
-    PNG::Read("res/texture/test.png", png, 8);
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
+    IO::PNG::Read("res/texture/test.png", 0, 0);
 
     while(true)
     {
@@ -43,6 +43,8 @@ Int32 main()
 
         if(Window::GetEvent(Window::Event::Resize))
             glViewport(0, 0, Window::GetWidth(), Window::GetHeight());        
+
+        glClear(GL_COLOR_BUFFER_BIT);
 
         Window::SwapBuffer();
     }

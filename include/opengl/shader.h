@@ -25,8 +25,8 @@ namespace Base::OpenGL::Shader
         glGetShaderiv(shaderObject, GL_COMPILE_STATUS, &result);
         if(!result)
         {
-            char message[100];
-            glGetShaderInfoLog(shaderObject, 100, NULL, message);
+            char message[128];
+            glGetShaderInfoLog(shaderObject, 128, NULL, message);
             Log::Print(message, Log::Type::Error, __LINE__, __FILE__);
             glDeleteShader(shaderObject);
             return 0;
