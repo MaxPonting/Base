@@ -32,7 +32,8 @@ Int32 main()
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
-    IO::PNG::Read("res/texture/test.png", 0, 0);
+    Char data[256];
+    IO::PNG::Read("res/shader/colour.vert", data, sizeof(data));
 
     while(true)
     {
