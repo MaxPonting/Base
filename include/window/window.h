@@ -328,6 +328,8 @@ namespace Base::Window
             EndPaint(hWnd, &paintStruct);
             break;
         case WM_KEYDOWN:
+            if(lParam & (1<<30))
+                break;
             ProcessKeyDown(wParam);
             break;
         case WM_KEYUP:
@@ -1108,6 +1110,7 @@ namespace Base::Window
                 XRefreshKeyboardMapping(&event.xmapping);
                 break;
             case KeyPress:
+                printf("Key Down\n");
                 ProcessKeyDown(event.xkey);               
                 break;
             case KeyRelease:
@@ -1116,8 +1119,12 @@ namespace Base::Window
                     XEvent nextEvent;
                     XPeekEvent(display, &nextEvent);
                     if (nextEvent.type == KeyPress && nextEvent.xkey.time == event.xkey.time && nextEvent.xkey.keycode == event.xkey.keycode)
+                    {
+                        XNextEvent(display, &event);
                         break;
+                    }
                 }
+                printf("Key Up\n");
                 ProcessKeyUp(event.xkey);
                 break;
             }

@@ -49,7 +49,12 @@ Int32 main()
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
-    Renderer2D::Quad quad = {0, 0, 100, 100, 0, 1.0f, 0.0f, 0.0f, 1.0f};
+    Renderer2D::Quad quads[] = 
+    {
+        {0, 0, 100, 100, 0, 1.0f, 0.0f, 0.0f, 1.0f}, 
+        {200, 0, 100, 100, 0, 1.0f, 0.0f, 0.0f, 1.0f},       
+        {0, -200, 100, 100, 0, 1.0f, 0.0f, 0.0f, 1.0f},        
+    };
 
     while(true)
     {
@@ -61,8 +66,17 @@ Int32 main()
         if(Window::GetEvent(Window::Event::Resize))
             glViewport(0, 0, Window::GetWidth(), Window::GetHeight());        
 
+        if(Window::GetEvent(Window::Event::KeyDown_W))
+            quads[0].position[1] += 10.0f;
+        if(Window::GetEvent(Window::Event::KeyDown_S))
+            quads[0].position[1] -= 10.0f;
+        if(Window::GetEvent(Window::Event::KeyDown_D))
+            quads[0].position[0] += 10.0f;
+        if(Window::GetEvent(Window::Event::KeyDown_A))
+            quads[0].position[0] -= 10.0f;
+
         Renderer2D::BeginScene(Window::GetWidth(), Window::GetHeight());
-        Renderer2D::DrawBatch(&quad, 1);
+        Renderer2D::DrawBatch(quads, 3);
         Renderer2D::EndScene();
 
         Window::SwapBuffer();

@@ -12,6 +12,11 @@
 
 namespace Base::Renderer2D
 {
+    struct SubTexture
+    {
+        UInt32 parentTexture;
+    };
+
     struct Quad
     {
         Vec2 position;
@@ -155,11 +160,25 @@ namespace Base::Renderer2D
                 {VERTICES[12] * quad.size[0], VERTICES[13] * quad.size[1], VERTICES[14], VERTICES[15], quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3]}
             };
 
+            const Float32 sin = sinf(Math::Radians(quad.rotation));
+            const Float32 cos = cosf(Math::Radians(quad.rotation));
+
+            for(Int32 i = 0; i < 4; i++)
+            {
+                const Float32 x = v[i].position[0];
+                const Float32 y = v[i].position[1];
+
+                v[i].position[0] = cos * x - sin * y;
+                v[i].position[1] = sin * x + cos * y;
+
+                v[i].position[0] += quad.position[0];
+                v[i].position[1] += quad.position[1];
+            }
+
             vertices[i + 0] = v[0];
             vertices[i + 1] = v[1];
             vertices[i + 2] = v[2];
             vertices[i + 3] = v[3];
-
         }
 
         glBindVertexArray(global.vertexArray);
@@ -183,6 +202,10 @@ namespace Base::Renderer2D
             }
 
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(UInt32) * size * 6, indices, GL_STATIC_DRAW);
+
+            Log::Print("Increased batch size from %d to %d", Log::Type::Message, __LINE__, __FILE__, global.largestBatchSize, size);
+
+            global.largestBatchSize = size;
 
             Allocator::Deallocate(sizeof(UInt32) * size * 6);           
         }
