@@ -105,6 +105,7 @@ namespace Base::Window
 
     OutputType windowOutputType;
 
+
 #if PLATFORM == PLATFORM_WINDOWS
 
 
@@ -872,6 +873,9 @@ namespace Base::Window
 #include <GL/glx.h>
 
     typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
+    typedef void (*glXSwapIntervalEXTProc)(Display*, GLXDrawable, int);
+
+    glXSwapIntervalEXTProc glXSwapIntervalEXT;
 
     Display* display = NULL;
     Window window = {};
@@ -1241,6 +1245,7 @@ namespace Base::Window
     {
         glXCreateContextAttribsARBProc glXCreateContextAttribsARB = 0;
         glXCreateContextAttribsARB = (glXCreateContextAttribsARBProc)glXGetProcAddressARB((const UInt8*)"glXCreateContextAttribsARB");
+        glXSwapIntervalEXT = (glXSwapIntervalEXTProc)glXGetProcAddressARB((const UInt8*)"glXSwapIntervalEXT");
 
         if(!glXCreateContextAttribsARB)
         {

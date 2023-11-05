@@ -4,6 +4,7 @@
 #include <log/log.h>
 #include <io/file.h>
 #include <math/math.h>
+#include <time/time.h>
 #include <opengl/opengl.h>
 #include <opengl/shader.h>
 #include <opengl/program.h>
@@ -30,6 +31,8 @@ const static UInt32 INDICES[] = {
 Int32 main()
 {
     using namespace Base;
+
+    UInt32 start = Time::Get();
 
     Allocator::Create(ALLOCATION_SIZE);
 
@@ -86,8 +89,11 @@ Int32 main()
 
     OpenGL::Program::Bind(program);
 
+
     UInt32 texture = OpenGL::Texture::Create("res/texture/sub_texture_atlas.png");
     OpenGL::Texture::Bind(texture, 0);
+
+    printf("%ums\n", Time::Get() - start);
 
     while(true)
     {

@@ -1,3 +1,4 @@
 -------------------Functionality to be added-----------------------
 1. PNG loading/decoder - Uses stb_image as of now
 2. XML writing and reading
+3. High Resolution Timer
