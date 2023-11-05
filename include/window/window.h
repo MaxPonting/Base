@@ -12,77 +12,22 @@ namespace Base::Window
 {
     enum class Event
     {
-        Destroy,
-        Resize,
-        Move,
-        MouseDown_Left,
-        MouseDown_Middle,
-        MouseDown_Right,
-        MouseUp_Left,
-        MouseUp_Middle,
-        MouseUp_Right,
-        KeyDown_Space,
-        KeyDown_A,
-        KeyDown_B,
-        KeyDown_C,
-        KeyDown_D,
-        KeyDown_E,
-        KeyDown_F,
-        KeyDown_G,
-        KeyDown_H,
-        KeyDown_I,
-        KeyDown_J,
-        KeyDown_K,
-        KeyDown_L,
-        KeyDown_M,
-        KeyDown_N,
-        KeyDown_O,
-        KeyDown_P,
-        KeyDown_Q,
-        KeyDown_R,
-        KeyDown_S,
-        KeyDown_T,
-        KeyDown_U,
-        KeyDown_V,
-        KeyDown_W,
-        KeyDown_X,
-        KeyDown_Y,
-        KeyDown_Z,
-        KeyDown_Up,
-        KeyDown_Down,
-        KeyDown_Left,
-        KeyDown_Right,
-        KeyUp_Space,
-        KeyUp_A,
-        KeyUp_B,
-        KeyUp_C,
-        KeyUp_D,
-        KeyUp_E,
-        KeyUp_F,
-        KeyUp_G,
-        KeyUp_H,
-        KeyUp_I,
-        KeyUp_J,
-        KeyUp_K,
-        KeyUp_L,
-        KeyUp_M,
-        KeyUp_N,
-        KeyUp_O,
-        KeyUp_P,
-        KeyUp_Q,
-        KeyUp_R,
-        KeyUp_S,
-        KeyUp_T,
-        KeyUp_U,
-        KeyUp_V,
-        KeyUp_W,
-        KeyUp_X,
-        KeyUp_Y,
-        KeyUp_Z,
-        KeyUp_Up,
-        KeyUp_Down,
-        KeyUp_Left,
-        KeyUp_Right,
+        Destroy, Resize, Move,
+        MouseDown_Left, MouseDown_Middle, MouseDown_Right, 
+        MouseUp_Left, MouseUp_Middle, MouseUp_Right,
+        KeyDown_Space, KeyDown_A, KeyDown_B, KeyDown_C, KeyDown_D, KeyDown_E,
+        KeyDown_F, KeyDown_G, KeyDown_H, KeyDown_I, KeyDown_J, KeyDown_K,
+        KeyDown_L, KeyDown_M, KeyDown_N, KeyDown_O, KeyDown_P, KeyDown_Q,
+        KeyDown_R, KeyDown_S, KeyDown_T, KeyDown_U, KeyDown_V, KeyDown_W,
+        KeyDown_X, KeyDown_Y, KeyDown_Z, 
+        KeyDown_Up, KeyDown_Down, KeyDown_Left, KeyDown_Right,
+        KeyUp_Space, KeyUp_A, KeyUp_B, KeyUp_C, KeyUp_D,
+        KeyUp_E, KeyUp_F, KeyUp_G, KeyUp_H, KeyUp_I,
+        KeyUp_J, KeyUp_K, KeyUp_L, KeyUp_M, KeyUp_N,
+        KeyUp_O, KeyUp_P, KeyUp_Q, KeyUp_R, KeyUp_S,
+        KeyUp_T, KeyUp_U, KeyUp_V, KeyUp_W, KeyUp_X,
+        KeyUp_Y, KeyUp_Z, KeyUp_Up, 
+        KeyUp_Down, KeyUp_Left, KeyUp_Right,
         Count
     };
 
@@ -94,6 +39,25 @@ namespace Base::Window
             return false;
 
         return windowEvents.Item((Int32)event);
+    }
+
+    enum class Key
+    {
+        Space, A, B, C, D, E, F, G, H, I,
+        J, K, L, M, N, O, P, Q, R, S, T,
+        U, V, W, X, Y, Z,
+        Up, Down, Left, Right,       
+        Count
+    };
+
+    Array<Bool> windowKeyboard;
+
+    Bool GetKey(const Key key)
+    {
+        if (key == Key::Count)
+            return false;
+        
+        return windowKeyboard.Item((Int32)key);
     }
 
     enum class OutputType
@@ -134,6 +98,7 @@ namespace Base::Window
             break;
         case 0x41:
             windowEvents.Item((Int32)Event::KeyDown_A) = true;
+            windowKeyboard.Item((Int32)Key::A) = true;
             break;
         case 0x42:
             windowEvents.Item((Int32)Event::KeyDown_B) = true;
@@ -143,6 +108,7 @@ namespace Base::Window
             break; 
         case 0x44:
             windowEvents.Item((Int32)Event::KeyDown_D) = true;
+            windowKeyboard.Item((Int32)Key::D) = true;
             break;
         case 0x45:
             windowEvents.Item((Int32)Event::KeyDown_E) = true;
@@ -188,6 +154,7 @@ namespace Base::Window
             break;
         case 0x53:
             windowEvents.Item((Int32)Event::KeyDown_S) = true;
+            windowKeyboard.Item((Int32)Key::S) = true;
             break;
         case 0x54:
             windowEvents.Item((Int32)Event::KeyDown_T) = true;
@@ -200,6 +167,7 @@ namespace Base::Window
             break;
         case 0x57:
             windowEvents.Item((Int32)Event::KeyDown_W) = true;
+            windowKeyboard.Item((Int32)Key::W) = true;
             break;
         case 0x58:
             windowEvents.Item((Int32)Event::KeyDown_X) = true;
@@ -224,6 +192,7 @@ namespace Base::Window
             break;
         case 0x41:
             windowEvents.Item((Int32)Event::KeyUp_A) = true;
+            windowKeyboard.Item((Int32)Key::A) = false;
             break;
         case 0x42:
             windowEvents.Item((Int32)Event::KeyUp_B) = true;
@@ -233,6 +202,7 @@ namespace Base::Window
             break; 
         case 0x44:
             windowEvents.Item((Int32)Event::KeyUp_D) = true;
+            windowKeyboard.Item((Int32)Key::D) = false;
             break;
         case 0x45:
             windowEvents.Item((Int32)Event::KeyUp_E) = true;
@@ -278,6 +248,7 @@ namespace Base::Window
             break;
         case 0x53:
             windowEvents.Item((Int32)Event::KeyUp_S) = true;
+            windowKeyboard.Item((Int32)Key::S) = false;
             break;
         case 0x54:
             windowEvents.Item((Int32)Event::KeyUp_T) = true;
@@ -290,6 +261,7 @@ namespace Base::Window
             break;
         case 0x57:
             windowEvents.Item((Int32)Event::KeyUp_W) = true;
+            windowKeyboard.Item((Int32)Key::W) = false;
             break;
         case 0x58:
             windowEvents.Item((Int32)Event::KeyUp_X) = true;
@@ -343,6 +315,7 @@ namespace Base::Window
     Int32 Create(const char* name, const OutputType outputType, const Int32 width, const Int32 height)
     {
         windowEvents = Array<Int8>((Int32)Event::Count);
+        windowKeyboard = Array<Bool>((Int32)Event::Count);
 
         hInstance = GetModuleHandle(NULL);        
         if(!hInstance)

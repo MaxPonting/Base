@@ -66,14 +66,14 @@ Int32 main()
         if(Window::GetEvent(Window::Event::Resize))
             glViewport(0, 0, Window::GetWidth(), Window::GetHeight());        
 
-        if(Window::GetEvent(Window::Event::KeyDown_W))
-            quads[0].position[1] += 10.0f;
-        if(Window::GetEvent(Window::Event::KeyDown_S))
-            quads[0].position[1] -= 10.0f;
-        if(Window::GetEvent(Window::Event::KeyDown_D))
-            quads[0].position[0] += 10.0f;
-        if(Window::GetEvent(Window::Event::KeyDown_A))
-            quads[0].position[0] -= 10.0f;
+        if(Window::GetKey(Window::Key::W))
+            quads[0].position[1] += 5.0f;
+        if(Window::GetKey(Window::Key::S))
+            quads[0].position[1] -= 5.0f;
+        if(Window::GetKey(Window::Key::D))
+            quads[0].position[0] += 5.0f;
+        if(Window::GetKey(Window::Key::A))
+            quads[0].position[0] -= 5.0f;
 
         Renderer2D::BeginScene(Window::GetWidth(), Window::GetHeight());
         Renderer2D::DrawBatch(quads, 3);
