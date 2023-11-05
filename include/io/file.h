@@ -52,7 +52,7 @@ namespace Base::IO::File
 
         if(size > outputSize)
         {
-            Log::Print("File %s is too big", Log::Type::Error, __LINE__, __FILE__, filePath);
+            Log::Print("File %s is too big, it is %u bytes", Log::Type::Error, __LINE__, __FILE__, filePath, size);
             return 0;
         }
 
