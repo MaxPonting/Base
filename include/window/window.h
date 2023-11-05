@@ -707,6 +707,13 @@ namespace Base::Window
         return 1;
     }
 
+    Int32 SetVSync(Bool value)
+    {
+        wglSwapIntervalEXT(value);
+
+        return 1;
+    }
+
     Int32 SetOutputType(const OutputType outputType)
     {
         if(windowOutputType == outputType)
@@ -874,7 +881,6 @@ namespace Base::Window
     XVisualInfo* visualInfo = NULL;
     GLXContext context = {};
     GLXFBConfig frameBuffer = {};
-
     Int32 windowX = 0, windowY = 0, windowWidth = 0, windowHeight = 0;
 
     Int32 ProcessKeyDown(XKeyEvent xkey)
@@ -1279,6 +1285,13 @@ namespace Base::Window
     Int32 SwapBuffer()
     {
         glXSwapBuffers(display, window);
+        return 1;
+    }
+
+    Int32 SetVSync(Bool value)
+    {
+        glXSwapIntervalEXT(display, glXGetCurrentDrawable(), value);
+
         return 1;
     }
 

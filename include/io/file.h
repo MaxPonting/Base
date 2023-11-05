@@ -68,8 +68,6 @@ namespace Base::IO::File
                 return 0;
             }
 
-            printf("%I64u\n", count);
-
             output[count] = '\0';
         }
 

@@ -3,7 +3,6 @@
 #include "opengl.h"
 #include "../type/type.h"
 #include "../log/log.h"
-#include "../math/struct.h"
 
 namespace Base::OpenGL::Shader
 {
@@ -25,7 +24,7 @@ namespace Base::OpenGL::Shader
         glGetShaderiv(shaderObject, GL_COMPILE_STATUS, &result);
         if(!result)
         {
-            char message[128];
+            Char message[256];
             glGetShaderInfoLog(shaderObject, 128, NULL, message);
             Log::Print(message, Log::Type::Error, __LINE__, __FILE__);
             glDeleteShader(shaderObject);

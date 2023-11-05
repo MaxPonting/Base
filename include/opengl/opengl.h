@@ -7,7 +7,7 @@
 #include <GL/gl.h>
 #include <GL/glext.h>
 PFNGLACTIVETEXTUREPROC base_glActiveTexture;
-#define glActiveTexture base_glActiveTexture;
+#define glActiveTexture base_glActiveTexture
 #elif PLATFORM == PLATFORM_LINUX
 #include <GL/gl.h>
 #include <GL/glext.h>
@@ -30,6 +30,7 @@ PFNGLDELETEBUFFERSPROC base_glDeleteBuffers;
 PFNGLDELETEPROGRAMPROC base_glDeleteProgram;
 PFNGLDELETESHADERPROC base_glDeleteShader;
 PFNGLDELETEVERTEXARRAYSPROC base_glDeleteVertexArrays;
+PFNGLDEBUGMESSAGECALLBACKPROC base_glDebugMessageCallback;
 PFNGLDETACHSHADERPROC base_glDetachShader;
 PFNGLENABLEVERTEXATTRIBARRAYPROC base_glEnableVertexAttribArray;
 PFNGLGENBUFFERSPROC base_glGenBuffers;
@@ -64,6 +65,7 @@ PFNGLVERTEXATTRIBPOINTERPROC base_glVertexAttribPointer;
 #define glDeleteVertexArrays base_glDeleteVertexArrays
 #define glDetachShader base_glDetachShader
 #define glEnableVertexAttribArray base_glEnableVertexAttribArray
+#define glDebugMessageCallback base_glDebugMessageCallback
 #define glGenBuffers base_glGenBuffers
 #define glGenVertexArrays base_glGenVertexArrays
 #define glGenerateMipMap base_glGenerateMipmap
@@ -107,6 +109,7 @@ namespace Base::OpenGL
         base_glDeleteVertexArrays        = (PFNGLDELETEVERTEXARRAYSPROC)Window::GetGLProcAddress("glDeleteVertexArrays");
         base_glDetachShader              = (PFNGLDETACHSHADERPROC)Window::GetGLProcAddress("glDetachShader");
         base_glEnableVertexAttribArray   = (PFNGLENABLEVERTEXATTRIBARRAYPROC)Window::GetGLProcAddress("glEnableVertexAttribArray");
+        base_glDebugMessageCallback      = (PFNGLDEBUGMESSAGECALLBACKPROC)Window::GetGLProcAddress("glDebugMessageCallback");
         base_glGenBuffers                = (PFNGLGENBUFFERSPROC)Window::GetGLProcAddress("glGenBuffers");
         base_glGenVertexArrays           = (PFNGLGENVERTEXARRAYSPROC)Window::GetGLProcAddress("glGenVertexArrays");
         base_glGenerateMipmap            = (PFNGLGENERATEMIPMAPPROC)Window::GetGLProcAddress("glGenerateMipmap");
@@ -125,4 +128,20 @@ namespace Base::OpenGL
 
         return 1;
     }
+
+    void APIENTRY OpenGLDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* msg, const void* data)
+    {
+        Log::Print(msg, Log::Type::Error, __LINE__, __FILE__);
+        source = type + id + severity + length + (UInt64)msg + (UInt64)data;
+        type = source;
+    }
+
+    Int32 EnableErrorLog()
+    {
+        glEnable(GL_DEBUG_OUTPUT);
+        glDebugMessageCallback(OpenGLDebugCallback, 0);
+
+        return 1;
+    }
+
 }

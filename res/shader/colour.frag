@@ -1,8 +1,12 @@
 #version 330 core
 
+in vec2 vTextureCoordinates;
+
+uniform sampler2D u_Texture;
+
 out vec4 oColour;
 
 void main()
 {
-    oColour = vec4(1.0, 0.0, 0.0, 1.0);
+    oColour = texture2D(u_Texture, vTextureCoordinates);
 }
