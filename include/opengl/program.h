@@ -44,6 +44,19 @@ namespace Base::OpenGL::Program
         return 1;
     }
 
+    Int32 SetUniform1IV(const UInt32 programObject, const char* const uniformName, const Int32* value, const Int32 count)
+    {
+        Int32 location = glGetUniformLocation(programObject, uniformName);
+        if(location == -1)
+        {
+            Log::Print("Cannot find uniform location", Log::Type::Error, __LINE__, __FILE__);
+            return 0;
+        }
+        glUniform1iv(location, count, value);
+
+        return 1;
+    }
+
     Int32 SetUniform1F(const UInt32 programObject, const char* const uniformName, const Float32 value)
     {
         Int32 location = glGetUniformLocation(programObject, uniformName);

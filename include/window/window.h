@@ -315,7 +315,7 @@ namespace Base::Window
     Int32 Create(const char* name, const OutputType outputType, const Int32 width, const Int32 height)
     {
         windowEvents = Array<Int8>((Int32)Event::Count);
-        windowKeyboard = Array<Bool>((Int32)Event::Count);
+        windowKeyboard = Array<Bool>((Int32)Key::Count);
 
         hInstance = GetModuleHandle(NULL);        
         if(!hInstance)
@@ -1083,7 +1083,6 @@ namespace Base::Window
                 XRefreshKeyboardMapping(&event.xmapping);
                 break;
             case KeyPress:
-                printf("Key Down\n");
                 ProcessKeyDown(event.xkey);               
                 break;
             case KeyRelease:
@@ -1097,7 +1096,6 @@ namespace Base::Window
                         break;
                     }
                 }
-                printf("Key Up\n");
                 ProcessKeyUp(event.xkey);
                 break;
             }
@@ -1195,6 +1193,7 @@ namespace Base::Window
         XSetWMProtocols(display, window, &deleteMessage, 1);
 
         windowEvents = Array<Int8>((Int32)Event::Count);
+        windowKeyboard = Array<bool>((Int32)Key::Count);
 
         XWindowAttributes attributes; 
         XGetWindowAttributes(display, window, &attributes);

@@ -3,11 +3,11 @@
 in vec2 vTextureCoordinates;
 in vec4 vColour;
 
-uniform sampler2D uTexture[1];
+uniform sampler2D uTexture;
 
 out vec4 oColour;
 
 void main()
 {
-    oColour = texture2D(uTexture[0], vTextureCoordinates) * vColour;
+    oColour = texture2D(uTexture, vTextureCoordinates) * vColour;
 }

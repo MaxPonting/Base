@@ -26,7 +26,7 @@ namespace Base
   
         Array(Int32 _size)
         {
-            memory = (T*)Allocator::Allocate(_size);
+            memory = (T*)Allocator::Allocate(_size * sizeof(T));
 
             if(memory == 0)
             {
@@ -37,6 +37,19 @@ namespace Base
             count = 0;
             size = _size;
         };
+
+        Int32 Deallocate()
+        {
+            if(memory == 0 || size == 0)
+            {
+                Log::Print("Nothing to deallocate", Log::Type::Error, __LINE__, __FILE__);
+                return 0; 
+            }
+
+            Allocator::Deallocate(size * sizeof(T));
+
+            return 1;
+        }
 
         T& Item(const Int32 index)
         {

@@ -49,11 +49,19 @@ Int32 main()
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
+    UInt32 texture = OpenGL::Texture::CreateWithFile("res/texture/sub_texture_atlas.png");
+
+    IVec2 parentSize = {64, 64};
+    IVec2 position = {0, 32};
+    IVec2 size = {32, 32};
+
+    Renderer2D::SubTexture plain = Renderer2D::CreateSubTexture(parentSize, position, size);
+
     Renderer2D::Quad quads[] = 
     {
-        {0, 0, 100, 100, 0, 1.0f, 0.0f, 0.0f, 1.0f}, 
-        {200, 0, 100, 100, 0, 1.0f, 0.0f, 0.0f, 1.0f},       
-        {0, -200, 100, 100, 0, 1.0f, 0.0f, 0.0f, 1.0f},        
+        {0, 0, 128, 128, 0, 1.0f, 1.0f, 1.0f, 1.0f, plain}, 
+        {200, 0, 128, 128, 0, 1.0f, 1.0f, 1.0f, 1.0f, plain},       
+        {0, -200, 128, 128, 0, 1.0f, 1.0f, 1.0f, 1.0f, plain},        
     };
 
     while(true)
@@ -76,12 +84,10 @@ Int32 main()
             quads[0].position[0] -= 5.0f;
 
         Renderer2D::BeginScene(Window::GetWidth(), Window::GetHeight());
-        Renderer2D::DrawBatch(quads, 3);
+        Renderer2D::DrawBatch(quads, 3, texture);
         Renderer2D::EndScene();
 
         Window::SwapBuffer();
-
-        //break;
     }
 
     Renderer2D::Destroy();

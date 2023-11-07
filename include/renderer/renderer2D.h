@@ -14,7 +14,8 @@ namespace Base::Renderer2D
 {
     struct SubTexture
     {
-        UInt32 parentTexture;
+        Vec2 bottom;
+        Vec2 top;
     };
 
     struct Quad
@@ -23,6 +24,7 @@ namespace Base::Renderer2D
         Vec2 size;
         Float32 rotation;
         Vec4 colour;
+        SubTexture subTexture;
     };
 
     struct Vertex
@@ -144,36 +146,55 @@ namespace Base::Renderer2D
         return 1;
     }
 
-    Int32 DrawBatch(const Quad* const quads, const Int32 size)
+    Int32 DrawBatch(const Quad* const quads, const Int32 count, const UInt32 texture)
     {
-        Vertex* vertices = (Vertex*)Allocator::Allocate(sizeof(Vertex) * 4 * size);
+        Vertex* vertices = (Vertex*)Allocator::Allocate(sizeof(Vertex) * 4 * count);
 
-        for(Int32 i = 0; i < size * 4; i+=4)
+        for(Int32 i = 0; i < count * 4; i+=4)
         {
             Quad quad = quads[i / 4];
 
             Vertex v[4] = 
             {
-                {VERTICES[0] * quad.size[0], VERTICES[1] * quad.size[1], VERTICES[2], VERTICES[3], quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3]},
-                {VERTICES[4] * quad.size[0], VERTICES[5] * quad.size[1], VERTICES[6], VERTICES[7], quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3]},
-                {VERTICES[8] * quad.size[0], VERTICES[9] * quad.size[1], VERTICES[10], VERTICES[11], quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3]},
-                {VERTICES[12] * quad.size[0], VERTICES[13] * quad.size[1], VERTICES[14], VERTICES[15], quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3]}
+                {
+                    VERTICES[0] * quad.size[0], VERTICES[1] * quad.size[1],
+                    quad.subTexture.bottom[0], quad.subTexture.bottom[1], 
+                    quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3],
+                },
+
+                {
+                    VERTICES[4] * quad.size[0], VERTICES[5] * quad.size[1], 
+                    quad.subTexture.top[0], quad.subTexture.bottom[1], 
+                    quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3],
+                },
+                {
+                    VERTICES[8] * quad.size[0], VERTICES[9] * quad.size[1], 
+                    quad.subTexture.bottom[0], quad.subTexture.top[1], 
+                    quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3],
+                },
+                {
+                    VERTICES[12] * quad.size[0], VERTICES[13] * quad.size[1], 
+                    quad.subTexture.top[0], quad.subTexture.top[1], 
+                    quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3],
+                }
             };
 
             const Float32 sin = sinf(Math::Radians(quad.rotation));
             const Float32 cos = cosf(Math::Radians(quad.rotation));
 
-            for(Int32 i = 0; i < 4; i++)
+            for(Int32 j = 0; j < 4; j++)
             {
-                const Float32 x = v[i].position[0];
-                const Float32 y = v[i].position[1];
+                const Float32 x = v[j].position[0];
+                const Float32 y = v[j].position[1];
 
-                v[i].position[0] = cos * x - sin * y;
-                v[i].position[1] = sin * x + cos * y;
+                v[j].position[0] = cos * x - sin * y;
+                v[j].position[1] = sin * x + cos * y;
 
-                v[i].position[0] += quad.position[0];
-                v[i].position[1] += quad.position[1];
+                v[j].position[0] += quad.position[0];
+                v[j].position[1] += quad.position[1];
             }
+
+
 
             vertices[i + 0] = v[0];
             vertices[i + 1] = v[1];
@@ -183,15 +204,14 @@ namespace Base::Renderer2D
 
         glBindVertexArray(global.vertexArray);
         glBindBuffer(GL_ARRAY_BUFFER, global.vertexBuffer);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, global.indexBuffer);
 
-        if(size > global.largestBatchSize)
+        if(count > global.largestBatchSize)
         {
-            glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 4 * size, vertices, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 4 * count, vertices, GL_DYNAMIC_DRAW);
 
-            UInt32* indices = (UInt32*)Allocator::Allocate(sizeof(UInt32) * size * 6);
+            UInt32* indices = (UInt32*)Allocator::Allocate(sizeof(UInt32) * count * 6);
 
-            for(Int32 i = 0, j = 0; i < size * 6; i+=6, j+=4)
+            for(Int32 i = 0, j = 0; i < count * 6; i+=6, j+=4)
             {
                 indices[i + 0] = j + 0;
                 indices[i + 1] = j + 1;
@@ -201,29 +221,48 @@ namespace Base::Renderer2D
                 indices[i + 5] = j + 2;
             }
 
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(UInt32) * size * 6, indices, GL_STATIC_DRAW);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(UInt32) * count * 6, indices, GL_STATIC_DRAW);
 
-            Log::Print("Increased batch size from %d to %d", Log::Type::Message, __LINE__, __FILE__, global.largestBatchSize, size);
+            Log::Print("Increased batch size from %d to %d", Log::Type::Message, __LINE__, __FILE__, global.largestBatchSize, count);
 
-            global.largestBatchSize = size;
+            global.largestBatchSize = count;
 
-            Allocator::Deallocate(sizeof(UInt32) * size * 6);           
+            Allocator::Deallocate(sizeof(UInt32) * count * 6);           
         }
         else
         {
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * 4 * size, vertices);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * 4 * count, vertices);
         }
 
         OpenGL::Program::Bind(global.program);
         OpenGL::Program::SetUniformMatrix4FV(global.program, "uView", global.view);
         OpenGL::Program::SetUniformMatrix4FV(global.program, "uProjection", global.projection);
+        OpenGL::Program::SetUniform1I(global.program, "uTexture", 0);
+        
+        OpenGL::Texture::Bind(texture ? texture : global.whiteTexture, 0);
 
-        OpenGL::Texture::Bind(global.whiteTexture, 0);
+        glDrawElements(GL_TRIANGLES, 6 * count, GL_UNSIGNED_INT, 0);
 
-        glDrawElements(GL_TRIANGLES, 6 * size, GL_UNSIGNED_INT, 0);
+        OpenGL::Texture::Bind(0, 0);
+        OpenGL::Program::Bind(0);
 
-        Allocator::Deallocate(sizeof(Vertex) * 4 * size);
+        glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        Allocator::Deallocate(sizeof(Vertex) * 4 * count);
 
         return 1;
+    }
+
+    SubTexture CreateSubTexture(const IVec2 parentTextureSize, const IVec2 position, const IVec2 size)
+    {
+        SubTexture subTexture;
+
+        subTexture.bottom[0] = (Float32)position[0] / (Float32)parentTextureSize[0];
+        subTexture.bottom[1] = (Float32)position[1] / (Float32)parentTextureSize[1];
+        subTexture.top[0] = (Float32)(position[0] + size[0]) / (Float32)parentTextureSize[0];
+        subTexture.top[1] = (Float32)(position[1] + size[1]) / (Float32)parentTextureSize[1];
+
+        return subTexture;
     }
 }

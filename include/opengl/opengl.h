@@ -42,6 +42,7 @@ PFNGLGETUNIFORMLOCATIONPROC base_glGetUniformLocation;
 PFNGLSHADERSOURCEPROC base_glShaderSource;
 PFNGLLINKPROGRAMPROC base_glLinkProgram;
 PFNGLUNIFORM1IPROC base_glUniform1i;
+PFNGLUNIFORM1IVPROC base_glUniform1iv;
 PFNGLUNIFORM1FPROC base_glUniform1f;
 PFNGLUNIFORM3FPROC base_glUniform3f;
 PFNGLUNIFORMMATRIX4FVPROC base_glUniformMatrix4fv;
@@ -75,6 +76,7 @@ PFNGLVERTEXATTRIBPOINTERPROC base_glVertexAttribPointer;
 #define glShaderSource base_glShaderSource
 #define glLinkProgram base_glLinkProgram
 #define glUniform1i base_glUniform1i
+#define glUniform1iv base_glUniform1iv
 #define glUniform1f base_glUniform1f
 #define glUniform3f base_glUniform3f
 #define glUniformMatrix4fv base_glUniformMatrix4fv
@@ -119,6 +121,7 @@ namespace Base::OpenGL
         base_glShaderSource              = (PFNGLSHADERSOURCEPROC)Window::GetGLProcAddress("glShaderSource");
         base_glLinkProgram               = (PFNGLLINKPROGRAMPROC)Window::GetGLProcAddress("glLinkProgram");
         base_glUniform1i                 = (PFNGLUNIFORM1IPROC)Window::GetGLProcAddress("glUniform1i");
+        base_glUniform1iv                = (PFNGLUNIFORM1IVPROC)Window::GetGLProcAddress("glUniform1iv");
         base_glUniform1f                 = (PFNGLUNIFORM1FPROC)Window::GetGLProcAddress("glUniform1f");
         base_glUniform3f                 = (PFNGLUNIFORM3FPROC)Window::GetGLProcAddress("glUniform3f");
         base_glUniformMatrix4fv          = (PFNGLUNIFORMMATRIX4FVPROC)Window::GetGLProcAddress("glUniformMatrix4fv");
