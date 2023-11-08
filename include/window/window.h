@@ -95,6 +95,7 @@ namespace Base::Window
         {
         case VK_SPACE:
             windowEvents.Item((Int32)Event::KeyDown_Space) = true;
+            windowKeyboard.Item((Int32)Key::Space) = true;
             break;
         case 0x41:
             windowEvents.Item((Int32)Event::KeyDown_A) = true;
@@ -102,9 +103,11 @@ namespace Base::Window
             break;
         case 0x42:
             windowEvents.Item((Int32)Event::KeyDown_B) = true;
+            windowKeyboard.Item((Int32)Key::B) = true;
             break;
         case 0x43:
             windowEvents.Item((Int32)Event::KeyDown_C) = true;
+            windowKeyboard.Item((Int32)Key::C) = true;
             break; 
         case 0x44:
             windowEvents.Item((Int32)Event::KeyDown_D) = true;
@@ -112,45 +115,59 @@ namespace Base::Window
             break;
         case 0x45:
             windowEvents.Item((Int32)Event::KeyDown_E) = true;
+            windowKeyboard.Item((Int32)Key::E) = true;
             break;
         case 0x46:
             windowEvents.Item((Int32)Event::KeyDown_F) = true;
+            windowKeyboard.Item((Int32)Key::F) = true;
             break; 
         case 0x47:
             windowEvents.Item((Int32)Event::KeyDown_G) = true;
+            windowKeyboard.Item((Int32)Key::G) = true;
             break;
         case 0x48:
             windowEvents.Item((Int32)Event::KeyDown_H) = true;
+            windowKeyboard.Item((Int32)Key::H) = true;
             break;
         case 0x49:
             windowEvents.Item((Int32)Event::KeyDown_I) = true;
+            windowKeyboard.Item((Int32)Key::I) = true;
             break;
         case 0x4A:
             windowEvents.Item((Int32)Event::KeyDown_J) = true;
+            windowKeyboard.Item((Int32)Key::J) = true;
             break;
         case 0x4B:
             windowEvents.Item((Int32)Event::KeyDown_K) = true;
+            windowKeyboard.Item((Int32)Key::K) = true;
             break;
         case 0x4C:
             windowEvents.Item((Int32)Event::KeyDown_L) = true;
+            windowKeyboard.Item((Int32)Key::L) = true;
             break;
         case 0x4D:
             windowEvents.Item((Int32)Event::KeyDown_M) = true;
+            windowKeyboard.Item((Int32)Key::M) = true;
             break;
         case 0x4E:
             windowEvents.Item((Int32)Event::KeyDown_N) = true;
+            windowKeyboard.Item((Int32)Key::N) = true;
             break;
         case 0x4F:
             windowEvents.Item((Int32)Event::KeyDown_O) = true;
+            windowKeyboard.Item((Int32)Key::O) = true;
             break;
         case 0x50:
             windowEvents.Item((Int32)Event::KeyDown_P) = true;
+            windowKeyboard.Item((Int32)Key::P) = true;
             break;
         case 0x51:
             windowEvents.Item((Int32)Event::KeyDown_Q) = true;
+            windowKeyboard.Item((Int32)Key::Q) = true;
             break;
         case 0x52:
             windowEvents.Item((Int32)Event::KeyDown_R) = true;
+            windowKeyboard.Item((Int32)Key::R) = true;
             break;
         case 0x53:
             windowEvents.Item((Int32)Event::KeyDown_S) = true;
@@ -158,12 +175,15 @@ namespace Base::Window
             break;
         case 0x54:
             windowEvents.Item((Int32)Event::KeyDown_T) = true;
+            windowKeyboard.Item((Int32)Key::T) = true;
             break;
         case 0x55:
             windowEvents.Item((Int32)Event::KeyDown_U) = true;
+            windowKeyboard.Item((Int32)Key::U) = true;
             break;
         case 0x56:
             windowEvents.Item((Int32)Event::KeyDown_V) = true;
+            windowKeyboard.Item((Int32)Key::V) = true;
             break;
         case 0x57:
             windowEvents.Item((Int32)Event::KeyDown_W) = true;
@@ -171,12 +191,15 @@ namespace Base::Window
             break;
         case 0x58:
             windowEvents.Item((Int32)Event::KeyDown_X) = true;
+            windowKeyboard.Item((Int32)Key::X) = true;
             break;
         case 0x59:
             windowEvents.Item((Int32)Event::KeyDown_Y) = true;
+            windowKeyboard.Item((Int32)Key::Y) = true;
             break;
         case 0x5A:
             windowEvents.Item((Int32)Event::KeyDown_Z) = true;
+            windowKeyboard.Item((Int32)Key::Z) = true;
             break;
         }
 
@@ -189,6 +212,7 @@ namespace Base::Window
         {
         case VK_SPACE:
             windowEvents.Item((Int32)Event::KeyUp_Space) = true;
+            windowKeyboard.Item((Int32)Key::Space) = false;
             break;
         case 0x41:
             windowEvents.Item((Int32)Event::KeyUp_A) = true;
@@ -196,9 +220,11 @@ namespace Base::Window
             break;
         case 0x42:
             windowEvents.Item((Int32)Event::KeyUp_B) = true;
+            windowKeyboard.Item((Int32)Key::B) = false;
             break;
         case 0x43:
             windowEvents.Item((Int32)Event::KeyUp_C) = true;
+            windowKeyboard.Item((Int32)Key::C) = false;
             break; 
         case 0x44:
             windowEvents.Item((Int32)Event::KeyUp_D) = true;
@@ -206,45 +232,59 @@ namespace Base::Window
             break;
         case 0x45:
             windowEvents.Item((Int32)Event::KeyUp_E) = true;
+            windowKeyboard.Item((Int32)Key::E) = false;
             break;
         case 0x46:
             windowEvents.Item((Int32)Event::KeyUp_F) = true;
+            windowKeyboard.Item((Int32)Key::F) = false;
             break; 
         case 0x47:
             windowEvents.Item((Int32)Event::KeyUp_G) = true;
+            windowKeyboard.Item((Int32)Key::G) = false;
             break;
         case 0x48:
             windowEvents.Item((Int32)Event::KeyUp_H) = true;
+            windowKeyboard.Item((Int32)Key::H) = false;
             break;
         case 0x49:
             windowEvents.Item((Int32)Event::KeyUp_I) = true;
+            windowKeyboard.Item((Int32)Key::I) = false;
             break;
         case 0x4A:
             windowEvents.Item((Int32)Event::KeyUp_J) = true;
+            windowKeyboard.Item((Int32)Key::J) = false;
             break;
         case 0x4B:
             windowEvents.Item((Int32)Event::KeyUp_K) = true;
+            windowKeyboard.Item((Int32)Key::K) = false;
             break;
         case 0x4C:
             windowEvents.Item((Int32)Event::KeyUp_L) = true;
+            windowKeyboard.Item((Int32)Key::L) = false;
             break;
         case 0x4D:
             windowEvents.Item((Int32)Event::KeyUp_M) = true;
+            windowKeyboard.Item((Int32)Key::M) = false;
             break;
         case 0x4E:
             windowEvents.Item((Int32)Event::KeyUp_N) = true;
+            windowKeyboard.Item((Int32)Key::N) = false;
             break;
         case 0x4F:
             windowEvents.Item((Int32)Event::KeyUp_O) = true;
+            windowKeyboard.Item((Int32)Key::O) = false;
             break;
         case 0x50:
             windowEvents.Item((Int32)Event::KeyUp_P) = true;
+            windowKeyboard.Item((Int32)Key::P) = false;
             break;
         case 0x51:
             windowEvents.Item((Int32)Event::KeyUp_Q) = true;
+            windowKeyboard.Item((Int32)Key::Q) = false;
             break;
         case 0x52:
             windowEvents.Item((Int32)Event::KeyUp_R) = true;
+            windowKeyboard.Item((Int32)Key::R) = false;
             break;
         case 0x53:
             windowEvents.Item((Int32)Event::KeyUp_S) = true;
@@ -252,12 +292,15 @@ namespace Base::Window
             break;
         case 0x54:
             windowEvents.Item((Int32)Event::KeyUp_T) = true;
+            windowKeyboard.Item((Int32)Key::T) = false;
             break;
         case 0x55:
             windowEvents.Item((Int32)Event::KeyUp_U) = true;
+            windowKeyboard.Item((Int32)Key::U) = false;
             break;
         case 0x56:
             windowEvents.Item((Int32)Event::KeyUp_V) = true;
+            windowKeyboard.Item((Int32)Key::V) = false;
             break;
         case 0x57:
             windowEvents.Item((Int32)Event::KeyUp_W) = true;
@@ -265,12 +308,15 @@ namespace Base::Window
             break;
         case 0x58:
             windowEvents.Item((Int32)Event::KeyUp_X) = true;
+            windowKeyboard.Item((Int32)Key::X) = false;
             break;
         case 0x59:
             windowEvents.Item((Int32)Event::KeyUp_Y) = true;
+            windowKeyboard.Item((Int32)Key::Y) = false;
             break;
         case 0x5A:
             windowEvents.Item((Int32)Event::KeyUp_Z) = true;
+            windowKeyboard.Item((Int32)Key::Z) = false;
             break;
         }
 
@@ -870,84 +916,112 @@ namespace Base::Window
         {
         case XK_space:
             windowEvents.Item((Int32)Event::KeyDown_Space) = true;
+            windowKeyboard.Item((Int32)Key::Space) = true;
             break;
         case XK_A:
             windowEvents.Item((Int32)Event::KeyDown_A) = true;
+            windowKeyboard.Item((Int32)Key::A) = true;
             break;
         case XK_B:
             windowEvents.Item((Int32)Event::KeyDown_B) = true;
+            windowKeyboard.Item((Int32)Key::B) = true;
             break;
         case XK_C:
             windowEvents.Item((Int32)Event::KeyDown_C) = true;
+            windowKeyboard.Item((Int32)Key::C) = true;
             break; 
         case XK_D:
             windowEvents.Item((Int32)Event::KeyDown_D) = true;
+            windowKeyboard.Item((Int32)Key::D) = true;
             break;
         case XK_E:
             windowEvents.Item((Int32)Event::KeyDown_E) = true;
+            windowKeyboard.Item((Int32)Key::E) = true;
             break;
         case XK_F:
             windowEvents.Item((Int32)Event::KeyDown_F) = true;
+            windowKeyboard.Item((Int32)Key::F) = true;
             break; 
         case XK_G:
             windowEvents.Item((Int32)Event::KeyDown_G) = true;
+            windowKeyboard.Item((Int32)Key::G) = true;
             break;
         case XK_H:
             windowEvents.Item((Int32)Event::KeyDown_H) = true;
+            windowKeyboard.Item((Int32)Key::H) = true;
             break;
         case XK_I:
             windowEvents.Item((Int32)Event::KeyDown_I) = true;
+            windowKeyboard.Item((Int32)Key::I) = true;
             break;
         case XK_J:
             windowEvents.Item((Int32)Event::KeyDown_J) = true;
+            windowKeyboard.Item((Int32)Key::J) = true;
             break;
         case XK_K:
             windowEvents.Item((Int32)Event::KeyDown_K) = true;
+            windowKeyboard.Item((Int32)Key::K) = true;
             break;
         case XK_L:
             windowEvents.Item((Int32)Event::KeyDown_L) = true;
+            windowKeyboard.Item((Int32)Key::L) = true;
             break;
         case XK_M:
             windowEvents.Item((Int32)Event::KeyDown_M) = true;
+            windowKeyboard.Item((Int32)Key::M) = true;
             break;
         case XK_N:
             windowEvents.Item((Int32)Event::KeyDown_N) = true;
+            windowKeyboard.Item((Int32)Key::N) = true;
             break;
         case XK_O:
             windowEvents.Item((Int32)Event::KeyDown_O) = true;
+            windowKeyboard.Item((Int32)Key::O) = true;
             break;
         case XK_P:
+            printf("P Down\n");
             windowEvents.Item((Int32)Event::KeyDown_P) = true;
+            windowKeyboard.Item((Int32)Key::P) = true;
             break;
         case XK_Q:
             windowEvents.Item((Int32)Event::KeyDown_Q) = true;
+            windowKeyboard.Item((Int32)Key::Q) = true;
             break;
         case XK_R:
             windowEvents.Item((Int32)Event::KeyDown_R) = true;
+            windowKeyboard.Item((Int32)Key::R) = true;
             break;
         case XK_S:
             windowEvents.Item((Int32)Event::KeyDown_S) = true;
+            windowKeyboard.Item((Int32)Key::S) = true;
             break;
         case XK_T:
             windowEvents.Item((Int32)Event::KeyDown_T) = true;
+            windowKeyboard.Item((Int32)Key::T) = true;
             break;
         case XK_U:
             windowEvents.Item((Int32)Event::KeyDown_U) = true;
+            windowKeyboard.Item((Int32)Key::U) = true;
             break;
         case XK_V:
             windowEvents.Item((Int32)Event::KeyDown_V) = true;
+            windowKeyboard.Item((Int32)Key::V) = true;
             break;
         case XK_W:
             windowEvents.Item((Int32)Event::KeyDown_W) = true;
+            windowKeyboard.Item((Int32)Key::W) = true;
             break;
         case XK_X:
             windowEvents.Item((Int32)Event::KeyDown_X) = true;
+            windowKeyboard.Item((Int32)Key::X) = true;
             break;
         case XK_Y:
             windowEvents.Item((Int32)Event::KeyDown_Y) = true;
+            windowKeyboard.Item((Int32)Key::Y) = true;
             break;
         case XK_Z:
             windowEvents.Item((Int32)Event::KeyDown_Z) = true;
+            windowKeyboard.Item((Int32)Key::Z) = true;
             break;
         }
 
@@ -957,90 +1031,118 @@ namespace Base::Window
 
     Int32 ProcessKeyUp(XKeyEvent xkey)
     {
-        KeySym keySym = XkbKeycodeToKeysym(display, xkey.keycode, 0, xkey.state & ShiftMask ? 1 : 0);
+        KeySym keySym = XkbKeycodeToKeysym(display, xkey.keycode, 0, 1);
 
         switch(keySym)
         {
         case XK_space:
             windowEvents.Item((Int32)Event::KeyUp_Space) = true;
+            windowKeyboard.Item((Int32)Key::Space) = false;
             break;
         case XK_A:
             windowEvents.Item((Int32)Event::KeyUp_A) = true;
+            windowKeyboard.Item((Int32)Key::A) = false;
             break;
         case XK_B:
             windowEvents.Item((Int32)Event::KeyUp_B) = true;
+            windowKeyboard.Item((Int32)Key::B) = false;
             break;
         case XK_C:
             windowEvents.Item((Int32)Event::KeyUp_C) = true;
+            windowKeyboard.Item((Int32)Key::C) = false;
             break; 
         case XK_D:
             windowEvents.Item((Int32)Event::KeyUp_D) = true;
+            windowKeyboard.Item((Int32)Key::D) = false;
             break;
         case XK_E:
             windowEvents.Item((Int32)Event::KeyUp_E) = true;
+            windowKeyboard.Item((Int32)Key::E) = false;
             break;
         case XK_F:
             windowEvents.Item((Int32)Event::KeyUp_F) = true;
+            windowKeyboard.Item((Int32)Key::F) = false;
             break; 
         case XK_G:
             windowEvents.Item((Int32)Event::KeyUp_G) = true;
+            windowKeyboard.Item((Int32)Key::G) = false;
             break;
         case XK_H:
             windowEvents.Item((Int32)Event::KeyUp_H) = true;
+            windowKeyboard.Item((Int32)Key::H) = false;
             break;
         case XK_I:
             windowEvents.Item((Int32)Event::KeyUp_I) = true;
+            windowKeyboard.Item((Int32)Key::I) = false;
             break;
         case XK_J:
             windowEvents.Item((Int32)Event::KeyUp_J) = true;
+            windowKeyboard.Item((Int32)Key::J) = false;
             break;
         case XK_K:
             windowEvents.Item((Int32)Event::KeyUp_K) = true;
+            windowKeyboard.Item((Int32)Key::K) = false;
             break;
         case XK_L:
             windowEvents.Item((Int32)Event::KeyUp_L) = true;
+            windowKeyboard.Item((Int32)Key::L) = false;
             break;
         case XK_M:
             windowEvents.Item((Int32)Event::KeyUp_M) = true;
+            windowKeyboard.Item((Int32)Key::M) = false;
             break;
         case XK_N:
             windowEvents.Item((Int32)Event::KeyUp_N) = true;
+            windowKeyboard.Item((Int32)Key::N) = false;
             break;
         case XK_O:
             windowEvents.Item((Int32)Event::KeyUp_O) = true;
+            windowKeyboard.Item((Int32)Key::O) = false;
             break;
         case XK_P:
             windowEvents.Item((Int32)Event::KeyUp_P) = true;
+            printf("P Up\n");
+            windowKeyboard.Item((Int32)Key::P) = false;
             break;
         case XK_Q:
             windowEvents.Item((Int32)Event::KeyUp_Q) = true;
+            windowKeyboard.Item((Int32)Key::Q) = false;
             break;
         case XK_R:
             windowEvents.Item((Int32)Event::KeyUp_R) = true;
+            windowKeyboard.Item((Int32)Key::R) = false;
             break;
         case XK_S:
             windowEvents.Item((Int32)Event::KeyUp_S) = true;
+            windowKeyboard.Item((Int32)Key::S) = false;
             break;
         case XK_T:
             windowEvents.Item((Int32)Event::KeyUp_T) = true;
+            windowKeyboard.Item((Int32)Key::T) = false;
             break;
         case XK_U:
             windowEvents.Item((Int32)Event::KeyUp_U) = true;
+            windowKeyboard.Item((Int32)Key::U) = false;
             break;
         case XK_V:
             windowEvents.Item((Int32)Event::KeyUp_V) = true;
+            windowKeyboard.Item((Int32)Key::V) = false;
             break;
         case XK_W:
             windowEvents.Item((Int32)Event::KeyUp_W) = true;
+            windowKeyboard.Item((Int32)Key::W) = false;
             break;
         case XK_X:
             windowEvents.Item((Int32)Event::KeyUp_X) = true;
+            windowKeyboard.Item((Int32)Key::X) = false;
             break;
         case XK_Y:
             windowEvents.Item((Int32)Event::KeyUp_Y) = true;
+            windowKeyboard.Item((Int32)Key::Y) = false;
             break;
         case XK_Z:
             windowEvents.Item((Int32)Event::KeyUp_Z) = true;
+            windowKeyboard.Item((Int32)Key::Z) = false;
             break;
         }
 
@@ -1225,6 +1327,8 @@ namespace Base::Window
         glXCreateContextAttribsARBProc glXCreateContextAttribsARB = 0;
         glXCreateContextAttribsARB = (glXCreateContextAttribsARBProc)glXGetProcAddressARB((const UInt8*)"glXCreateContextAttribsARB");
         glXSwapIntervalEXT = (glXSwapIntervalEXTProc)glXGetProcAddressARB((const UInt8*)"glXSwapIntervalEXT");
+
+        glXSwapIntervalEXT(display, glXGetCurrentDrawable(), 1);
 
         if(!glXCreateContextAttribsARB)
         {
