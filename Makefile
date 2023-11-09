@@ -11,7 +11,7 @@ CC = g++
 # Compiler Flags
 FLAGS = -Wall -Wextra -Wno-cast-function-type -Wno-missing-field-initializers
 DFLAGS = -g3 -ggdb 
-RFLAGS = -O3
+RFLAGS = -O2
 
 # Source File
 SRC = src/main.cpp
