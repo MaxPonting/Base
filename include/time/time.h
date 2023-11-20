@@ -3,20 +3,40 @@
 #include "../platform/platform.h"
 #include "../type/type.h"
 
+#if PLATFORM == PLATFORM_WINDOWS || PLATFORM == PLATFORM_LINUX
+#include <sys/time.h>
+#elif PLATFORM == PLATFORM_MAC
+#endif
 
 namespace Base::Time
 {
 
-#if PLATFORM == PLATFORM_WINDOWS || PLATFORM == PLATFORM_LINUX
-#include <sys/time.h>
+struct Timer
+{
+    Float64 start;
+};
 
-    // Returns time (ms) since January 1st 1970 
-    Int32 Get()
+#if PLATFORM == PLATFORM_WINDOWS || PLATFORM == PLATFORM_LINUX
+ 
+    // Returns time of day in seconds 
+    Float64 Get()
     {
         struct timeval time;
         gettimeofday(&time, 0);
 
-        return time.tv_usec / 1000;
+        return (Float64)time.tv_usec / 1000000 + (Float64)time.tv_sec;
+    }
+
+    Timer StartTimer()
+    {
+        Timer timer;
+        timer.start = Get();
+        return timer;
+    }
+
+    Float64 EndTimer(const Timer timer)
+    {
+        return Get() - timer.start;
     }
 
 #elif PLATFORM == PLATFORM_MAC

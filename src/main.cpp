@@ -1,10 +1,13 @@
 #define BASE_DEBUG
 
+
 #include <allocator/allocator.h>
 #include <log/log.h>
 #include <io/file.h>
 #include <math/math.h>
 #include <time/time.h>
+#include <time/sleep.h>
+#include <time/performance_counter.h>
 #include <opengl/opengl.h>
 #include <opengl/shader.h>
 #include <opengl/program.h>
@@ -13,21 +16,11 @@
 #include <renderer/renderer2D.h>
 
 #include <stdio.h>
-#include <time.h>
 
 const static UInt64 ALLOCATION_SIZE = 1024 * 1024; // MB
-
-const static Float32 VERTICES[] = {
-     -1.0f, -1.0f, 0.0f, 0.0f,
-      1.0f, -1.0f, 1.0f, 0.0f,
-     -1.0f,  1.0f, 0.0f, 1.0f,
-      1.0f,  1.0f, 1.0f, 1.0f
-};
-
-const static UInt32 INDICES[] = {
-    0, 1, 2,
-    1, 3, 2
-};
+static Vec2 cameraPosition = {0, 0};
+static Vec2 cameraScale = {1, 1};
+static Float32 cameraRotation = 0;
 
 Int32 main()
 {
@@ -44,6 +37,8 @@ Int32 main()
 
     OpenGL::LoadProcedures();
     OpenGL::EnableErrorLog();
+
+    Window::SetVSync(1);
 
     Renderer2D::Create(10);
 
@@ -64,30 +59,35 @@ Int32 main()
         {0, -200, 128, 128, 0, 1.0f, 1.0f, 1.0f, 1.0f, plain},        
     };
 
+    const Float64 frameTime = 16.6666 * 1000;
+    
     while(true)
     {
+        const PerformanceCounter::Timer timer = PerformanceCounter::StartTimer();
+
         Window::PollEvents();
 
         if(Window::GetEvent(Window::Event::Destroy))
             break; 
 
+        if(Window::GetKeyDown(Window::Key::Escape))
+            break;
+
+        if(Window::GetKey(Window::Key::D))
+            cameraPosition[0] += 5;
+        if(Window::GetKey(Window::Key::A))
+            cameraPosition[0] -= 5;
+
         if(Window::GetEvent(Window::Event::Resize))
             glViewport(0, 0, Window::GetWidth(), Window::GetHeight());        
 
-        if(Window::GetKey(Window::Key::W))
-            quads[0].position[1] += 5.0f;
-        if(Window::GetKey(Window::Key::S))
-            quads[0].position[1] -= 5.0f;
-        if(Window::GetKey(Window::Key::D))
-            quads[0].position[0] += 5.0f;
-        if(Window::GetKey(Window::Key::A))
-            quads[0].position[0] -= 5.0f;
-
-        Renderer2D::BeginScene(Window::GetWidth(), Window::GetHeight());
-        Renderer2D::DrawBatch(quads, 3, texture);
+        Renderer2D::BeginScene(Window::GetWidth(), Window::GetHeight(), cameraPosition, cameraScale, Math::Radians(cameraRotation));
+        Renderer2D::DrawQuads(quads, 3, texture);
         Renderer2D::EndScene();
 
         Window::SwapBuffer();
+
+        printf("%f\n", PerformanceCounter::EndTimer(timer) * 1000);
     }
 
     Renderer2D::Destroy();
@@ -96,6 +96,3 @@ Int32 main()
 
     return 0;
 }
-
-
-

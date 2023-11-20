@@ -1,10 +1,9 @@
 #pragma once
 
 #include "../type/type.h"
-#include "../allocator/allocator.h"
 #include "../array/array.h"
 #include "../math/math.h"
-#include "../io/file.h"
+#include "../allocator/allocator.h"
 #include "../opengl/opengl.h"
 #include "../opengl/shader.h"
 #include "../opengl/program.h"
@@ -37,7 +36,7 @@ namespace Base::Renderer2D
     struct Global
     {
         UInt32 vertexArray, vertexBuffer, indexBuffer, program, whiteTexture;
-        Int32 largestBatchSize;
+        Int32 batchSize;
         Mat4 view, projection;
     };
 
@@ -87,11 +86,8 @@ namespace Base::Renderer2D
 
         Allocator::Deallocate(sizeof(UInt32) * estimatedMaxBatchSize * 6);
 
-        Char VERTEX_SOURCE[512] = {0}; 
-        Char FRAGMENT_SOURCE[512] = {0};
-
-        IO::File::Read("res/shader/colour.vert", VERTEX_SOURCE, 512, false, true);
-        IO::File::Read("res/shader/colour.frag", FRAGMENT_SOURCE, 512, false, true);
+        const Char* VERTEX_SOURCE = "#version 330 core\nlayout(location = 0) in vec4 aPosition;layout(location = 1) in vec2 aTextureCoordinates;layout(location = 2) in vec4 aColour;uniform mat4 uView;uniform mat4 uProjection;out vec2 vTextureCoordinates;out vec4 vColour;void main(){gl_Position = uProjection * uView * aPosition;vTextureCoordinates = aTextureCoordinates;vColour = aColour;};";
+        const Char* FRAGMENT_SOURCE = "#version 330 core\nin vec2 vTextureCoordinates;in vec4 vColour;uniform sampler2D uTexture;out vec4 oColour;void main(){oColour = texture2D(uTexture, vTextureCoordinates) * vColour;};";
 
         UInt32 shaders[2] = { 0 };
         shaders[0] = OpenGL::Shader::Create(VERTEX_SOURCE, OpenGL::Shader::Type::Vertex);
@@ -115,7 +111,7 @@ namespace Base::Renderer2D
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-        global.largestBatchSize = estimatedMaxBatchSize;
+        global.batchSize = estimatedMaxBatchSize;
 
         return 1;
     }
@@ -131,12 +127,16 @@ namespace Base::Renderer2D
         return 1;
     }
 
-    Int32 BeginScene(const Int32 width, const Int32 height)
+    Int32 BeginScene(const Int32 width, const Int32 height, const Vec2 cameraPosition, const Vec2 cameraScale, const Float32 cameraRotation)
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
         Math::Orthographic(global.projection, -width / 2, width / 2, -height / 2, height / 2, -1, 1);
         Math::Mat4Identity(global.view);        
+
+        const Vec2 position = {-cameraPosition[0], -cameraPosition[1] };
+        const Vec2 scale = { 1 / cameraScale[0], 1 / cameraScale[1] };
+        Math::Mat4Transform2D(global.view, position, scale, -cameraRotation);
 
         return 1;
     }
@@ -146,7 +146,7 @@ namespace Base::Renderer2D
         return 1;
     }
 
-    Int32 DrawBatch(const Quad* const quads, const Int32 count, const UInt32 texture)
+    Int32 DrawQuads(const Quad* const quads, const Int32 count, const UInt32 texture)
     {
         Vertex* vertices = (Vertex*)Allocator::Allocate(sizeof(Vertex) * 4 * count);
 
@@ -194,8 +194,6 @@ namespace Base::Renderer2D
                 v[j].position[1] += quad.position[1];
             }
 
-
-
             vertices[i + 0] = v[0];
             vertices[i + 1] = v[1];
             vertices[i + 2] = v[2];
@@ -205,7 +203,7 @@ namespace Base::Renderer2D
         glBindVertexArray(global.vertexArray);
         glBindBuffer(GL_ARRAY_BUFFER, global.vertexBuffer);
 
-        if(count > global.largestBatchSize)
+        if(count > global.batchSize)
         {
             glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 4 * count, vertices, GL_DYNAMIC_DRAW);
 
@@ -223,9 +221,9 @@ namespace Base::Renderer2D
 
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(UInt32) * count * 6, indices, GL_STATIC_DRAW);
 
-            Log::Print("Increased batch size from %d to %d", Log::Type::Message, __LINE__, __FILE__, global.largestBatchSize, count);
+            Log::Print("Increased batch size from %d to %d", Log::Type::Message, __LINE__, __FILE__, global.batchSize, count);
 
-            global.largestBatchSize = count;
+            global.batchSize = count;
 
             Allocator::Deallocate(sizeof(UInt32) * count * 6);           
         }

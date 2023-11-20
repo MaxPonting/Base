@@ -15,7 +15,6 @@ Only for array structs:
 
 An array struct is a struct that manages a memory block. 
 
-
 Functions:
 
 1. All functions should have an integer return type, where returing 0 is an error and returning 1 is a success. If the function cannot fail it should return void or return a useful value.

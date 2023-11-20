@@ -21,7 +21,7 @@ INC = -I include/
 
 # Linker Files
 ifeq ($(DOS), Windows)
-LINK = -lopengl32 -lgdi32
+LINK = -lopengl32 -lgdi32 -lWinmm
 endif
 ifeq ($(DOS), Linux)
 LINK = -lGL -lX11

@@ -8,6 +8,11 @@
 
 #include <string.h>
 
+#if PLATFORM == PLATFORM_WINDOWS
+#include <windows.h>
+#include <GL/wglext.h>
+#endif
+
 namespace Base::Window
 {
     enum class Event
@@ -105,11 +110,6 @@ namespace Base::Window
 
 
 #if PLATFORM == PLATFORM_WINDOWS
-
-
-#include <windows.h>
-#include <GL/wglext.h>
-
 
 
     PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB;
@@ -713,7 +713,6 @@ namespace Base::Window
 
 #elif PLATFORM == PLATFORM_LINUX
 
-
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/XKBlib.h>
@@ -736,7 +735,7 @@ namespace Base::Window
 
     Int32 FilterKeySym(KeySym keySym)
     {
-        if(keySym == XK_BackSpace && keySym <= XK_Escape)  
+        if(keySym >= XK_BackSpace && keySym <= XK_Escape)  
         {
             keySym -= 0xFF00;
             keySym += 0x0060;
