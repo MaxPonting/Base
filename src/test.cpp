@@ -1,21 +1,21 @@
-#include <time/performance_counter.h>
-#include <time/sleep.h>
-#include <time/time.h>
+#define BASE_DEBUG
 
 #include <stdio.h>
+#include <array/static_array.h>
 
 int main()
 {
-    const Base::PerformanceCounter::Timer timer = Base::PerformanceCounter::StartTimer();
+    Base::StaticArray<int, 10> arr;
 
-    for(int i = 0; i < 50; i++)
+    arr.Push(4);
+    arr.Push(7);
+    arr.Clear();
+
+    for(int i = 0; i < arr.GetSize(); i++)
     {
-        Base::Time::ThreadSleep(100 * 1000);
-    }
-
-    const Float64 end = Base::PerformanceCounter::EndTimer(timer); 
-
-    printf("%lf\n", end * 1000);
+        printf("%d\n", arr.Item(i));
+    } 
 
     return 0;
+
 }

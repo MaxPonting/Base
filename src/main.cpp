@@ -38,8 +38,6 @@ Int32 main()
     OpenGL::LoadProcedures();
     OpenGL::EnableErrorLog();
 
-    Window::SetVSync(1);
-
     Renderer2D::Create(10);
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -59,12 +57,8 @@ Int32 main()
         {0, -200, 128, 128, 0, 1.0f, 1.0f, 1.0f, 1.0f, plain},        
     };
 
-    const Float64 frameTime = 16.6666 * 1000;
-    
     while(true)
     {
-        const PerformanceCounter::Timer timer = PerformanceCounter::StartTimer();
-
         Window::PollEvents();
 
         if(Window::GetEvent(Window::Event::Destroy))
@@ -73,21 +67,24 @@ Int32 main()
         if(Window::GetKeyDown(Window::Key::Escape))
             break;
 
-        if(Window::GetKey(Window::Key::D))
-            cameraPosition[0] += 5;
-        if(Window::GetKey(Window::Key::A))
-            cameraPosition[0] -= 5;
-
         if(Window::GetEvent(Window::Event::Resize))
             glViewport(0, 0, Window::GetWidth(), Window::GetHeight());        
 
+        if(Window::GetKey(Window::Key::W))
+            cameraPosition[1] += 2;
+        if(Window::GetKey(Window::Key::S))
+            cameraPosition[1] -= 2;
+        if(Window::GetKey(Window::Key::D))
+            cameraPosition[0] += 2;
+        if(Window::GetKey(Window::Key::A))
+            cameraPosition[0] -= 2;
+
         Renderer2D::BeginScene(Window::GetWidth(), Window::GetHeight(), cameraPosition, cameraScale, Math::Radians(cameraRotation));
-        Renderer2D::DrawQuads(quads, 3, texture);
+        Renderer2D::DrawQuads(quads, 3, texture, Renderer2D::CoordinateSpace::World);
+        Renderer2D::DrawQuads(quads, 1, texture, Renderer2D::CoordinateSpace::Screen);
         Renderer2D::EndScene();
 
         Window::SwapBuffer();
-
-        printf("%f\n", PerformanceCounter::EndTimer(timer) * 1000);
     }
 
     Renderer2D::Destroy();

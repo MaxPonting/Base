@@ -11,6 +11,11 @@
 
 namespace Base::Renderer2D
 {
+    enum class CoordinateSpace
+    {
+        World, Screen
+    };
+
     struct SubTexture
     {
         Vec2 bottom;
@@ -146,7 +151,7 @@ namespace Base::Renderer2D
         return 1;
     }
 
-    Int32 DrawQuads(const Quad* const quads, const Int32 count, const UInt32 texture)
+    Int32 DrawQuads(const Quad* const quads, const Int32 count, const UInt32 texture, const CoordinateSpace space)
     {
         Vertex* vertices = (Vertex*)Allocator::Allocate(sizeof(Vertex) * 4 * count);
 
@@ -233,7 +238,15 @@ namespace Base::Renderer2D
         }
 
         OpenGL::Program::Bind(global.program);
-        OpenGL::Program::SetUniformMatrix4FV(global.program, "uView", global.view);
+        
+        if(space == CoordinateSpace::World)
+            OpenGL::Program::SetUniformMatrix4FV(global.program, "uView", global.view);
+        else if(space == CoordinateSpace::Screen)
+        {
+            Mat4 view;
+            Math::Mat4Identity(view);
+            OpenGL::Program::SetUniformMatrix4FV(global.program, "uView", view);
+        }
         OpenGL::Program::SetUniformMatrix4FV(global.program, "uProjection", global.projection);
         OpenGL::Program::SetUniform1I(global.program, "uTexture", 0);
         

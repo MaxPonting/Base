@@ -1011,7 +1011,7 @@ namespace Base::Window
 
     Int32 SetVSync(Bool value)
     {
-        glXSwapIntervalEXT(display, glXGetCurrentDrawable(), value);
+        glXSwapIntervalEXT(glXGetCurrentDisplay(), glXGetCurrentDrawable(), value);
 
         return 1;
     }

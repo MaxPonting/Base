@@ -43,7 +43,7 @@ namespace Base
 
         T& Item(const Int32 index)
         {
-            if (index >= size)
+            if (index >= size || index < 0)
             {
                 Log::Print("Array index out of bounds", Log::Type::Error, __LINE__, __FILE__);
                 exit(0);
