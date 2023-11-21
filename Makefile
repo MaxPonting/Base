@@ -14,7 +14,7 @@ DFLAGS = -g3 -ggdb
 RFLAGS = -O2
 
 # Source File
-SRC = src/test.cpp
+SRC = src/main.cpp
 
 # Include Directory
 INC = -I include/

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "opengl.h"
+#include <math/struct.h>
 
 namespace Base::OpenGL::Program
 {
@@ -91,7 +92,7 @@ namespace Base::OpenGL::Program
             Log::Print("Cannot find uniform location", Log::Type::Error, __LINE__, __FILE__);
             return 0;
         }
-        glUniformMatrix4fv(location, 1, 0, (Float32*)value);
+        glUniformMatrix4fv(location, 1, 0, (Float32*)value.data);
 
         return 1;
     }

@@ -2,7 +2,7 @@
 
 #include "../type/type.h"
 #include "../array/array.h"
-#include "../math/math.h"
+#include "../math/matrix.h"
 #include "../allocator/allocator.h"
 #include "../opengl/opengl.h"
 #include "../opengl/shader.h"
@@ -11,11 +11,6 @@
 
 namespace Base::Renderer2D
 {
-    enum class CoordinateSpace
-    {
-        World, Screen
-    };
-
     struct SubTexture
     {
         Vec2 bottom;
@@ -136,12 +131,12 @@ namespace Base::Renderer2D
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
-        Math::Orthographic(global.projection, -width / 2, width / 2, -height / 2, height / 2, -1, 1);
-        Math::Mat4Identity(global.view);        
+        global.projection =  Math::Orthographic(-width / 2, width / 2, -height / 2, height / 2, -1, 1);
+        global.view =  Math::Mat4Identity();        
 
         const Vec2 position = {-cameraPosition[0], -cameraPosition[1] };
         const Vec2 scale = { 1 / cameraScale[0], 1 / cameraScale[1] };
-        Math::Mat4Transform2D(global.view, position, scale, -cameraRotation);
+        global.view = Math::Mat4Transform2D(position, scale, -cameraRotation);
 
         return 1;
     }
@@ -151,7 +146,7 @@ namespace Base::Renderer2D
         return 1;
     }
 
-    Int32 DrawQuads(const Quad* const quads, const Int32 count, const UInt32 texture, const CoordinateSpace space)
+    Int32 DrawWorld(const Quad* const quads, const Int32 count, const UInt32 texture)
     {
         Vertex* vertices = (Vertex*)Allocator::Allocate(sizeof(Vertex) * 4 * count);
 
@@ -238,15 +233,7 @@ namespace Base::Renderer2D
         }
 
         OpenGL::Program::Bind(global.program);
-        
-        if(space == CoordinateSpace::World)
-            OpenGL::Program::SetUniformMatrix4FV(global.program, "uView", global.view);
-        else if(space == CoordinateSpace::Screen)
-        {
-            Mat4 view;
-            Math::Mat4Identity(view);
-            OpenGL::Program::SetUniformMatrix4FV(global.program, "uView", view);
-        }
+        OpenGL::Program::SetUniformMatrix4FV(global.program, "uView", global.view);
         OpenGL::Program::SetUniformMatrix4FV(global.program, "uProjection", global.projection);
         OpenGL::Program::SetUniform1I(global.program, "uTexture", 0);
         
@@ -263,6 +250,112 @@ namespace Base::Renderer2D
         Allocator::Deallocate(sizeof(Vertex) * 4 * count);
 
         return 1;
+    }
+
+    Int32 DrawScreen(const Quad* const quads, const Int32 count, const UInt32 texture, const Float32 horizontalAnchor, const Float32 verticalAnchor)
+    {
+        Vertex* vertices = (Vertex*)Allocator::Allocate(sizeof(Vertex) * 4 * count);
+
+        for(Int32 i = 0; i < count * 4; i+=4)
+        {
+            Quad quad = quads[i / 4];
+
+            Vertex v[4] = 
+            {
+                {
+                    VERTICES[0] * quad.size[0], VERTICES[1] * quad.size[1],
+                    quad.subTexture.bottom[0], quad.subTexture.bottom[1], 
+                    quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3],
+                },
+
+                {
+                    VERTICES[4] * quad.size[0], VERTICES[5] * quad.size[1], 
+                    quad.subTexture.top[0], quad.subTexture.bottom[1], 
+                    quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3],
+                },
+                {
+                    VERTICES[8] * quad.size[0], VERTICES[9] * quad.size[1], 
+                    quad.subTexture.bottom[0], quad.subTexture.top[1], 
+                    quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3],
+                },
+                {
+                    VERTICES[12] * quad.size[0], VERTICES[13] * quad.size[1], 
+                    quad.subTexture.top[0], quad.subTexture.top[1], 
+                    quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3],
+                }
+            };
+
+            const Float32 sin = sinf(Math::Radians(quad.rotation));
+            const Float32 cos = cosf(Math::Radians(quad.rotation));
+
+            for(Int32 j = 0; j < 4; j++)
+            {
+                const Float32 x = v[j].position[0];
+                const Float32 y = v[j].position[1];
+
+                v[j].position[0] = cos * x - sin * y;
+                v[j].position[1] = sin * x + cos * y;
+
+                v[j].position[0] += quad.position[0];
+                v[j].position[1] += quad.position[1];
+            }
+
+            vertices[i + 0] = v[0];
+            vertices[i + 1] = v[1];
+            vertices[i + 2] = v[2];
+            vertices[i + 3] = v[3];
+        }
+
+        glBindVertexArray(global.vertexArray);
+        glBindBuffer(GL_ARRAY_BUFFER, global.vertexBuffer);
+
+        if(count > global.batchSize)
+        {
+            glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 4 * count, vertices, GL_DYNAMIC_DRAW);
+
+            UInt32* indices = (UInt32*)Allocator::Allocate(sizeof(UInt32) * count * 6);
+
+            for(Int32 i = 0, j = 0; i < count * 6; i+=6, j+=4)
+            {
+                indices[i + 0] = j + 0;
+                indices[i + 1] = j + 1;
+                indices[i + 2] = j + 2;
+                indices[i + 3] = j + 1;
+                indices[i + 4] = j + 3;
+                indices[i + 5] = j + 2;
+            }
+
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(UInt32) * count * 6, indices, GL_STATIC_DRAW);
+
+            Log::Print("Increased batch size from %d to %d", Log::Type::Message, __LINE__, __FILE__, global.batchSize, count);
+
+            global.batchSize = count;
+
+            Allocator::Deallocate(sizeof(UInt32) * count * 6);           
+        }
+        else
+        {
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * 4 * count, vertices);
+        }
+
+        OpenGL::Program::Bind(global.program);
+        OpenGL::Program::SetUniformMatrix4FV(global.program, "uView", Math::Mat4Identity());
+        OpenGL::Program::SetUniformMatrix4FV(global.program, "uProjection", global.projection);
+        OpenGL::Program::SetUniform1I(global.program, "uTexture", 0);
+        
+        OpenGL::Texture::Bind(texture ? texture : global.whiteTexture, 0);
+
+        glDrawElements(GL_TRIANGLES, 6 * count, GL_UNSIGNED_INT, 0);
+
+        OpenGL::Texture::Bind(0, 0);
+        OpenGL::Program::Bind(0);
+
+        glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        Allocator::Deallocate(sizeof(Vertex) * 4 * count);
+
+        return 1;       
     }
 
     SubTexture CreateSubTexture(const IVec2 parentTextureSize, const IVec2 position, const IVec2 size)

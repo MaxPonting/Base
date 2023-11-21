@@ -2,14 +2,65 @@
 
 #include "../type/type.h"
 
-typedef Float32 Vec2[2];
-typedef Float32 Vec3[3];
-typedef Float32 Vec4[4];
+struct Vec2
+{
+    Float32 data[2];
+    Float32& operator[](const Int32 index) { return data[index]; }
+    Float32 operator[](const Int32 index) const { return data[index]; }
+};
 
-typedef Int32 IVec2[2];
-typedef Int32 IVec3[3];
-typedef Int32 IVec4[4];
+struct Vec3
+{
+    Float32 data[3];
+    Float32& operator[](const Int32 index) { return data[index]; }
+    Float32 operator[](const Int32 index) const { return data[index]; }
+};
 
-typedef Vec2 Mat2[2];
-typedef Vec3 Mat3[3];
-typedef Vec4 Mat4[4];
+struct Vec4
+{
+    Float32 data[4];
+    Float32& operator[](const Int32 index) { return data[index]; }
+    Float32 operator[](const Int32 index) const { return data[index]; }
+};
+
+struct IVec2
+{
+    Int32 data[2];
+    Int32& operator[](const Int32 index) { return data[index]; }
+    Int32 operator[](const Int32 index) const { return data[index]; }
+};
+
+struct IVec3
+{
+    Int32 data[3];
+    Int32& operator[](const Int32 index) { return data[index]; }
+    Int32 operator[](const Int32 index) const { return data[index]; }
+};
+
+struct IVec4
+{
+    Int32 data[4];
+    Int32& operator[](const Int32 index) { return data[index]; }
+    Int32 operator[](const Int32 index) const { return data[index]; }
+};
+
+struct Mat2
+{
+    Vec2 data[2];
+    Vec2& operator[](const Int32 index) { return data[index]; } 
+    Vec2 operator[](const Int32 index) const { return data[index]; } 
+};
+
+struct Mat3
+{
+    Vec3 data[3];
+    Vec3& operator[](const Int32 index) { return data[index]; } 
+    Vec3 operator[](const Int32 index) const { return data[index]; } 
+};
+
+struct Mat4
+{
+    Vec4 data[4];
+    Vec4& operator[](const Int32 index) { return data[index]; } 
+    Vec4 operator[](const Int32 index) const { return data[index]; } 
+};

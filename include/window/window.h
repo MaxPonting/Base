@@ -3,7 +3,7 @@
 #include "../platform/platform.h"
 #include "../type/type.h"
 #include "../log/log.h"
-#include "../array/array.h"
+#include "../array/static_array.h"
 #include "../opengl/opengl.h"
 
 #include <string.h>
@@ -70,10 +70,10 @@ namespace Base::Window
 
 #endif
 
-    Array<Int8> windowEvents;
-    Array<Bool> windowKeyboardDown;
-    Array<Bool> windowKeyboardUp;
-    Array<Bool> windowKeyboard;
+    StaticArray<Bool, (Int32)Event::Count> windowEvents;
+    StaticArray<Bool, (Int32)Key::Count>windowKeyboardDown;
+    StaticArray<Bool, (Int32)Key::Count> windowKeyboardUp;
+    StaticArray<Bool, (Int32)Key::Count> windowKeyboard;
     OutputType windowOutputType;
 
     Bool GetEvent(const Event event)
@@ -184,11 +184,6 @@ namespace Base::Window
 
     Int32 Create(const char* name, const OutputType outputType, const Int32 width, const Int32 height)
     {
-        windowEvents = Array<Int8>((Int32)Event::Count);
-        windowKeyboardDown = Array<Bool>((Int32)Key::Count);
-        windowKeyboardUp = Array<Bool>((Int32)Key::Count);
-        windowKeyboard = Array<Bool>((Int32)Key::Count);
-
         hInstance = GetModuleHandle(NULL);        
         if(!hInstance)
         {
@@ -932,11 +927,6 @@ namespace Base::Window
         windowY = attributes.y;
         windowWidth = attributes.width;
         windowHeight = attributes.height;
-
-        windowEvents = Array<Int8>((Int32)Event::Count);
-        windowKeyboardDown = Array<bool>((Int32)Key::Count);
-        windowKeyboardUp = Array<bool>((Int32)Key::Count);
-        windowKeyboard = Array<bool>((Int32)Key::Count);
 
         return 1;
     }
