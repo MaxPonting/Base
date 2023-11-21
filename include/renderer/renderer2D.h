@@ -2,6 +2,7 @@
 
 #include "../type/type.h"
 #include "../array/array.h"
+#include "../math/math.h"
 #include "../math/matrix.h"
 #include "../allocator/allocator.h"
 #include "../opengl/opengl.h"
@@ -38,6 +39,8 @@ namespace Base::Renderer2D
         UInt32 vertexArray, vertexBuffer, indexBuffer, program, whiteTexture;
         Int32 batchSize;
         Mat4 view, projection;
+        IVec2 screenDimensions, nativeResolution;
+        Float32 screenScale;
     };
 
     const static Float32 VERTICES[] = {
@@ -49,7 +52,7 @@ namespace Base::Renderer2D
 
     static Global global = { 0 };
 
-    Int32 Create(const Int32 estimatedMaxBatchSize)
+    Int32 Create(const IVec2 nativeResolution, const Int32 estimatedMaxBatchSize)
     {
         glGenVertexArrays(1, &global.vertexArray);
         glBindVertexArray(global.vertexArray);
@@ -112,6 +115,7 @@ namespace Base::Renderer2D
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
         global.batchSize = estimatedMaxBatchSize;
+        global.nativeResolution = nativeResolution;
 
         return 1;
     }
@@ -127,12 +131,14 @@ namespace Base::Renderer2D
         return 1;
     }
 
-    Int32 BeginScene(const Int32 width, const Int32 height, const Vec2 cameraPosition, const Vec2 cameraScale, const Float32 cameraRotation)
+    Int32 BeginScene(const IVec2 screenDimensions, const Vec2 cameraPosition, const Vec2 cameraScale, const Float32 cameraRotation)
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
-        global.projection =  Math::Orthographic(-width / 2, width / 2, -height / 2, height / 2, -1, 1);
+        global.screenDimensions = screenDimensions;
+        global.projection =  Math::Orthographic(-screenDimensions[0]/ 2, screenDimensions[0] / 2, -screenDimensions[1] / 2, screenDimensions[1] / 2, -1, 1);
         global.view =  Math::Mat4Identity();        
+        global.screenScale = Math::MinimumF32((Float32)screenDimensions[0] / (Float32)global.nativeResolution[0], (Float32)screenDimensions[1] / (Float32)global.nativeResolution[1]);
 
         const Vec2 position = {-cameraPosition[0], -cameraPosition[1] };
         const Vec2 scale = { 1 / cameraScale[0], 1 / cameraScale[1] };
@@ -153,6 +159,10 @@ namespace Base::Renderer2D
         for(Int32 i = 0; i < count * 4; i+=4)
         {
             Quad quad = quads[i / 4];
+            quad.size[0] *= global.screenScale;
+            quad.size[1] *= global.screenScale;
+            quad.position[0] *= global.screenScale;
+            quad.position[1] *= global.screenScale;
 
             Vertex v[4] = 
             {
@@ -161,7 +171,6 @@ namespace Base::Renderer2D
                     quad.subTexture.bottom[0], quad.subTexture.bottom[1], 
                     quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3],
                 },
-
                 {
                     VERTICES[4] * quad.size[0], VERTICES[5] * quad.size[1], 
                     quad.subTexture.top[0], quad.subTexture.bottom[1], 
@@ -252,13 +261,17 @@ namespace Base::Renderer2D
         return 1;
     }
 
-    Int32 DrawScreen(const Quad* const quads, const Int32 count, const UInt32 texture, const Float32 horizontalAnchor, const Float32 verticalAnchor)
+    Int32 DrawScreen(const Quad* const quads, const Int32 count, const UInt32 texture, const Vec2 anchor)
     {
         Vertex* vertices = (Vertex*)Allocator::Allocate(sizeof(Vertex) * 4 * count);
 
         for(Int32 i = 0; i < count * 4; i+=4)
         {
             Quad quad = quads[i / 4];
+            quad.size[0] *= global.screenScale;
+            quad.size[1] *= global.screenScale;
+            quad.position[0] *= global.screenScale;
+            quad.position[1] *= global.screenScale;
 
             Vertex v[4] = 
             {
@@ -296,8 +309,8 @@ namespace Base::Renderer2D
                 v[j].position[0] = cos * x - sin * y;
                 v[j].position[1] = sin * x + cos * y;
 
-                v[j].position[0] += quad.position[0];
-                v[j].position[1] += quad.position[1];
+                v[j].position[0] += quad.position[0] + (anchor[0] * global.screenDimensions[0] / 2) + (-anchor[0] * quad.size[0] / 2);
+                v[j].position[1] += quad.position[1] + (anchor[1] * global.screenDimensions[1] / 2) + (-anchor[1] * quad.size[1] / 2);
             }
 
             vertices[i + 0] = v[0];

@@ -28,7 +28,7 @@ Int32 main()
 
     Allocator::Create(ALLOCATION_SIZE);
 
-    if(!Window::Create("Base Window", Window::OutputType::Windowed, 1280, 720))
+    if(!Window::Create("Base Window", Window::OutputType::Fullscreen, 2560, 1440))
         return 1; 
     if(!Window::SetGLContext(3, 3))
         return 1;
@@ -38,7 +38,7 @@ Int32 main()
     OpenGL::LoadProcedures();
     OpenGL::EnableErrorLog();
 
-    Renderer2D::Create(10);
+    Renderer2D::Create({ 1280, 720 }, 10);
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
@@ -48,7 +48,11 @@ Int32 main()
     Renderer2D::Quad quads[] = 
     {
         {0, 0, 128, 128, 0, 1.0f, 1.0f, 1.0f, 1.0f, plain}, 
+        {0, 128, 128, 128, 0, 1.0f, 1.0f, 1.0f, 1.0f, plain}, 
+        {0, 256, 128, 128, 0, 1.0f, 1.0f, 1.0f, 1.0f, plain}, 
     };
+
+    printf("%d, %d\n", Window::GetWidth(), Window::GetHeight());
 
     while(true)
     {
@@ -61,7 +65,12 @@ Int32 main()
             break;
 
         if(Window::GetEvent(Window::Event::Resize))
+        {
             glViewport(0, 0, Window::GetWidth(), Window::GetHeight());        
+        }
+
+        if(Window::GetKey(Window::Key::Space))
+            Window::SetOutputType(Window::OutputType::BorderlessFullscreen);
 
         if(Window::GetKey(Window::Key::W))
             cameraPosition[1] += 2;
@@ -72,9 +81,9 @@ Int32 main()
         if(Window::GetKey(Window::Key::A))
             cameraPosition[0] -= 2;
 
-        Renderer2D::BeginScene(Window::GetWidth(), Window::GetHeight(), cameraPosition, cameraScale, Math::Radians(cameraRotation));
-        Renderer2D::DrawWorld(quads, 1, texture); 
-        Renderer2D::DrawScreen(quads, 1, texture, -1, 0);
+        Renderer2D::BeginScene({ Window::GetWidth(), Window::GetHeight() }, cameraPosition, cameraScale, Math::Radians(cameraRotation));
+        Renderer2D::DrawWorld(quads, 3, texture); 
+        Renderer2D::DrawScreen(quads, 1, texture, {-1, 0});
         Renderer2D::EndScene();
 
         Window::SwapBuffer();
