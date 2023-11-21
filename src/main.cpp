@@ -28,7 +28,7 @@ Int32 main()
 
     Allocator::Create(ALLOCATION_SIZE);
 
-    if(!Window::Create("Base Window", Window::OutputType::Fullscreen, 2560, 1440))
+    if(!Window::Create("Base Window", Window::OutputType::Windowed, 1280, 720))
         return 1; 
     if(!Window::SetGLContext(3, 3))
         return 1;
@@ -81,10 +81,12 @@ Int32 main()
         if(Window::GetKey(Window::Key::A))
             cameraPosition[0] -= 2;
 
-        Renderer2D::BeginScene({ Window::GetWidth(), Window::GetHeight() }, cameraPosition, cameraScale, Math::Radians(cameraRotation));
-        Renderer2D::DrawWorld(quads, 3, texture); 
-        Renderer2D::DrawScreen(quads, 1, texture, {-1, 0});
+        Renderer2D::BeginScene({ Window::GetWidth(), Window::GetHeight() }, { cameraPosition, cameraScale, Math::Radians(cameraRotation) });
+        Renderer2D::Draw(quads, 3, texture, Renderer2D::CoordinateSpace::World, {0, 0});
+        Renderer2D::Draw(quads, 1, texture, Renderer2D::CoordinateSpace::Screen, { -1, 0});
         Renderer2D::EndScene();
+
+        printf("%f\n", Renderer2D::global.renderTime * 1000);
 
         Window::SwapBuffer();
     }

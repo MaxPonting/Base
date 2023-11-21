@@ -64,3 +64,10 @@ struct Mat4
     Vec4& operator[](const Int32 index) { return data[index]; } 
     Vec4 operator[](const Int32 index) const { return data[index]; } 
 };
+
+struct Rect
+{
+    Vec2 position;
+    Vec2 size;
+    Float32 rotation;
+};
