@@ -10,6 +10,7 @@
 
 #if PLATFORM == PLATFORM_WINDOWS
 #include <windows.h>
+#include <windowsx.h>
 #include <GL/wglext.h>
 #endif
 
@@ -26,6 +27,11 @@ namespace Base::Window
         Windowed,
         Fullscreen,
         BorderlessFullscreen
+    };
+
+    enum class MouseButton
+    {
+        Left, Middle, Right, Count
     };
 
 #if PLATFORM == PLATFORM_WINDOWS
@@ -74,6 +80,11 @@ namespace Base::Window
     StaticArray<Bool, (Int32)Key::Count>windowKeyboardDown;
     StaticArray<Bool, (Int32)Key::Count> windowKeyboardUp;
     StaticArray<Bool, (Int32)Key::Count> windowKeyboard;
+    StaticArray<Bool, (Int32)MouseButton::Count> windowMouseButtonDown;
+    StaticArray<Bool, (Int32)MouseButton::Count> windowMouseButtonUp;
+    StaticArray<Bool, (Int32)MouseButton::Count> windowMouseButton;
+    Int32 windowMouseWheel = 0;
+    IVec2 windowMousePosition = { 0, 0 };
     OutputType windowOutputType;
 
     Bool GetEvent(const Event event)
@@ -106,6 +117,40 @@ namespace Base::Window
             return false;
         
         return windowKeyboard.Item((Int32)key);
+    }
+
+    Bool GetMouseButtonDown(const MouseButton button)
+    {
+        if (button == MouseButton::Count)
+            return false;
+        
+        return windowMouseButtonDown.Item((Int32)button);
+    }
+
+    Bool GetMouseButtonUp(const MouseButton button)
+    {
+        if (button == MouseButton::Count)
+            return false;
+        
+        return windowMouseButtonUp.Item((Int32)button);
+    }
+
+    Bool GetMouseButton(const MouseButton button)
+    {
+        if (button == MouseButton::Count)
+            return false;
+        
+        return windowMouseButton.Item((Int32)button);
+    }
+
+    Int32 GetMouseWheel()
+    {
+        return windowMouseWheel;
+    }
+
+    IVec2 GetMousePosition()
+    {
+        return windowMousePosition;
     }
 
 
@@ -176,6 +221,37 @@ namespace Base::Window
             break;
         case WM_KEYUP:
             ProcessKeyUp(wParam);
+            break;
+        case WM_MOUSEWHEEL:
+            windowMouseWheel += GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA;
+            break;
+        case WM_MOUSEMOVE:
+            windowMousePosition[0] = GET_X_LPARAM(lParam) - (windowRect.right - windowRect.left) / 2;
+            windowMousePosition[1] = GET_Y_LPARAM(lParam) - (windowRect.bottom - windowRect.top) / 2;
+            break;
+        case WM_LBUTTONDOWN:
+            windowMouseButtonDown.Item((Int32)MouseButton::Left) = true;
+            windowMouseButton.Item((Int32)MouseButton::Left) = true;
+            break;
+        case WM_LBUTTONUP:
+            windowMouseButtonUp.Item((Int32)MouseButton::Left) = true;
+            windowMouseButton.Item((Int32)MouseButton::Left) = false;
+            break;
+        case WM_MBUTTONDOWN:
+            windowMouseButtonDown.Item((Int32)MouseButton::Middle) = true;
+            windowMouseButton.Item((Int32)MouseButton::Middle) = true;
+            break;
+        case WM_MBUTTONUP:
+            windowMouseButtonUp.Item((Int32)MouseButton::Middle) = true;
+            windowMouseButton.Item((Int32)MouseButton::Middle) = false;
+            break;
+        case WM_RBUTTONDOWN:
+            windowMouseButtonDown.Item((Int32)MouseButton::Right) = true;
+            windowMouseButton.Item((Int32)MouseButton::Right) = true;
+            break;
+        case WM_RBUTTONUP:
+            windowMouseButtonUp.Item((Int32)MouseButton::Right) = true;
+            windowMouseButton.Item((Int32)MouseButton::Right) = false;
             break;
         }
 
@@ -526,6 +602,11 @@ namespace Base::Window
         }
 
         windowEvents.Clear();
+        windowKeyboardDown.Clear();
+        windowKeyboardUp.Clear();
+        windowMouseButtonDown.Clear();
+        windowMouseButtonUp.Clear();
+        windowMouseWheel = 0;
 
         MSG msg = {};
         while (PeekMessage(&msg, hWindow, 0, 0, PM_REMOVE) > 0)
@@ -779,6 +860,11 @@ namespace Base::Window
     Int32 PollEvents()
     {
         windowEvents.Clear();
+        windowKeyboardDown.Clear();
+        windowKeyboardUp.Clear();
+        windowMouseButtonDown.Clear();
+        windowMouseButtonUp.Clear();
+        windowMouseWheel = 0;
 
         XEvent event;
 
@@ -825,6 +911,50 @@ namespace Base::Window
                     }
                 }
                 ProcessKeyUp(event.xkey);
+                break;
+            case ButtonPress:
+                switch(event.xbutton.button)
+                {
+                case 1:
+                    windowMouseButtonDown.Item((Int32)MouseButton::Left) = true;
+                    windowMouseButton.Item((Int32)MouseButton::Left) = true;
+                    break;
+                case 2:
+                    windowMouseButtonDown.Item((Int32)MouseButton::Middle) = true;
+                    windowMouseButton.Item((Int32)MouseButton::Middle) = true;
+                    break;
+                case 3:
+                    windowMouseButtonDown.Item((Int32)MouseButton::Right) = true;
+                    windowMouseButton.Item((Int32)MouseButton::Right) = true;
+                    break;
+                case 4:
+                    windowMouseWheel += 1;
+                    break;
+                case 5:
+                    windowMouseWheel -= 1;
+                    break;
+                }
+                break;
+            case ButtonRelease:
+                switch(event.xbutton.button)
+                {
+                case 1:
+                    windowMouseButtonUp.Item((Int32)MouseButton::Left) = true;
+                    windowMouseButton.Item((Int32)MouseButton::Left) = false;
+                    break;
+                case 2:
+                    windowMouseButtonUp.Item((Int32)MouseButton::Middle) = true;
+                    windowMouseButton.Item((Int32)MouseButton::Middle) = false;
+                    break;
+                case 3:
+                    windowMouseButtonUp.Item((Int32)MouseButton::Right) = true;
+                    windowMouseButton.Item((Int32)MouseButton::Right) = false;
+                    break;
+                }
+                break;
+            case MotionNotify:
+                windowMousePosition[0] = event.xmotion.x - windowWidth / 2;
+                windowMousePosition[1] = event.xmotion.y - windowHeight / 2;
                 break;
             }
         }
@@ -895,7 +1025,7 @@ namespace Base::Window
         windowAttributes.background_pixel = WhitePixel(display, screenID);
         windowAttributes.override_redirect = true;
         windowAttributes.colormap = XCreateColormap(display, RootWindow(display, screenID), visualInfo->visual, AllocNone);
-        windowAttributes.event_mask = StructureNotifyMask | KeyPressMask | KeyReleaseMask | KeymapStateMask;
+        windowAttributes.event_mask = StructureNotifyMask | KeyPressMask | KeyReleaseMask | KeymapStateMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask;
         window = XCreateWindow(display, RootWindow(display, screenID), 0, 0, width, height, 0, visualInfo->depth, InputOutput, visualInfo->visual, CWBackPixel | CWBorderPixel | CWColormap| CWEventMask, &windowAttributes);
         XFree(visualInfo);
 

@@ -69,8 +69,7 @@ Int32 main()
             glViewport(0, 0, Window::GetWidth(), Window::GetHeight());        
         }
 
-        if(Window::GetKey(Window::Key::Space))
-            Window::SetOutputType(Window::OutputType::BorderlessFullscreen);
+        quads[0].position[0] += Window::GetMouseWheel();
 
         if(Window::GetKey(Window::Key::W))
             cameraPosition[1] += 2;
@@ -85,8 +84,6 @@ Int32 main()
         Renderer2D::Draw(quads, 3, texture, Renderer2D::CoordinateSpace::World, {0, 0});
         Renderer2D::Draw(quads, 1, texture, Renderer2D::CoordinateSpace::Screen, { -1, 0});
         Renderer2D::EndScene();
-
-        printf("%f\n", Renderer2D::global.renderTime * 1000);
 
         Window::SwapBuffer();
     }
