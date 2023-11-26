@@ -5,6 +5,7 @@
 #include <log/log.h>
 #include <io/file.h>
 #include <math/math.h>
+#include <math/collision.h>
 #include <time/time.h>
 #include <time/sleep.h>
 #include <time/performance_counter.h>
@@ -52,8 +53,6 @@ Int32 main()
         {0, 256, 128, 128, 0, 1.0f, 1.0f, 1.0f, 1.0f, plain}, 
     };
 
-    printf("%d, %d\n", Window::GetWidth(), Window::GetHeight());
-
     while(true)
     {
         Window::PollEvents();
@@ -65,24 +64,39 @@ Int32 main()
             break;
 
         if(Window::GetEvent(Window::Event::Resize))
-        {
             glViewport(0, 0, Window::GetWidth(), Window::GetHeight());        
+
+        if(Math::Collision::RectRectAxisUnaligned({quads[0].position[0], quads[0].position[1], quads[0].size[0], quads[0].size[1], quads[0].rotation},
+            {quads[1].position[0], quads[1].position[1], quads[1].size[0], quads[1].size[1], quads[0].rotation}))
+        {
+            quads[0].colour[1] = 0;
+            quads[1].colour[1] = 0;
+        }
+        else
+        {
+            quads[0].colour[1] = 1;
+            quads[1].colour[1] = 1;
         }
 
-        quads[0].position[0] += Window::GetMouseWheel();
+        if(Window::GetKey(Window::Key::Left))
+            quads[0].rotation += 0.5f;
+        if(Window::GetKey(Window::Key::Right))
+            quads[0].rotation -= 0.5f;
 
         if(Window::GetKey(Window::Key::W))
-            cameraPosition[1] += 2;
+            quads[0].position[1] += 2;
         if(Window::GetKey(Window::Key::S))
-            cameraPosition[1] -= 2;
+            quads[0].position[1] -= 2;
         if(Window::GetKey(Window::Key::D))
-            cameraPosition[0] += 2;
+            quads[0].position[0] += 2;
         if(Window::GetKey(Window::Key::A))
-            cameraPosition[0] -= 2;
+            quads[0].position[0] -= 2;
 
-        Renderer2D::BeginScene({ Window::GetWidth(), Window::GetHeight() }, { cameraPosition, cameraScale, Math::Radians(cameraRotation) });
-        Renderer2D::Draw(quads, 3, texture, Renderer2D::CoordinateSpace::World, {0, 0});
-        Renderer2D::Draw(quads, 1, texture, Renderer2D::CoordinateSpace::Screen, { -1, 0});
+        quads[1].position = { (Float32)Window::GetMousePosition()[0], (Float32)Window::GetMousePosition()[1] };
+
+        Renderer2D::BeginScene({ Window::GetWidth(), Window::GetHeight() }, { cameraPosition, cameraScale, Math::F32::Radians(cameraRotation) });
+        Renderer2D::Draw(quads, 2, texture, Renderer2D::CoordinateSpace::World, {0, 0});
+//        Renderer2D::Draw(quads, 1, texture, Renderer2D::CoordinateSpace::Screen, { -1, 0});
         Renderer2D::EndScene();
 
         Window::SwapBuffer();

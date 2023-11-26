@@ -227,7 +227,7 @@ namespace Base::Window
             break;
         case WM_MOUSEMOVE:
             windowMousePosition[0] = GET_X_LPARAM(lParam) - (windowRect.right - windowRect.left) / 2;
-            windowMousePosition[1] = GET_Y_LPARAM(lParam) - (windowRect.bottom - windowRect.top) / 2;
+            windowMousePosition[1] = -(GET_Y_LPARAM(lParam) - (windowRect.bottom - windowRect.top) / 2);
             break;
         case WM_LBUTTONDOWN:
             windowMouseButtonDown.Item((Int32)MouseButton::Left) = true;
@@ -954,7 +954,7 @@ namespace Base::Window
                 break;
             case MotionNotify:
                 windowMousePosition[0] = event.xmotion.x - windowWidth / 2;
-                windowMousePosition[1] = event.xmotion.y - windowHeight / 2;
+                windowMousePosition[1] = -(event.xmotion.y - windowHeight / 2);
                 break;
             }
         }

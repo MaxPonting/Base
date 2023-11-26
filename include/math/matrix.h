@@ -4,9 +4,9 @@
 
 #include <math.h>
 
-namespace Base::Math
+namespace Base::Math::Matrix4
 {
-    Mat4 Mat4Identity()
+    Mat4 Identity()
     {
         Mat4 mat;
 
@@ -29,38 +29,6 @@ namespace Base::Math
         mat[3][1] = 0;
         mat[3][2] = 0;
         mat[3][3] = 1;
-
-        return mat;
-    }
-    
-    Mat3 Mat3Identity()
-    {
-        Mat3 mat;
-
-        mat[0][0] = 1;
-        mat[0][1] = 0;
-        mat[0][2] = 0;
-
-        mat[1][0] = 0;
-        mat[1][1] = 1;
-        mat[1][2] = 0;
-
-        mat[2][0] = 0;
-        mat[2][1] = 0;
-        mat[2][2] = 1;
-
-        return mat;
-    }
-
-    Mat2 Mat2Identity()
-    {
-        Mat2 mat;
-
-        mat[0][0] = 1;
-        mat[0][1] = 0;
-
-        mat[1][0] = 0;
-        mat[1][1] = 1;
 
         return mat;
     }
@@ -92,9 +60,9 @@ namespace Base::Math
         return mat;
     }
 
-    Mat4 Mat4Transform2D(const Vec2 translation, const Vec2 scale, const Float32 rotation)
+    Mat4 Transform2D(const Vec2 translation, const Vec2 scale, const Float32 rotation)
     {
-        Mat4 mat = Mat4Identity();
+        Mat4 mat = Identity();
 
         mat[3][0] = translation[0]; 
         mat[3][1] = translation[1]; 
@@ -109,4 +77,44 @@ namespace Base::Math
 
         return mat;
     }
+
+}
+
+namespace Base::Math::Matrix3
+{
+    Mat3 Mat3Identity()
+    {
+        Mat3 mat;
+
+        mat[0][0] = 1;
+        mat[0][1] = 0;
+        mat[0][2] = 0;
+
+        mat[1][0] = 0;
+        mat[1][1] = 1;
+        mat[1][2] = 0;
+
+        mat[2][0] = 0;
+        mat[2][1] = 0;
+        mat[2][2] = 1;
+
+        return mat;
+    }
+}
+
+namespace Base::Math::Matrix2
+{
+    Mat2 Mat2Identity()
+    {
+        Mat2 mat;
+
+        mat[0][0] = 1;
+        mat[0][1] = 0;
+
+        mat[1][0] = 0;
+        mat[1][1] = 1;
+
+        return mat;
+    }
+
 }

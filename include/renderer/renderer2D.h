@@ -146,13 +146,13 @@ namespace Base::Renderer2D
         glClear(GL_COLOR_BUFFER_BIT);
 
         global.screenDimensions = screen;
-        global.projection =  Math::Orthographic(-screen[0]/ 2, screen[0] / 2, -screen[1] / 2, screen[1] / 2, -1, 1);
-        global.view =  Math::Mat4Identity();        
-        global.screenScale = Math::MinimumF32((Float32)screen[0] / (Float32)global.nativeResolution[0], (Float32)screen[1] / (Float32)global.nativeResolution[1]);
+        global.projection =  Math::Matrix4::Orthographic(-screen[0]/ 2, screen[0] / 2, -screen[1] / 2, screen[1] / 2, -1, 1);
+        global.view =  Math::Matrix4::Identity();        
+        global.screenScale = Math::F32::Minimum((Float32)screen[0] / (Float32)global.nativeResolution[0], (Float32)screen[1] / (Float32)global.nativeResolution[1]);
 
         const Vec2 position = {-camera.position[0], -camera.position[1] };
         const Vec2 scale = { 1 / camera.size[0], 1 / camera.size[1] };
-        global.view = Math::Mat4Transform2D(position, scale, -camera.rotation);
+        global.view = Math::Matrix4::Transform2D(position, scale, -camera.rotation);
 
         return 1;
     }
@@ -200,8 +200,8 @@ namespace Base::Renderer2D
                 }
             };
 
-            const Float32 sin = sinf(Math::Radians(quad.rotation));
-            const Float32 cos = cosf(Math::Radians(quad.rotation));
+            const Float32 sin = sinf(Math::F32::Radians(quad.rotation));
+            const Float32 cos = cosf(Math::F32::Radians(quad.rotation));
 
             for(Int32 j = 0; j < 4; j++)
             {
@@ -258,7 +258,7 @@ namespace Base::Renderer2D
         if(space == CoordinateSpace::World)
             OpenGL::Program::SetUniformMatrix4FV(global.program, "uView", global.view);
         else if(space == CoordinateSpace::Screen)
-            OpenGL::Program::SetUniformMatrix4FV(global.program, "uView", Math::Mat4Identity());
+            OpenGL::Program::SetUniformMatrix4FV(global.program, "uView", Math::Matrix4::Identity());
 
         OpenGL::Program::SetUniformMatrix4FV(global.program, "uProjection", global.projection);
         OpenGL::Program::SetUniform1I(global.program, "uTexture", 0);
