@@ -50,7 +50,7 @@ Int32 main()
     {
         {0, 0, 128, 128, 0, 1.0f, 1.0f, 1.0f, 1.0f, plain}, 
         {0, 128, 128, 128, 0, 1.0f, 1.0f, 1.0f, 1.0f, plain}, 
-        {0, 256, 128, 128, 0, 1.0f, 1.0f, 1.0f, 1.0f, plain}, 
+        {0, 0, 128, 128, 0, 1.0f, 1.0f, 1.0f, 1.0f, plain}, 
     };
 
     while(true)
@@ -66,8 +66,8 @@ Int32 main()
         if(Window::GetEvent(Window::Event::Resize))
             glViewport(0, 0, Window::GetWidth(), Window::GetHeight());        
 
-        if(Math::Collision::RectRectAxisUnaligned({quads[0].position[0], quads[0].position[1], quads[0].size[0], quads[0].size[1], quads[0].rotation},
-            {quads[1].position[0], quads[1].position[1], quads[1].size[0], quads[1].size[1], quads[0].rotation}))
+        if(Math::Collision::RectRect({quads[0].position[0], quads[0].position[1], quads[0].size[0], quads[0].size[1], quads[0].rotation},
+            {quads[1].position[0], quads[1].position[1], quads[1].size[0], quads[1].size[1], quads[1].rotation}))
         {
             quads[0].colour[1] = 0;
             quads[1].colour[1] = 0;

@@ -80,9 +80,10 @@ namespace Base::Math::Vector2F
         return { b[0] - a[0], b[1] - a[1] };
     }
 
-    Float32 ProjectPointOnLineScalar(const Vec2 x, const Vec2 ab)
+    Float32 ProjectPointOnLineScalar(const Vec2 x, const Vec2 a, const Vec2 b)
     {
-        return DotProduct(x, ab) / Magnitude(ab);
+        const Vec2 ab = LineSegment(a, b);
+        return DotProduct(ab, LineSegment(a, x)) / Magnitude(ab);
     }
 
     Vec2 ProjectPointOnLine(const Vec2 x, const Vec2 a, const Vec2 b)

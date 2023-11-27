@@ -26,7 +26,7 @@ namespace Base::Math::Collision
         return true;
     }
 
-    Bool CheckRectProjection(const Vec2* const vertices, const Vec2 lineSegment)
+    Bool CheckRectProjection(const Vec2* const vertices, const Vec2 a, const Vec2 b)
     {
         auto AllNegative = [](const Float32* const projections) -> Bool
         {
@@ -50,10 +50,10 @@ namespace Base::Math::Collision
             return true;
         };
 
-        Float32 magnitude = Vector2F::Magnitude(lineSegment);
+        const Float32 magnitude = Vector2F::Magnitude(Vector2F::LineSegment(a, b));
         Float32 projections[4];
         for(Int32 i = 0; i < 4; i++)
-            projections[i] = Vector2F::ProjectPointOnLineScalar(vertices[i], lineSegment);
+            projections[i] = Vector2F::ProjectPointOnLineScalar(vertices[i], a, b);
 
         if(AllNegative(projections))
             return true;
@@ -71,16 +71,16 @@ namespace Base::Math::Collision
         Vec2 bVertices[4];
         Rectangle::Vertices(bVertices, b);
 
-        if(CheckRectProjection(aVertices, Vector2F::LineSegment(bVertices[2], bVertices[0])))
+        if(CheckRectProjection(aVertices, bVertices[2], bVertices[0]))
             return false;
 
-        if(CheckRectProjection(aVertices, Vector2F::LineSegment(bVertices[2], bVertices[3])))
+        if(CheckRectProjection(aVertices, bVertices[2], bVertices[3]))
             return false;
 
-        if(CheckRectProjection(bVertices, Vector2F::LineSegment(aVertices[2], aVertices[0])))
+        if(CheckRectProjection(bVertices, aVertices[2], aVertices[0]))
             return false;
 
-        if(CheckRectProjection(bVertices, Vector2F::LineSegment(aVertices[2], aVertices[3])))
+        if(CheckRectProjection(bVertices, aVertices[2], aVertices[3]))
             return false;
 
         return true;        
