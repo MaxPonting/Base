@@ -92,7 +92,7 @@ namespace Base::Window
         if (event == Event::Count)
             return false;
 
-        return windowEvents.Item((Int32)event);
+        return windowEvents[(Int32)event];
     }
 
     Bool GetKeyDown(const Key key)
@@ -100,7 +100,7 @@ namespace Base::Window
         if (key == Key::Count)
             return false;
 
-        return windowKeyboardDown.Item((Int32)key);
+        return windowKeyboardDown[(Int32)key];
     }
 
     Bool GetKeyUp(const Key key)
@@ -108,7 +108,7 @@ namespace Base::Window
         if (key == Key::Count)
             return false;
 
-        return windowKeyboardUp.Item((Int32)key);       
+        return windowKeyboardUp[(Int32)key];       
     }
 
     Bool GetKey(const Key key)
@@ -116,7 +116,7 @@ namespace Base::Window
         if (key == Key::Count)
             return false;
         
-        return windowKeyboard.Item((Int32)key);
+        return windowKeyboard[(Int32)key];
     }
 
     Bool GetMouseButtonDown(const MouseButton button)
@@ -124,7 +124,7 @@ namespace Base::Window
         if (button == MouseButton::Count)
             return false;
         
-        return windowMouseButtonDown.Item((Int32)button);
+        return windowMouseButtonDown[(Int32)button];
     }
 
     Bool GetMouseButtonUp(const MouseButton button)
@@ -132,7 +132,7 @@ namespace Base::Window
         if (button == MouseButton::Count)
             return false;
         
-        return windowMouseButtonUp.Item((Int32)button);
+        return windowMouseButtonUp[(Int32)button];
     }
 
     Bool GetMouseButton(const MouseButton button)
@@ -140,7 +140,7 @@ namespace Base::Window
         if (button == MouseButton::Count)
             return false;
         
-        return windowMouseButton.Item((Int32)button);
+        return windowMouseButton[(Int32)button];
     }
 
     Int32 GetMouseWheel()
@@ -175,8 +175,8 @@ namespace Base::Window
         if(wParam >= (Int32)Key::Count)
             return 1;
 
-        windowKeyboard.Item(wParam) = true;
-        windowKeyboardDown.Item(wParam) = true;
+        windowKeyboard[wParam] = true;
+        windowKeyboardDown[wParam] = true;
 
         return 1;
     }
@@ -186,8 +186,8 @@ namespace Base::Window
         if(wParam >= (Int32)Key::Count)
             return 1;
 
-        windowKeyboard.Item(wParam) = false;
-        windowKeyboardUp.Item(wParam) = true;
+        windowKeyboard[wParam] = false;
+        windowKeyboardUp[wParam] = true;
 
         return 1;
     }
@@ -197,15 +197,15 @@ namespace Base::Window
         switch (uMsg)
         {
         case WM_DESTROY:
-            windowEvents.Item((Int32)Event::Destroy) = true;
+            windowEvents[(Int32)Event::Destroy] = true;
             PostQuitMessage(0);
             return 0;
         case WM_SIZE:
-            windowEvents.Item((Int32)Event::Resize) = true;
+            windowEvents[(Int32)Event::Resize] = true;
             GetClientRect(hWindow, &windowRect);
             break;
         case WM_MOVE:
-            windowEvents.Item((Int32)Event::Move) = true;
+            windowEvents[(Int32)Event::Move] = true;
             windowX = LOWORD(lParam);
             windowY = HIWORD(lParam);
             break;
@@ -230,28 +230,28 @@ namespace Base::Window
             windowMousePosition[1] = -(GET_Y_LPARAM(lParam) - (windowRect.bottom - windowRect.top) / 2);
             break;
         case WM_LBUTTONDOWN:
-            windowMouseButtonDown.Item((Int32)MouseButton::Left) = true;
-            windowMouseButton.Item((Int32)MouseButton::Left) = true;
+            windowMouseButtonDown[(Int32)MouseButton::Left] = true;
+            windowMouseButton[(Int32)MouseButton::Left] = true;
             break;
         case WM_LBUTTONUP:
-            windowMouseButtonUp.Item((Int32)MouseButton::Left) = true;
-            windowMouseButton.Item((Int32)MouseButton::Left) = false;
+            windowMouseButtonUp[(Int32)MouseButton::Left] = true;
+            windowMouseButton[(Int32)MouseButton::Left] = false;
             break;
         case WM_MBUTTONDOWN:
-            windowMouseButtonDown.Item((Int32)MouseButton::Middle) = true;
-            windowMouseButton.Item((Int32)MouseButton::Middle) = true;
+            windowMouseButtonDown[(Int32)MouseButton::Middle] = true;
+            windowMouseButton[(Int32)MouseButton::Middle] = true;
             break;
         case WM_MBUTTONUP:
-            windowMouseButtonUp.Item((Int32)MouseButton::Middle) = true;
-            windowMouseButton.Item((Int32)MouseButton::Middle) = false;
+            windowMouseButtonUp[(Int32)MouseButton::Middle] = true;
+            windowMouseButton[(Int32)MouseButton::Middle] = false;
             break;
         case WM_RBUTTONDOWN:
-            windowMouseButtonDown.Item((Int32)MouseButton::Right) = true;
-            windowMouseButton.Item((Int32)MouseButton::Right) = true;
+            windowMouseButtonDown[(Int32)MouseButton::Right] = true;
+            windowMouseButton[(Int32)MouseButton::Right] = true;
             break;
         case WM_RBUTTONUP:
-            windowMouseButtonUp.Item((Int32)MouseButton::Right) = true;
-            windowMouseButton.Item((Int32)MouseButton::Right) = false;
+            windowMouseButtonUp[(Int32)MouseButton::Right] = true;
+            windowMouseButton[(Int32)MouseButton::Right] = false;
             break;
         }
 
@@ -837,8 +837,8 @@ namespace Base::Window
         if(index >= (Int32)Key::Count)
             return 1;
 
-        windowKeyboard.Item(index) = true;
-        windowKeyboardDown.Item(index) = true;
+        windowKeyboard[index] = true;
+        windowKeyboardDown[index] = true;
         
         return 1;
     }
@@ -850,8 +850,8 @@ namespace Base::Window
         if(index >= (Int32)Key::Count)
             return 1;
 
-        windowKeyboard.Item(index) = false;
-        windowKeyboardUp.Item(index) = true;
+        windowKeyboard[index] = false;
+        windowKeyboardUp[index] = true;
 
         return 1;
     }
@@ -877,20 +877,20 @@ namespace Base::Window
             case ClientMessage:
                 if ((Atom)event.xclient.data.l[0] != deleteMessage)
                     break;
-                windowEvents.Item((Int32)Event::Destroy) = true;
+                windowEvents[(Int32)Event::Destroy] = true;
                 break;
             case ConfigureNotify:
                 if(windowX != event.xconfigure.x || windowY != event.xconfigure.y)
                 {
                     windowX = event.xconfigure.x;
                     windowY = event.xconfigure.y;
-                    windowEvents.Item((Int32)Event::Move) = true;
+                    windowEvents[(Int32)Event::Move] = true;
                 }
                 if(windowWidth != event.xconfigure.width || windowHeight != event.xconfigure.height)
                 {
                     windowWidth = event.xconfigure.width;
                     windowHeight = event.xconfigure.height;
-                    windowEvents.Item((Int32)Event::Resize) = true;
+                    windowEvents[(Int32)Event::Resize] = true;
                 }
                 break;
             case KeymapNotify:
@@ -916,16 +916,16 @@ namespace Base::Window
                 switch(event.xbutton.button)
                 {
                 case 1:
-                    windowMouseButtonDown.Item((Int32)MouseButton::Left) = true;
-                    windowMouseButton.Item((Int32)MouseButton::Left) = true;
+                    windowMouseButtonDown[(Int32)MouseButton::Left] = true;
+                    windowMouseButton[(Int32)MouseButton::Left] = true;
                     break;
                 case 2:
-                    windowMouseButtonDown.Item((Int32)MouseButton::Middle) = true;
-                    windowMouseButton.Item((Int32)MouseButton::Middle) = true;
+                    windowMouseButtonDown[(Int32)MouseButton::Middle] = true;
+                    windowMouseButton[(Int32)MouseButton::Middle] = true;
                     break;
                 case 3:
-                    windowMouseButtonDown.Item((Int32)MouseButton::Right) = true;
-                    windowMouseButton.Item((Int32)MouseButton::Right) = true;
+                    windowMouseButtonDown[(Int32)MouseButton::Right] = true;
+                    windowMouseButton[(Int32)MouseButton::Right] = true;
                     break;
                 case 4:
                     windowMouseWheel += 1;
@@ -939,16 +939,16 @@ namespace Base::Window
                 switch(event.xbutton.button)
                 {
                 case 1:
-                    windowMouseButtonUp.Item((Int32)MouseButton::Left) = true;
-                    windowMouseButton.Item((Int32)MouseButton::Left) = false;
+                    windowMouseButtonUp[(Int32)MouseButton::Left] = true;
+                    windowMouseButton[(Int32)MouseButton::Left] = false;
                     break;
                 case 2:
-                    windowMouseButtonUp.Item((Int32)MouseButton::Middle) = true;
-                    windowMouseButton.Item((Int32)MouseButton::Middle) = false;
+                    windowMouseButtonUp[(Int32)MouseButton::Middle] = true;
+                    windowMouseButton[(Int32)MouseButton::Middle] = false;
                     break;
                 case 3:
-                    windowMouseButtonUp.Item((Int32)MouseButton::Right) = true;
-                    windowMouseButton.Item((Int32)MouseButton::Right) = false;
+                    windowMouseButtonUp[(Int32)MouseButton::Right] = true;
+                    windowMouseButton[(Int32)MouseButton::Right] = false;
                     break;
                 }
                 break;

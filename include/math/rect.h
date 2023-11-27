@@ -9,15 +9,17 @@
 
 namespace Base::Math::Rectangle
 {
-    void Vertices(Vec2* const vertices, const Rect rect)
+    StaticArray<Vec2, 4> Vertices(const Rect rect)
     {
+        StaticArray<Vec2, 4> vertices;
+
         vertices[0] = {rect.position[0] + rect.size[0] / 2, rect.position[1] + rect.size[1] / 2};
         vertices[1] = {rect.position[0] + rect.size[0] / 2, rect.position[1] - rect.size[1] / 2};
         vertices[2] = {rect.position[0] - rect.size[0] / 2, rect.position[1] + rect.size[1] / 2};
         vertices[3] = {rect.position[0] - rect.size[0] / 2, rect.position[1] - rect.size[1] / 2};
 
         if(rect.rotation == 0)
-            return;
+            return vertices;
 
         const Float32 rotation = F32::Radians(rect.rotation);
         const Float32 sin = sinf(rotation);
@@ -25,5 +27,7 @@ namespace Base::Math::Rectangle
 
         for(Int32 i = 0; i < 4; i++)
             vertices[i] = Vector2F::RotateAroundPointCache(vertices[i], rect.position, sin, cos);
+
+        return vertices;
     }
 }  

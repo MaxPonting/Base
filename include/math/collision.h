@@ -26,9 +26,9 @@ namespace Base::Math::Collision
         return true;
     }
 
-    Bool CheckRectProjection(const Vec2* const vertices, const Vec2 a, const Vec2 b)
+    Bool CheckRectProjection(const StaticArray<Vec2, 4> vertices, const Vec2 a, const Vec2 b)
     {
-        auto AllNegative = [](const Float32* const projections) -> Bool
+        auto AllNegative = [](const StaticArray<Float32, 4> projections) -> Bool
         {
             for(Int32 i = 0; i < 4; i++)
             {
@@ -39,7 +39,7 @@ namespace Base::Math::Collision
             return true;
         };
 
-        auto AllGreater = [](const Float32* const projections, const Float32 magnitude) -> Bool
+        auto AllGreater = [](const StaticArray<Float32, 4> projections, const Float32 magnitude) -> Bool
         {
             for(Int32 i = 0; i < 4; i++)
             {
@@ -51,7 +51,7 @@ namespace Base::Math::Collision
         };
 
         const Float32 magnitude = Vector2F::Magnitude(Vector2F::LineSegment(a, b));
-        Float32 projections[4];
+        StaticArray<Float32, 4> projections;
         for(Int32 i = 0; i < 4; i++)
             projections[i] = Vector2F::ProjectPointOnLineScalar(vertices[i], a, b);
 
@@ -66,10 +66,8 @@ namespace Base::Math::Collision
 
     Bool RectRectAxisUnaligned(const Rect a, const Rect b)
     {
-        Vec2 aVertices[4];
-        Rectangle::Vertices(aVertices, a);
-        Vec2 bVertices[4];
-        Rectangle::Vertices(bVertices, b);
+        StaticArray<Vec2, 4> aVertices = Rectangle::Vertices(a);
+        StaticArray<Vec2, 4> bVertices =  Rectangle::Vertices(b);
 
         if(CheckRectProjection(aVertices, bVertices[2], bVertices[0]))
             return false;

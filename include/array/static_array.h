@@ -20,18 +20,29 @@ namespace Base
             count = 0;
             memset(memory, 0, size * sizeof(T));
         };
-  
-        T& Item(const Int32 index)
-        {
+
+        T& operator[](const Int32 index) 
+        { 
             if (index >= size || index < 0)
             {
                 Log::Print("Array index out of bounds", Log::Type::Error, __LINE__, __FILE__);
                 exit(0);
             }
-            
-            return memory[index];
-        }
 
+            return memory[index]; 
+        } 
+
+        T operator[](const Int32 index) const 
+        { 
+            if (index >= size || index < 0)
+            {
+                Log::Print("Array index out of bounds", Log::Type::Error, __LINE__, __FILE__);
+                exit(0);
+            }
+
+            return memory[index]; 
+        } 
+  
         Int32 Push(const T value)
         {
             if(count == size)
@@ -67,7 +78,7 @@ namespace Base
             return 1;
         }
 
-        Int32 GetSize()
+        Int32 GetSize() const
         {
             return size;
         }

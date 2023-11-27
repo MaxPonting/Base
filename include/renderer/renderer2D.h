@@ -166,7 +166,7 @@ namespace Base::Renderer2D
 
     Int32 Draw(const Quad* const quads, const Int32 count, const UInt32 texture, const CoordinateSpace space, const Vec2 anchor)
     {
-        Vertex* vertices = (Vertex*)Allocator::Allocate(sizeof(Vertex) * 4 * count);
+        Array<Vertex> vertices = Array<Vertex>(4 * count);
 
         for(Int32 i = 0; i < count * 4; i+=4)
         {
@@ -226,7 +226,7 @@ namespace Base::Renderer2D
 
         if(count > global.batchSize)
         {
-            glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 4 * count, vertices, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 4 * count, vertices.memory, GL_DYNAMIC_DRAW);
 
             UInt32* indices = (UInt32*)Allocator::Allocate(sizeof(UInt32) * count * 6);
 
@@ -250,7 +250,7 @@ namespace Base::Renderer2D
         }
         else
         {
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * 4 * count, vertices);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * 4 * count, vertices.memory);
         }
 
         OpenGL::Program::Bind(global.program);
@@ -273,7 +273,7 @@ namespace Base::Renderer2D
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        Allocator::Deallocate(sizeof(Vertex) * 4 * count);
+        vertices.Deallocate();
 
         return 1;
     }
