@@ -4,14 +4,17 @@
 #include "../type/type.h"
 #include "../log/log.h"
 #include "../array/static_array.h"
-#include "../opengl/opengl.h"
-
-#include <string.h>
+#include "../math/struct.h"
 
 #if PLATFORM == PLATFORM_WINDOWS
 #include <windows.h>
 #include <windowsx.h>
+#include <GL/gl.h>
+#include <GL/glext.h>
 #include <GL/wglext.h>
+#elif PLATFORM == PLATFORM_LINUX
+#include <GL/gl.h>
+#include <GL/glext.h>
 #endif
 
 namespace Base::Window
@@ -405,6 +408,21 @@ namespace Base::Window
         return 1;
     }
 
+    Int64 GetGLProcAddress(const char* name)
+    {
+        PROC proc = wglGetProcAddress(name);
+
+        if(proc == NULL)
+        {
+            char buffer[50] = "Failed to retrieve procedure: ";
+            strncat_s(buffer, 50, name, strlen(name));
+            Log::Print(buffer, Log::Type::Warning, __LINE__, __FILE__);
+            return 0;
+        }
+
+        return (Int64)proc;
+    }
+
     Int32 LoadWGLProcerdures()
     {
         WNDCLASSEX windowClassEx; 
@@ -499,21 +517,6 @@ namespace Base::Window
         DestroyWindow(hDummyWindow);
 
         return 1;
-    }
-
-    Int64 GetGLProcAddress(const char* name)
-    {
-        PROC proc = wglGetProcAddress(name);
-
-        if(proc == NULL)
-        {
-            char buffer[50] = "Failed to retrieve procedure: ";
-            strncat_s(buffer, 50, name, strlen(name));
-            Log::Print(buffer, Log::Type::Warning, __LINE__, __FILE__);
-            return 0;
-        }
-
-        return (Int64)proc;
     }
 
     Int32 SetGLContext(const Int32 majorVersion, const Int32 minorVersion)

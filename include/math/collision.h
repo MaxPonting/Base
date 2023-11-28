@@ -5,8 +5,6 @@
 #include "rect.h"
 #include "vector.h"
 
-#include <math.h>
-
 namespace Base::Math::Collision
 {
     Bool PointRect(const Vec2 point, const Rect rect)

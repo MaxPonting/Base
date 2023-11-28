@@ -1,11 +1,8 @@
 #pragma once
 
-#include "struct.h"
 #include "math.h"
 #include "vector.h"
 #include "../array/static_array.h"
-
-#include <math.h>
 
 namespace Base::Math::Rectangle
 {

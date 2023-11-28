@@ -1,5 +1,8 @@
 #pragma once
 
+#include "struct.h"
+#include <math.h>
+
 namespace Base::Math::F64
 {
     const Float64 PI = 3.14159265359;

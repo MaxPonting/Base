@@ -10,8 +10,6 @@
 #include <time.h> 
 #endif
 
-#include <stdio.h>
-
 namespace Base::Time
 {
 #if PLATFORM == PLATFORM_WINDOWS

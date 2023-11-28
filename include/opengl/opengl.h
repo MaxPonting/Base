@@ -2,6 +2,7 @@
 
 #include "../type/type.h"
 #include "../platform/platform.h"
+#include "../window/window.h"
 
 #if PLATFORM == PLATFORM_WINDOWS
 #include <GL/gl.h>
@@ -83,11 +84,6 @@ PFNGLVERTEXATTRIBPOINTERPROC base_glVertexAttribPointer;
 #define glUseProgram base_glUseProgram
 #define glValidateProgram base_glValidateProgram
 #define glVertexAttribPointer base_glVertexAttribPointer
-
-namespace Base::Window
-{
-    Int64 GetGLProcAddress(const char* name);
-}
 
 namespace Base::OpenGL
 {

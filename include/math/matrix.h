@@ -1,8 +1,6 @@
 #pragma once
 
-#include "struct.h"
-
-#include <math.h>
+#include "math.h"
 
 namespace Base::Math::Matrix4
 {

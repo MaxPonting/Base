@@ -1,9 +1,6 @@
 #pragma once
 
-#include <math.h>
-
-#include "struct.h"
-#include <stdio.h>
+#include "math.h"
 
 namespace Base::Math::Vector2F
 {

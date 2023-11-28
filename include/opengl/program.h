@@ -1,7 +1,7 @@
 #pragma once
 
 #include "opengl.h"
-#include <math/struct.h>
+#include "../math/struct.h"
 
 namespace Base::OpenGL::Program
 {

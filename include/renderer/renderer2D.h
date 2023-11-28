@@ -2,6 +2,7 @@
 
 #include "../type/type.h"
 #include "../array/array.h"
+#include "../array/static_array.h"
 #include "../math/math.h"
 #include "../math/matrix.h"
 #include "../allocator/allocator.h"
@@ -176,28 +177,29 @@ namespace Base::Renderer2D
             quad.position[0] *= global.screenScale;
             quad.position[1] *= global.screenScale;
 
-            Vertex v[4] = 
-            {
-                {
-                    VERTICES[0] * quad.size[0], VERTICES[1] * quad.size[1],
-                    quad.subTexture.bottom[0], quad.subTexture.bottom[1], 
-                    quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3],
-                },
-                {
-                    VERTICES[4] * quad.size[0], VERTICES[5] * quad.size[1], 
-                    quad.subTexture.top[0], quad.subTexture.bottom[1], 
-                    quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3],
-                },
-                {
-                    VERTICES[8] * quad.size[0], VERTICES[9] * quad.size[1], 
-                    quad.subTexture.bottom[0], quad.subTexture.top[1], 
-                    quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3],
-                },
-                {
-                    VERTICES[12] * quad.size[0], VERTICES[13] * quad.size[1], 
-                    quad.subTexture.top[0], quad.subTexture.top[1], 
-                    quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3],
-                }
+            StaticArray<Vertex, 4> v;
+            v[0] = {
+                VERTICES[0] * quad.size[0], VERTICES[1] * quad.size[1],
+                quad.subTexture.bottom[0], quad.subTexture.bottom[1], 
+                quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3]
+            };
+
+            v[1] = {
+                VERTICES[4] * quad.size[0], VERTICES[5] * quad.size[1], 
+                quad.subTexture.top[0], quad.subTexture.bottom[1], 
+                quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3]
+            };
+
+            v[2] = {
+                VERTICES[8] * quad.size[0], VERTICES[9] * quad.size[1], 
+                quad.subTexture.bottom[0], quad.subTexture.top[1], 
+                quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3]
+            };
+
+            v[3] = {
+                VERTICES[12] * quad.size[0], VERTICES[13] * quad.size[1], 
+                quad.subTexture.top[0], quad.subTexture.top[1], 
+                quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3],
             };
 
             const Float32 sin = sinf(Math::F32::Radians(quad.rotation));

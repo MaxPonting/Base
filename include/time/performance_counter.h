@@ -7,7 +7,6 @@
 #include <windows.h>
 #elif PLATFORM == PLATFORM_LINUX
 #include <time.h>
-#include <stdio.h>
 #endif
 
 namespace Base::PerformanceCounter

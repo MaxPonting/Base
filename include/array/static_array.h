@@ -5,7 +5,6 @@
 #include "../allocator/allocator.h"
 
 #include <stdlib.h>
-#include <stdio.h>
 
 namespace Base
 {

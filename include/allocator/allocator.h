@@ -6,6 +6,7 @@
 
 #include <memory.h>
 #include <malloc.h>
+#include <stdio.h>
 
 namespace Base::Allocator
 {

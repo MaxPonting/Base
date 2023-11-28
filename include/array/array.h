@@ -4,9 +4,8 @@
 #include "../log/log.h"
 #include "../allocator/allocator.h"
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <memory.h> 
+#include <stdlib.h>
 
 namespace Base
 {
