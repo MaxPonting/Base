@@ -15,13 +15,12 @@
 #include <opengl/texture.h>
 #include <window/window.h>
 #include <renderer/renderer2D.h>
+#include <game/point.h>
 
 #include <stdio.h>
 
 const static UInt64 ALLOCATION_SIZE = 1024 * 1024; // MB
-static Vec2 cameraPosition = {0, 0};
-static Vec2 cameraScale = {1, 1};
-static Float32 cameraRotation = 0;
+static Rect camera = { 0, 0, 1, 1, 0 };
 
 Int32 main()
 {
@@ -66,37 +65,29 @@ Int32 main()
         if(Window::GetEvent(Window::Event::Resize))
             glViewport(0, 0, Window::GetWidth(), Window::GetHeight());        
 
-        if(Math::Collision::RectRect({quads[0].position[0], quads[0].position[1], quads[0].size[0], quads[0].size[1], quads[0].rotation},
-            {quads[1].position[0], quads[1].position[1], quads[1].size[0], quads[1].size[1], quads[1].rotation}))
-        {
-            quads[0].colour[1] = 0;
-            quads[1].colour[1] = 0;
-        }
-        else
-        {
-            quads[0].colour[1] = 1;
-            quads[1].colour[1] = 1;
-        }
-
-        if(Window::GetKey(Window::Key::Left))
-            quads[0].rotation += 0.5f;
-        if(Window::GetKey(Window::Key::Right))
-            quads[0].rotation -= 0.5f;
-
         if(Window::GetKey(Window::Key::W))
-            quads[0].position[1] += 2;
+            camera.position[1] += 2;
         if(Window::GetKey(Window::Key::S))
-            quads[0].position[1] -= 2;
+            camera.position[1] -= 2;
         if(Window::GetKey(Window::Key::D))
-            quads[0].position[0] += 2;
+            camera.position[0] += 2;
         if(Window::GetKey(Window::Key::A))
-            quads[0].position[0] -= 2;
+            camera.position[0] -= 2;
 
-        quads[1].position = { (Float32)Window::GetMousePosition()[0], (Float32)Window::GetMousePosition()[1] };
+        if(Window::GetKey(Window::Key::Space))
+        {
+            camera.size[0] += 0.1f;
+            camera.size[1] += 0.1f;
+        }
 
-        Renderer2D::BeginScene({ Window::GetWidth(), Window::GetHeight() }, { cameraPosition, cameraScale, Math::F32::Radians(cameraRotation) });
+        if(Window::GetKey(Window::Key::Right))
+            camera.rotation += 0.01f;
+
+        quads[0].position = { (Float32)Window::GetMousePosition()[0], (Float32)Window::GetMousePosition()[1] };
+        quads[0].position = Game2D::ScreenToWorldPoint(quads[0].position, camera);
+
+        Renderer2D::BeginScene({ Window::GetWidth(), Window::GetHeight() }, camera);
         Renderer2D::Draw(quads, 2, texture, Renderer2D::CoordinateSpace::World, {0, 0});
-//        Renderer2D::Draw(quads, 1, texture, Renderer2D::CoordinateSpace::Screen, { -1, 0});
         Renderer2D::EndScene();
 
         Window::SwapBuffer();

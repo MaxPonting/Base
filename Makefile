@@ -20,7 +20,7 @@ DIFLAGS = -O2 -static-libgcc -static-libstdc++
 endif
 
 # Source File
-SRC = src/test.cpp
+SRC = src/main.cpp
 
 # Include Directory
 INC = -I include/
@@ -45,7 +45,8 @@ debug:
 	bin/debug/windows.exe
 
 release:
-	$(CC) $(FLAGS) $(RFLAGS) -ftime-report $(SRC) $(INC) $(LINK) -o bin/release/windows.exe
+	$(CC) $(FLAGS) $(RFLAGS) $(SRC) $(INC) $(LINK) -o bin/release/windows.exe
+	bin/release/windows.exe
 
 distribution:
 	$(CC) $(FLAGS) $(DIFLAGS) $(SRC) $(INC) $(LINK) -o bin/distribution/windows.exe 

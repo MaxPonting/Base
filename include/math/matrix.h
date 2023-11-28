@@ -80,7 +80,7 @@ namespace Base::Math::Matrix4
 
 namespace Base::Math::Matrix3
 {
-    Mat3 Mat3Identity()
+    Mat3 Identity()
     {
         Mat3 mat;
 
@@ -102,7 +102,7 @@ namespace Base::Math::Matrix3
 
 namespace Base::Math::Matrix2
 {
-    Mat2 Mat2Identity()
+    Mat2 Identity()
     {
         Mat2 mat;
 

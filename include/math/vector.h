@@ -19,6 +19,11 @@ namespace Base::Math::Vector2F
         return { a[0] + b[0], a[1] + b[1] };
     }
 
+    Vec2 Scale(const Vec2 a, const Vec2 b)
+    {
+        return { a[0] * b[0], a[1] * b[1] };
+    }
+
     Float32 DotProduct(Vec2 a, Vec2 b)
     {
         return a[0] * b[0] + a[1] * b[1];
@@ -87,5 +92,10 @@ namespace Base::Math::Vector2F
     {
         const Vec2 unitAB = Normalize(LineSegment(a, b));
         return Translation(a, Multiplication(unitAB, DotProduct(LineSegment(a, x), unitAB)));
+    }
+
+    Vec2 TransformMat4(const Mat4 mat, const Vec2 vec)
+    {
+        return { vec[0] * mat[0][0] + vec[1] * mat[1][0] + mat[3][0], vec[0] * mat[0][1] + vec[1] * mat[1][1] + mat[3][1] };
     }
 }
