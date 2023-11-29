@@ -15,7 +15,6 @@
 #include <opengl/texture.h>
 #include <window/window.h>
 #include <renderer/renderer2D.h>
-#include <game/point.h>
 
 #include <stdio.h>
 

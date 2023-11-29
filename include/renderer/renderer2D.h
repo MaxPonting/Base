@@ -4,6 +4,7 @@
 #include "../array/array.h"
 #include "../array/static_array.h"
 #include "../math/math.h"
+#include "../math/vector.h"
 #include "../math/matrix.h"
 #include "../allocator/allocator.h"
 #include "../time/performance_counter.h"
@@ -284,7 +285,7 @@ namespace Base::Renderer2D
     Vec2 WindowToScreenPoint(Vec2 point, const IVec2 screenResolution)
     {
         const Float32 scale = Math::F32::Minimum((Float32)screenResolution[0] / (Float32)global.nativeResolution[0], (Float32)screenResolution[1] / (Float32)global.nativeResolution[1]);
-        point = Math::Vector2F::Multiplication(point, 1 / scale);
+        point *= 1 / scale;
 
         return point;
     }
@@ -293,21 +294,21 @@ namespace Base::Renderer2D
     {
         const Float32 scale = Math::F32::Minimum((Float32)screenResolution[0] / (Float32)global.nativeResolution[0], (Float32)screenResolution[1] / (Float32)global.nativeResolution[1]);
 
-        point = Math::Vector2F::Translation(point, Math::Vector2F::Multiplication(camera.position, 1 / scale));
+        point += camera.position * 1 / scale;
         point = Math::Vector2F::Rotate(point, camera.rotation);
-        point = Math::Vector2F::Scale(point, camera.size);
+        point *= camera.size;
 
         return point;
     }
 
     Vec2 WindowToWorldPoint(Vec2 point, const IVec2 screenResolution, const Rect camera)
     {
-        point = Math::Vector2F::Translation(point, camera.position);
+        point += camera.position;
         point = Math::Vector2F::Rotate(point, camera.rotation);
-        point = Math::Vector2F::Scale(point, camera.size);
+        point *= camera.size;
 
         const Float32 scale = Math::F32::Minimum((Float32)screenResolution[0] / (Float32)global.nativeResolution[0], (Float32)screenResolution[1] / (Float32)global.nativeResolution[1]);
-        point = Math::Vector2F::Multiplication(point, 1 / scale);
+        point *= 1 / scale;
 
         return point;
     }
@@ -316,9 +317,9 @@ namespace Base::Renderer2D
     {
         const Float32 scale = Math::F32::Minimum((Float32)screenResolution[0] / (Float32)global.nativeResolution[0], (Float32)screenResolution[1] / (Float32)global.nativeResolution[1]);
 
-        point = Math::Vector2F::Scale(point, { 1 / camera.size[0], 1 / camera.size[1] });
+        point /= camera.size;
         point = Math::Vector2F::Rotate(point, -camera.rotation);
-        point = Math::Vector2F::Translation(point, Math::Vector2F::Multiplication(camera.position, scale));
+        point += camera.position * scale;
 
         return point;
     }

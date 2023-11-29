@@ -4,26 +4,6 @@
 
 namespace Base::Math::Vector2F
 {
-    Vec2 Division(const Vec2 vec, const Float32 div)
-    {
-        return { vec[0] / div, vec[1] / div };
-    }
-
-    Vec2 Multiplication(const Vec2 vec, const Float32 mul)
-    {
-        return { vec[0] * mul, vec[1] * mul };
-    }
-
-    Vec2 Translation(const Vec2 a, const Vec2 b)
-    {
-        return { a[0] + b[0], a[1] + b[1] };
-    }
-
-    Vec2 Scale(const Vec2 a, const Vec2 b)
-    {
-        return { a[0] * b[0], a[1] * b[1] };
-    }
-
     Float32 DotProduct(Vec2 a, Vec2 b)
     {
         return a[0] * b[0] + a[1] * b[1];
@@ -36,7 +16,7 @@ namespace Base::Math::Vector2F
 
     Vec2 Normalize(const Vec2 vec)
     {
-        return Division(vec, Magnitude(vec));
+        return vec / Magnitude(vec);
     }
 
     Vec2 Normal(const Vec2 vector)
@@ -91,7 +71,7 @@ namespace Base::Math::Vector2F
     Vec2 ProjectPointOnLine(const Vec2 x, const Vec2 a, const Vec2 b)
     {
         const Vec2 unitAB = Normalize(LineSegment(a, b));
-        return Translation(a, Multiplication(unitAB, DotProduct(LineSegment(a, x), unitAB)));
+        return a + unitAB * DotProduct(LineSegment(a, x), unitAB);
     }
 
     Vec2 TransformMat4(const Mat4 mat, const Vec2 vec)
