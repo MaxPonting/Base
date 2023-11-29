@@ -46,7 +46,7 @@ namespace Base::Renderer2D
         UInt32 vertexArray, vertexBuffer, indexBuffer, program, whiteTexture;
         Int32 batchSize;
         Mat4 view, projection;
-        IVec2 screenDimensions, nativeResolution;
+        IVec2 screenResolution, nativeResolution;
         Float32 screenScale;
         Float64 renderTime;
         PerformanceCounter::Timer timer;
@@ -61,14 +61,17 @@ namespace Base::Renderer2D
 
     static Global global = { 0 };
 
-    Int32 Create(const IVec2 nativeResolution, const Int32 estimatedMaxBatchSize)
+    Int32 Create(const IVec2 nativeResolution, Int32 maxBatchSizeHint)
     {
+        if(maxBatchSizeHint <= 0)
+            maxBatchSizeHint = 1;
+
         glGenVertexArrays(1, &global.vertexArray);
         glBindVertexArray(global.vertexArray);
 
         glGenBuffers(1, &global.vertexBuffer);
         glBindBuffer(GL_ARRAY_BUFFER, global.vertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 4 * estimatedMaxBatchSize, NULL, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 4 * maxBatchSizeHint, NULL, GL_DYNAMIC_DRAW);
 
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 2, GL_FLOAT, 0, sizeof(Vertex), (void*)(0));
@@ -82,9 +85,11 @@ namespace Base::Renderer2D
         glGenBuffers(1, &global.indexBuffer);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, global.indexBuffer);
 
-        UInt32* indices = (UInt32*)Allocator::Allocate(sizeof(UInt32) * estimatedMaxBatchSize * 6);
+        const UInt64 indexBufferSize = sizeof(UInt32) * maxBatchSizeHint * 6;
+        const Int32 indexBufferCount = maxBatchSizeHint * 6;
+        UInt32* indices = (UInt32*)Allocator::Allocate(indexBufferSize);
 
-        for(Int32 i = 0, j = 0; i < estimatedMaxBatchSize * 6; i+=6, j+=4)
+        for(Int32 i = 0, j = 0; i < indexBufferCount; i+=6, j+=4)
         {
             indices[i + 0] = j + 0;
             indices[i + 1] = j + 1;
@@ -94,9 +99,9 @@ namespace Base::Renderer2D
             indices[i + 5] = j + 2;
         }
 
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(UInt32) * estimatedMaxBatchSize * 6, indices, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBufferSize, indices, GL_STATIC_DRAW);
 
-        Allocator::Deallocate(sizeof(UInt32) * estimatedMaxBatchSize * 6);
+        Allocator::Deallocate(indexBufferSize);
 
         const Char* VERTEX_SOURCE = "#version 330 core\nlayout(location = 0) in vec4 aPosition;layout(location = 1) in vec2 aTextureCoordinates;layout(location = 2) in vec4 aColour;uniform mat4 uView;uniform mat4 uProjection;out vec2 vTextureCoordinates;out vec4 vColour;void main(){gl_Position = uProjection * uView * aPosition;vTextureCoordinates = aTextureCoordinates;vColour = aColour;};";
         const Char* FRAGMENT_SOURCE = "#version 330 core\nin vec2 vTextureCoordinates;in vec4 vColour;uniform sampler2D uTexture;out vec4 oColour;void main(){oColour = texture2D(uTexture, vTextureCoordinates) * vColour;};";
@@ -123,7 +128,7 @@ namespace Base::Renderer2D
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-        global.batchSize = estimatedMaxBatchSize;
+        global.batchSize = maxBatchSizeHint;
         global.nativeResolution = nativeResolution;
 
         return 1;
@@ -140,20 +145,16 @@ namespace Base::Renderer2D
         return 1;
     }
 
-    Int32 BeginScene(const IVec2 screen, const Rect camera)
+    Int32 BeginScene(const IVec2 screenResolution, const Rect camera)
     {
         global.timer = PerformanceCounter::StartTimer();
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        global.screenDimensions = screen;
-        global.projection =  Math::Matrix4::Orthographic(-screen[0]/ 2, screen[0] / 2, -screen[1] / 2, screen[1] / 2, -1, 1);
-        global.view =  Math::Matrix4::Identity();        
-        global.screenScale = Math::F32::Minimum((Float32)screen[0] / (Float32)global.nativeResolution[0], (Float32)screen[1] / (Float32)global.nativeResolution[1]);
-
-        const Vec2 position = {-camera.position[0], -camera.position[1] };
-        const Vec2 scale = { 1 / camera.size[0], 1 / camera.size[1] };
-        global.view = Math::Matrix4::Transform2D(position, scale, -camera.rotation);
+        global.screenResolution = screenResolution;
+        global.projection =  Math::Matrix4::Orthographic(-screenResolution[0]/ 2, screenResolution[0] / 2, -screenResolution[1] / 2, screenResolution[1] / 2, -1, 1);
+        global.screenScale = Math::F32::Minimum((Float32)screenResolution[0] / (Float32)global.nativeResolution[0], (Float32)screenResolution[1] / (Float32)global.nativeResolution[1]);
+        global.view = Math::Matrix4::Transform2D({-camera.position[0], -camera.position[1]}, { 1 / camera.size[0], 1 / camera.size[1]}, -camera.rotation);
 
         return 1;
     }
@@ -213,8 +214,8 @@ namespace Base::Renderer2D
                 v[j].position[0] = cos * x - sin * y;
                 v[j].position[1] = sin * x + cos * y;
 
-                v[j].position[0] += quad.position[0] + (anchor[0] * global.screenDimensions[0] / 2) + (-anchor[0] * quad.size[0] / 2);
-                v[j].position[1] += quad.position[1] + (anchor[1] * global.screenDimensions[1] / 2) + (-anchor[1] * quad.size[1] / 2);
+                v[j].position[0] += quad.position[0] + (anchor[0] * global.screenResolution[0] / 2) + (-anchor[0] * quad.size[0] / 2);
+                v[j].position[1] += quad.position[1] + (anchor[1] * global.screenResolution[1] / 2) + (-anchor[1] * quad.size[1] / 2);
             }
 
             vertices[i + 0] = v[0];
@@ -278,6 +279,24 @@ namespace Base::Renderer2D
         vertices.Deallocate();
 
         return 1;
+    }
+
+    Vec2 WindowToScreenPoint(Vec2 point, const IVec2 screenResolution)
+    {
+        
+    }
+
+    Vec2 ScreenToWorldPoint(Vec2 point, const IVec2 screenResolution, const Rect camera)
+    {
+        point = Math::Vector2F::Translation(point, camera.position);
+        point = Math::Vector2F::Rotate(point, camera.rotation);
+        point = Math::Vector2F::Scale(point, camera.size);
+
+        const Float32 scale = Math::F32::Minimum((Float32)screenResolution[0] / (Float32)global.nativeResolution[0], (Float32)screenResolution[1] / (Float32)global.nativeResolution[1]);
+
+        point = Math::Vector2F::Multiplication(point, 1 / scale);
+
+        return point;
     }
 
     SubTexture CreateSubTexture(const IVec2 parentTextureSize, const IVec2 position, const IVec2 size)

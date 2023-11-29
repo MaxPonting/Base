@@ -779,6 +779,11 @@ namespace Base::Window
         return windowRect.bottom - windowRect.top;
     }
 
+    IVec2 GetSize()
+    {
+        return { GetWidth(), GetHeight() };
+    }
+
     Int32 GetX()
     {
         return windowX;
@@ -1197,6 +1202,11 @@ namespace Base::Window
     Int32 GetHeight()
     {
         return windowHeight;
+    }
+
+    IVec2 GetSize()
+    {
+        return { GetWidth(), GetHeight() };
     }
         
     Int32 GetX()

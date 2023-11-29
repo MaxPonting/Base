@@ -84,9 +84,9 @@ Int32 main()
             camera.rotation += 0.01f;
 
         quads[0].position = { (Float32)Window::GetMousePosition()[0], (Float32)Window::GetMousePosition()[1] };
-        quads[0].position = Game2D::ScreenToWorldPoint(quads[0].position, camera);
+        quads[0].position = Renderer2D::ScreenToWorldPoint(quads[0].position, Window::GetSize(), camera);
 
-        Renderer2D::BeginScene({ Window::GetWidth(), Window::GetHeight() }, camera);
+        Renderer2D::BeginScene(Window::GetSize(), camera);
         Renderer2D::Draw(quads, 2, texture, Renderer2D::CoordinateSpace::World, {0, 0});
         Renderer2D::EndScene();
 
