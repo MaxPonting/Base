@@ -283,18 +283,42 @@ namespace Base::Renderer2D
 
     Vec2 WindowToScreenPoint(Vec2 point, const IVec2 screenResolution)
     {
-        
+        const Float32 scale = Math::F32::Minimum((Float32)screenResolution[0] / (Float32)global.nativeResolution[0], (Float32)screenResolution[1] / (Float32)global.nativeResolution[1]);
+        point = Math::Vector2F::Multiplication(point, 1 / scale);
+
+        return point;
     }
 
     Vec2 ScreenToWorldPoint(Vec2 point, const IVec2 screenResolution, const Rect camera)
+    {
+        const Float32 scale = Math::F32::Minimum((Float32)screenResolution[0] / (Float32)global.nativeResolution[0], (Float32)screenResolution[1] / (Float32)global.nativeResolution[1]);
+
+        point = Math::Vector2F::Translation(point, Math::Vector2F::Multiplication(camera.position, 1 / scale));
+        point = Math::Vector2F::Rotate(point, camera.rotation);
+        point = Math::Vector2F::Scale(point, camera.size);
+
+        return point;
+    }
+
+    Vec2 WindowToWorldPoint(Vec2 point, const IVec2 screenResolution, const Rect camera)
     {
         point = Math::Vector2F::Translation(point, camera.position);
         point = Math::Vector2F::Rotate(point, camera.rotation);
         point = Math::Vector2F::Scale(point, camera.size);
 
         const Float32 scale = Math::F32::Minimum((Float32)screenResolution[0] / (Float32)global.nativeResolution[0], (Float32)screenResolution[1] / (Float32)global.nativeResolution[1]);
-
         point = Math::Vector2F::Multiplication(point, 1 / scale);
+
+        return point;
+    }
+
+    Vec2 WorldToScreenPoint(Vec2 point, const IVec2 screenResolution, const Rect camera)
+    {
+        const Float32 scale = Math::F32::Minimum((Float32)screenResolution[0] / (Float32)global.nativeResolution[0], (Float32)screenResolution[1] / (Float32)global.nativeResolution[1]);
+
+        point = Math::Vector2F::Scale(point, { 1 / camera.size[0], 1 / camera.size[1] });
+        point = Math::Vector2F::Rotate(point, -camera.rotation);
+        point = Math::Vector2F::Translation(point, Math::Vector2F::Multiplication(camera.position, scale));
 
         return point;
     }

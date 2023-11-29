@@ -440,7 +440,11 @@ namespace Base::Window
     	windowClassEx.lpszMenuName = NULL;
     	windowClassEx.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 
-        RegisterClassEx(&windowClassEx);
+        if(!RegisterClassEx(&windowClassEx))
+        {
+            Log::Print("Failed to register window class", Log::Type::Error, __LINE__, __FILE__);
+            return 0;
+        }
 
         HWND hDummyWindow = CreateWindowEx(
             WS_EX_APPWINDOW,
