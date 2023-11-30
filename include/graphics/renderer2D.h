@@ -6,12 +6,15 @@
 #include "../math/math.h"
 #include "../math/vector.h"
 #include "../math/matrix.h"
+#include "../math/rect.h"
 #include "../allocator/allocator.h"
 #include "../time/performance_counter.h"
 #include "../opengl/opengl.h"
 #include "../opengl/shader.h"
 #include "../opengl/program.h"
 #include "../opengl/texture.h"
+
+#include "struct.h"
 
 namespace Base::Renderer2D
 {
@@ -26,12 +29,10 @@ namespace Base::Renderer2D
         Vec2 top;
     };
 
-    struct Quad
+    struct Sprite 
     {
-        Vec2 position;
-        Vec2 size;
-        Float32 rotation;
-        Vec4 colour;
+        Rect rect;
+        RGBA colour;
         SubTexture subTexture;
     };
 
@@ -39,7 +40,7 @@ namespace Base::Renderer2D
     {
         Vec2 position;
         Vec2 textureCoordinates;
-        Vec4 colour;
+        RGBA colour;
     };
 
     struct Global
@@ -75,13 +76,13 @@ namespace Base::Renderer2D
         glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 4 * maxBatchSizeHint, NULL, GL_DYNAMIC_DRAW);
 
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 2, GL_FLOAT, 0, sizeof(Vertex), (void*)(0));
+        glVertexAttribPointer(0, 2, GL_FLOAT, false, sizeof(Vertex), (void*)(0));
 
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, 0, sizeof(Vertex), (void*)(sizeof(Float32) * 2));
+        glVertexAttribPointer(1, 2, GL_FLOAT, false, sizeof(Vertex), (void*)(sizeof(Float32) * 2));
 
         glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 4, GL_FLOAT, 0, sizeof(Vertex), (void*)(sizeof(Float32) * 4));
+        glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, true, sizeof(Vertex), (void*)(sizeof(Float32) * 4));
 
         glGenBuffers(1, &global.indexBuffer);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, global.indexBuffer);
@@ -155,7 +156,7 @@ namespace Base::Renderer2D
         global.screenResolution = screenResolution;
         global.projection =  Math::Matrix4::Orthographic(-screenResolution[0]/ 2, screenResolution[0] / 2, -screenResolution[1] / 2, screenResolution[1] / 2, -1, 1);
         global.screenScale = Math::F32::Minimum((Float32)screenResolution[0] / (Float32)global.nativeResolution[0], (Float32)screenResolution[1] / (Float32)global.nativeResolution[1]);
-        global.view = Math::Matrix4::Transform2D({-camera.position[0], -camera.position[1]}, { 1 / camera.size[0], 1 / camera.size[1]}, -camera.rotation);
+        global.view = Math::Matrix4::Transform2D({-camera.position[0] * 1 / camera.size[0], -camera.position[1] * 1 / camera.size[1] }, { 1 / camera.size[0], 1 / camera.size[1]}, -camera.rotation);
 
         return 1;
     }
@@ -167,45 +168,45 @@ namespace Base::Renderer2D
         return 1;
     }
 
-    Int32 Draw(const Quad* const quads, const Int32 count, const UInt32 texture, const CoordinateSpace space, const Vec2 anchor)
+    Int32 Draw(const Sprite* const sprites, const Int32 count, const UInt32 texture, const CoordinateSpace space, const Vec2 anchor)
     {
         Array<Vertex> vertices = Array<Vertex>(4 * count);
 
         for(Int32 i = 0; i < count * 4; i+=4)
         {
-            Quad quad = quads[i / 4];
-            quad.size[0] *= global.screenScale;
-            quad.size[1] *= global.screenScale;
-            quad.position[0] *= global.screenScale;
-            quad.position[1] *= global.screenScale;
+            Sprite sprite = sprites[i / 4];
+            sprite.rect.size[0] *= global.screenScale;
+            sprite.rect.size[1] *= global.screenScale;
+            sprite.rect.position[0] *= global.screenScale;
+            sprite.rect.position[1] *= global.screenScale;
 
             StaticArray<Vertex, 4> v;
             v[0] = {
-                VERTICES[0] * quad.size[0], VERTICES[1] * quad.size[1],
-                quad.subTexture.bottom[0], quad.subTexture.bottom[1], 
-                quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3]
+                VERTICES[0] * sprite.rect.size[0], VERTICES[1] * sprite.rect.size[1],
+                sprite.subTexture.bottom[0], sprite.subTexture.bottom[1], 
+                sprite.colour[0], sprite.colour[1], sprite.colour[2], sprite.colour[3]
             };
 
             v[1] = {
-                VERTICES[4] * quad.size[0], VERTICES[5] * quad.size[1], 
-                quad.subTexture.top[0], quad.subTexture.bottom[1], 
-                quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3]
+                VERTICES[4] * sprite.rect.size[0], VERTICES[5] * sprite.rect.size[1], 
+                sprite.subTexture.top[0], sprite.subTexture.bottom[1], 
+                sprite.colour[0], sprite.colour[1], sprite.colour[2], sprite.colour[3]
             };
 
             v[2] = {
-                VERTICES[8] * quad.size[0], VERTICES[9] * quad.size[1], 
-                quad.subTexture.bottom[0], quad.subTexture.top[1], 
-                quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3]
+                VERTICES[8] * sprite.rect.size[0], VERTICES[9] * sprite.rect.size[1], 
+                sprite.subTexture.bottom[0], sprite.subTexture.top[1], 
+                sprite.colour[0], sprite.colour[1], sprite.colour[2], sprite.colour[3]
             };
 
             v[3] = {
-                VERTICES[12] * quad.size[0], VERTICES[13] * quad.size[1], 
-                quad.subTexture.top[0], quad.subTexture.top[1], 
-                quad.colour[0], quad.colour[1], quad.colour[2], quad.colour[3],
+                VERTICES[12] * sprite.rect.size[0], VERTICES[13] * sprite.rect.size[1], 
+                sprite.subTexture.top[0], sprite.subTexture.top[1], 
+                sprite.colour[0], sprite.colour[1], sprite.colour[2], sprite.colour[3],
             };
 
-            const Float32 sin = sinf(Math::F32::Radians(quad.rotation));
-            const Float32 cos = cosf(Math::F32::Radians(quad.rotation));
+            const Float32 sin = sinf(Math::F32::Radians(sprite.rect.rotation));
+            const Float32 cos = cosf(Math::F32::Radians(sprite.rect.rotation));
 
             for(Int32 j = 0; j < 4; j++)
             {
@@ -215,8 +216,8 @@ namespace Base::Renderer2D
                 v[j].position[0] = cos * x - sin * y;
                 v[j].position[1] = sin * x + cos * y;
 
-                v[j].position[0] += quad.position[0] + (anchor[0] * global.screenResolution[0] / 2) + (-anchor[0] * quad.size[0] / 2);
-                v[j].position[1] += quad.position[1] + (anchor[1] * global.screenResolution[1] / 2) + (-anchor[1] * quad.size[1] / 2);
+                v[j].position[0] += sprite.rect.position[0] + (anchor[0] * global.screenResolution[0] / 2) + (-anchor[0] * sprite.rect.size[0] / 2);
+                v[j].position[1] += sprite.rect.position[1] + (anchor[1] * global.screenResolution[1] / 2) + (-anchor[1] * sprite.rect.size[1] / 2);
             }
 
             vertices[i + 0] = v[0];
@@ -294,18 +295,18 @@ namespace Base::Renderer2D
     {
         const Float32 scale = Math::F32::Minimum((Float32)screenResolution[0] / (Float32)global.nativeResolution[0], (Float32)screenResolution[1] / (Float32)global.nativeResolution[1]);
 
-        point += camera.position * 1 / scale;
-        point = Math::Vector2F::Rotate(point, camera.rotation);
         point *= camera.size;
+        point = Math::Vector2F::Rotate(point, camera.rotation);
+        point += camera.position * 1 / scale;
 
         return point;
     }
 
     Vec2 WindowToWorldPoint(Vec2 point, const IVec2 screenResolution, const Rect camera)
     {
-        point += camera.position;
-        point = Math::Vector2F::Rotate(point, camera.rotation);
         point *= camera.size;
+        point = Math::Vector2F::Rotate(point, camera.rotation);
+        point += camera.position;
 
         const Float32 scale = Math::F32::Minimum((Float32)screenResolution[0] / (Float32)global.nativeResolution[0], (Float32)screenResolution[1] / (Float32)global.nativeResolution[1]);
         point *= 1 / scale;
@@ -317,9 +318,9 @@ namespace Base::Renderer2D
     {
         const Float32 scale = Math::F32::Minimum((Float32)screenResolution[0] / (Float32)global.nativeResolution[0], (Float32)screenResolution[1] / (Float32)global.nativeResolution[1]);
 
-        point /= camera.size;
-        point = Math::Vector2F::Rotate(point, -camera.rotation);
         point += camera.position * scale;
+        point = Math::Vector2F::Rotate(point, -camera.rotation);
+        point /= camera.size;
 
         return point;
     }

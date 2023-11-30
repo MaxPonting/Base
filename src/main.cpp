@@ -14,7 +14,7 @@
 #include <opengl/program.h>
 #include <opengl/texture.h>
 #include <window/window.h>
-#include <renderer/renderer2D.h>
+#include <graphics/renderer2D.h>
 
 #include <stdio.h>
 
@@ -44,11 +44,11 @@ Int32 main()
     UInt32 texture = OpenGL::Texture::CreateWithFile("res/texture/sub_texture_atlas.png");
     Renderer2D::SubTexture plain = Renderer2D::CreateSubTexture({64, 64}, {0, 32}, {32, 32});
 
-    Renderer2D::Quad quads[] = 
+    Renderer2D::Sprite sprites[] = 
     {
-        {0, 0, 128, 128, 0, 1.0f, 1.0f, 1.0f, 1.0f, plain}, 
-        {0, 128, 128, 128, 0, 1.0f, 1.0f, 1.0f, 1.0f, plain}, 
-        {0, 0, 128, 128, 0, 1.0f, 1.0f, 1.0f, 1.0f, plain}, 
+        {0, 0, 128, 128, 0, 255, 255, 255, 255, plain}, 
+        {0, 128, 128, 128, 0, 255, 255, 255, 255, plain}, 
+        {0, 0, 128, 128, 0, 255, 255, 255, 255, plain}, 
     };
 
     while(true)
@@ -82,11 +82,14 @@ Int32 main()
         if(Window::GetKey(Window::Key::Right))
             camera.rotation += 0.01f;
 
-        quads[0].position = { (Float32)Window::GetMousePosition()[0], (Float32)Window::GetMousePosition()[1] };
-        quads[0].position = Renderer2D::WindowToScreenPoint(quads[0].position, Window::GetSize());
+        sprites[0].rect.position = Renderer2D::WindowToWorldPoint(Window::GetMousePosition(), Window::GetSize(), camera);
+        const Vec2 screenPoint = Renderer2D::WindowToScreenPoint(Window::GetMousePosition(), Window::GetSize());
+        sprites[0].rect.position = Renderer2D::WorldToScreenPoint(sprites[0].rect.position, Window::GetSize(), camera); 
+        printf("%f, %f\n", screenPoint[0], screenPoint[1]);
+        printf("%f, %f\n\n", sprites[0].rect.position[0], sprites[0].rect.position[1]);
 
         Renderer2D::BeginScene(Window::GetSize(), camera);
-        Renderer2D::Draw(quads, 1, texture, Renderer2D::CoordinateSpace::World, {0, 0});
+        Renderer2D::Draw(sprites, 1, texture, Renderer2D::CoordinateSpace::World, {0, 0});
         Renderer2D::EndScene();
 
         Window::SwapBuffer();
