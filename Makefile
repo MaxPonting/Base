@@ -20,7 +20,7 @@ DIFLAGS = -O2 -static-libgcc -static-libstdc++
 endif
 
 # Source File
-SRC = src/test.cpp
+SRC = src/main.cpp
 
 # Include Directory
 INC = -I include/

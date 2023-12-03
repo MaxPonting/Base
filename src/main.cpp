@@ -15,11 +15,12 @@
 #include <opengl/texture.h>
 #include <window/window.h>
 #include <graphics/renderer2D.h>
+#include <graphics/convert.h>
 
 #include <stdio.h>
 
 const static UInt64 ALLOCATION_SIZE = 1024 * 1024; // MB
-static Rect camera = { 0, 0, 1, 1, 0 };
+static Base::Rect camera = { 0, 0, 1, 1, 0 };
 
 Int32 main()
 {
@@ -27,12 +28,9 @@ Int32 main()
 
     Allocator::Create(ALLOCATION_SIZE);
 
-    if(!Window::Create("Base Window", Window::OutputType::Windowed, 1280, 720))
-        return 1; 
-    if(!Window::SetGLContext(3, 3))
-        return 1;
-    if(!Window::Show())
-        return 1;
+    if(!Window::Create("Base Window", Window::OutputType::Windowed, 1280, 720)) return 1; 
+    if(!Window::SetGLContext(3, 3)) return 1;
+    if(!Window::Show()) return 1;
 
     OpenGL::LoadProcedures();
     OpenGL::EnableErrorLog();
@@ -42,12 +40,11 @@ Int32 main()
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
     UInt32 texture = OpenGL::Texture::CreateWithFile("res/texture/sub_texture_atlas.png");
-    Renderer2D::SubTexture plain = Renderer2D::CreateSubTexture({64, 64}, {0, 32}, {32, 32});
+    Base::SubTexture plain = Renderer2D::CreateSubTexture({64, 64}, {0, 32}, {32, 32});
 
-    Renderer2D::Sprite sprites[] = 
+    Base::Sprite sprites[] = 
     {
         {0, 0, 128, 128, 0, 255, 255, 255, 255, plain}, 
-        {0, 128, 128, 128, 0, 255, 255, 255, 255, plain}, 
         {0, 0, 128, 128, 0, 255, 255, 255, 255, plain}, 
     };
 
@@ -55,39 +52,26 @@ Int32 main()
     {
         Window::PollEvents();
 
-        if(Window::GetEvent(Window::Event::Destroy))
-            break; 
+        if(Window::GetEvent(Window::Event::Destroy)) break; 
+        if(Window::GetKeyDown(Window::Key::Escape)) break;
+        if(Window::GetEvent(Window::Event::Resize)) glViewport(0, 0, Window::GetWidth(), Window::GetHeight());        
 
-        if(Window::GetKeyDown(Window::Key::Escape))
-            break;
+        sprites[0].position = Renderer2D::WindowToWorldPoint(Window::GetMousePosition(), Window::GetSize(), camera);
+        if(Window::GetMouseButton(Window::MouseButton::Left)) sprites[0].rotation += 2;
 
-        if(Window::GetEvent(Window::Event::Resize))
-            glViewport(0, 0, Window::GetWidth(), Window::GetHeight());        
-
-        if(Window::GetKey(Window::Key::W))
-            camera.position[1] += 2;
-        if(Window::GetKey(Window::Key::S))
-            camera.position[1] -= 2;
-        if(Window::GetKey(Window::Key::D))
-            camera.position[0] += 2;
-        if(Window::GetKey(Window::Key::A))
-            camera.position[0] -= 2;
-
-        if(Window::GetKey(Window::Key::Space))
+        if(Math::Collision::RectRectManifold(Graphics::Convert::SpriteToRect(sprites[0]), Graphics::Convert::SpriteToRect(sprites[1])).isCollision)
         {
-            camera.size[0] += 0.1f;
-            camera.size[1] += 0.1f;
+            sprites[0].colour = {0, 0, 255, 255};
+            sprites[1].colour = {0, 0, 255, 255};
+        }
+        else
+        {
+            sprites[0].colour = {255, 255, 255, 255};
+            sprites[1].colour = {255, 255, 255, 255};
         }
 
-        if(Window::GetKey(Window::Key::Right))
-            camera.rotation += 0.01f;
-
-        sprites[0].rect.position = Renderer2D::WindowToWorldPoint(Window::GetMousePosition(), Window::GetSize(), camera);
-        const Vec2 screenPoint = Renderer2D::WindowToScreenPoint(Window::GetMousePosition(), Window::GetSize());
-        sprites[0].rect.position = Renderer2D::WorldToScreenPoint(sprites[0].rect.position, Window::GetSize(), camera); 
-
         Renderer2D::BeginScene(Window::GetSize(), camera);
-        Renderer2D::Draw(sprites, 1, texture, Renderer2D::CoordinateSpace::World, {0, 0});
+        Renderer2D::Draw(sprites, 2, texture, Base::CoordinateSpace::World, {0, 0});
         Renderer2D::EndScene();
 
         Window::SwapBuffer();

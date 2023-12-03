@@ -119,7 +119,7 @@ namespace Base::Math::Collision
         {
             support = Polygon::FurthestPoint(a, direction) - Polygon::FurthestPoint(b, -direction);
 
-            if(Vector2F::DotProduct(support, direction) <= 0)
+            if(Vector2F::DotProduct(support, direction) < 0)
                 return manifold;
 
             simplex.Push(support);
@@ -128,12 +128,35 @@ namespace Base::Math::Collision
             {
                 case 2: 
                 {
-                    Vec2 ab = simplex[1] - simplex[0];
-                    Vec2 ao = -simplex[0];
+                    const Vec2 cb = simplex[1] - simplex[0];
+                    const Vec2 co = -simplex[0];
+                    direction = Vector2F::TripleCrossProduct(cb, co, cb);
                     break;
                 }
                 case 3: 
                 {
+                    const Vec2 ab = simplex[1] - simplex[2];
+                    const Vec2 ac = simplex[0] - simplex[2];
+                    const Vec2 ao = -simplex[2];
+                    const Vec2 abPerpendicular = Vector2F::TripleCrossProduct(ac, ab, ab);
+                    const Vec2 acPerpendicular = Vector2F::TripleCrossProduct(ab, ac, ac);
+
+                    if(Vector2F::DotProduct(abPerpendicular, ao) > 0)
+                    {
+                        simplex = { simplex[1], simplex[2] };
+                        direction = abPerpendicular;
+                    }
+                    else if(Vector2F::DotProduct(acPerpendicular, ao) > 0)
+                    {
+                        simplex = { simplex[0], simplex[2] };
+                        direction = acPerpendicular;
+                    }
+                    else
+                    {
+                        manifold.isCollision = true;
+                        return manifold;
+                    }
+
                     break;
                 }
             }

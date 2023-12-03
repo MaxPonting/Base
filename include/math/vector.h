@@ -2,8 +2,6 @@
 
 #include "math.h"
 
-#include <stdio.h>
-
 namespace Base::Math::Vector3F
 {
     Vec3 CrossProduct(Vec3 a, Vec3 b)
@@ -26,8 +24,8 @@ namespace Base::Math::Vector2F
 
     Vec2 TripleCrossProduct(Vec2 a, Vec2 b, Vec2 c)
     {
-        const Float32 z = b[0] * c[1] - b[1] * c[0];
-        return { a[1] * z, -a[0] * z };
+        const Vec3 triple = Vector3F::CrossProduct(Vector3F::CrossProduct({a[0], a[1], 0}, {b[0], b[1], 0}), {c[0], c[1], 0});
+        return { triple[0], triple[1] };
     }
 
     Float32 Magnitude(const Vec2 vec)
