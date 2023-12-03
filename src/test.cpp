@@ -1,4 +1,7 @@
+#define BASE_DEBUG
+
 #include <math/vector.h>
+#include <array/array.h>
 
 #include <stdio.h>
 
@@ -6,13 +9,17 @@ int main()
 {
     using namespace Base;
 
-    Vec2 a = {5, 11};
-    Vec2 b = {19, 4};
-    Vec2 c = {12, -6};
+    Allocator::Create(256);
 
-    Vec2 tripleCrossProduct = Math::Vector2F::TripleCrossProduct(a, b, c);
+    Array<Int32, 5> arr = { 2, 4, 5 };
+    arr.Insert(2, 7);
 
-    printf("%f, %f\n", tripleCrossProduct[0], tripleCrossProduct[1]);
+    for(Int32 i = 0; i < arr.count; i++)
+    {
+        printf("[%d]", arr[i]);
+    }
+
+    Allocator::Destroy();
 
     return 0;
 }

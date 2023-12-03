@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../type/type.h"
+#include "../array/array.h"
 
 namespace Base
 {
@@ -128,5 +129,18 @@ namespace Base
         Bool isCollision;
         Vec2 normal;
         Float32 depth;
+    };
+
+    struct GJK2DManifold
+    {
+        Bool isCollision;
+        Array<Vec2, 3> simplex;
+    };
+
+    struct Edge
+    {
+        Float32 distance;
+        Vec2 normal;
+        Int32 index;
     };
 }

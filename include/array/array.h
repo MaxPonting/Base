@@ -27,6 +27,7 @@ namespace Base
                 exit(0);
 
             memcpy(memory, elements.begin(), elements.size() * sizeof(T));
+            memset(memory + elements.size(), 0, (size - elements.size()) * sizeof(T));
             count = elements.size();
         }
 
@@ -62,6 +63,42 @@ namespace Base
             
             memory[count] = value;
             count++;
+
+            return 1;
+        }
+
+        Int32 Insert(const Int32 index, const T value)
+        {
+            if(index >= size || index < 0)
+            {
+                Log::Print("Array index out of bounds", Log::Type::Error, __LINE__, __FILE__);
+                return 0;
+            }
+
+            if(count == size)
+            {
+                Log::Print("Array size reached, value was not inserted", Log::Type::Warning, __LINE__, __FILE__);
+                return 0;
+            }
+
+            if(index >= count)
+            {
+                memory[count] = value;
+                count++;
+                return 1;
+            }
+
+            const UInt64 moveSize = (count - index) * sizeof(T);
+
+            T* temp = (T*)Allocator::Allocate(moveSize);
+
+            memcpy(temp, memory + index, moveSize);
+            memcpy(memory + index + 1, temp, moveSize);
+
+            memory[index] = value;
+            count++;
+
+            Allocator::Deallocate(moveSize);
 
             return 1;
         }

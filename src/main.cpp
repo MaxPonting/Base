@@ -57,12 +57,15 @@ Int32 main()
         if(Window::GetEvent(Window::Event::Resize)) glViewport(0, 0, Window::GetWidth(), Window::GetHeight());        
 
         sprites[0].position = Renderer2D::WindowToWorldPoint(Window::GetMousePosition(), Window::GetSize(), camera);
-        if(Window::GetMouseButton(Window::MouseButton::Left)) sprites[0].rotation += 2;
+        if(Window::GetMouseButton(Window::MouseButton::Left)) sprites[0].rotation += 0.4f;
 
-        if(Math::Collision::RectRectManifold(Graphics::Convert::SpriteToRect(sprites[0]), Graphics::Convert::SpriteToRect(sprites[1])).isCollision)
+        CollisionManifold manifold = Math::Collision::RectRectManifold(Graphics::Convert::SpriteToRect(sprites[0]), Graphics::Convert::SpriteToRect(sprites[1]));
+
+        if(manifold.isCollision)
         {
             sprites[0].colour = {0, 0, 255, 255};
             sprites[1].colour = {0, 0, 255, 255};
+            printf("%f, %f\n", manifold.normal[0], manifold.normal[1]);
         }
         else
         {

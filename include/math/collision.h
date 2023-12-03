@@ -6,6 +6,8 @@
 #include "vector.h"
 #include "polygon.h"
 
+#include <vector>
+
 namespace Base::Math::Collision
 {
     Bool PointRect(const Vec2 point, const Rect rect)
@@ -25,87 +27,9 @@ namespace Base::Math::Collision
         return true;
     }
 
-    Bool CheckRectProjection(const Array<Vec2, 4> vertices, const Vec2 a, const Vec2 b)
+    GJK2DManifold GJK2D(const Poly a, const Poly b)
     {
-        auto AllNegative = [](const Array<Float32, 4> projections) -> Bool
-        {
-            for(Int32 i = 0; i < 4; i++)
-            {
-                if(projections[i] >= 0)
-                    return false;
-            }
-
-            return true;
-        };
-
-        auto AllGreater = [](const Array<Float32, 4> projections, const Float32 magnitude) -> Bool
-        {
-            for(Int32 i = 0; i < 4; i++)
-            {
-                if(projections[i] <= magnitude)
-                    return false;
-            }
-
-            return true;
-        };
-
-        const Float32 magnitude = Vector2F::Magnitude(Vector2F::LineSegment(a, b));
-        Array<Float32, 4> projections;
-        for(Int32 i = 0; i < 4; i++)
-            projections[i] = Vector2F::ProjectPointOnLineScalar(vertices[i], a, b);
-
-        if(AllNegative(projections))
-            return true;
-
-        if(AllGreater(projections, magnitude))
-            return true;
-
-        return false;
-    }
-
-    Bool RectRectUnaligned(const Rect a, const Rect b)
-    {
-        Array<Vec2, 4> aVertices = Rectangle::Vertices(a);
-        Array<Vec2, 4> bVertices =  Rectangle::Vertices(b);
-
-        if(CheckRectProjection(aVertices, bVertices[2], bVertices[0]))
-            return false;
-
-        if(CheckRectProjection(aVertices, bVertices[2], bVertices[3]))
-            return false;
-
-        if(CheckRectProjection(bVertices, aVertices[2], aVertices[0]))
-            return false;
-
-        if(CheckRectProjection(bVertices, aVertices[2], aVertices[3]))
-            return false;
-
-        return true;        
-    }
-
-    Bool RectRect(const Rect a, const Rect b)
-    {
-        if(a.rotation != 0 || b.rotation != 0)
-            return RectRectUnaligned(a, b);
-
-        if(a.position[0] + a.size[0] / 2 < b.position[0] - b.size[0] / 2)
-            return false;
-
-        if(a.position[0] - a.size[0] / 2 > b.position[0] + b.size[0] / 2)
-            return false;
-
-        if(a.position[1] + a.size[1] / 2 < b.position[1] - b.size[1] / 2)
-            return false;
-
-        if(a.position[1] - a.size[1] / 2 > b.position[1] + b.size[1] / 2)
-            return false;
-
-        return true;
-    }
-
-    CollisionManifold PolygonPolygonManifold(const Poly a, const Poly b)
-    {
-        CollisionManifold manifold;
+        GJK2DManifold manifold;
         manifold.isCollision = false;
 
         Vec2 support = Polygon::FurthestPoint(a, {1, 0}) - Polygon::FurthestPoint(b, {-1, 0});
@@ -119,8 +43,7 @@ namespace Base::Math::Collision
         {
             support = Polygon::FurthestPoint(a, direction) - Polygon::FurthestPoint(b, -direction);
 
-            if(Vector2F::DotProduct(support, direction) < 0)
-                return manifold;
+            if(Vector2F::DotProduct(support, direction) < 0) return manifold;
 
             simplex.Push(support);
 
@@ -154,15 +77,96 @@ namespace Base::Math::Collision
                     else
                     {
                         manifold.isCollision = true;
+                        manifold.simplex = simplex;
                         return manifold;
                     }
 
                     break;
                 }
+            }       
+        }
+    }
+
+    Edge FindClosestEdge(const std::vector<Vec2> vertices, const Bool clockwiseWinding)
+    {
+        Vec2 edge = vertices[1] - vertices[0];
+        Vec2 closestNormal = clockwiseWinding ? (Vec2){ edge[1], -edge[0] } : (Vec2){ -edge[1], edge[0] };
+        Float32 closestDistance = Vector2F::DotProduct(closestNormal, vertices[0]);
+        Int32 closestIndex = 1;
+
+        for(Int32 i = 1; i < vertices.size(); i++)
+        {
+            Int32 j = i + 1;
+            if(j >= vertices.size()) j = 0;
+
+            edge = vertices[j] - vertices[i];
+
+            Vec2 normal = clockwiseWinding ? (Vec2){ edge[1], -edge[0] } : (Vec2){ -edge[1], edge[0] };
+            normal = Vector2F::Normalize(normal);
+
+            Float32 distance = Vector2F::DotProduct(normal, vertices[i]);
+            if(distance >= closestDistance) continue;
+
+            closestDistance = distance;
+            closestNormal = normal;
+            closestIndex = j;
+        }
+
+        return { closestDistance, closestNormal, closestIndex };
+    }
+
+    CollisionManifold EPA2D(const Poly a, const Poly b, const Array<Vec2, 3> simplex)
+    {
+        CollisionManifold manifold;
+        manifold.isCollision = true;
+
+        const Float32 e0 = simplex[1][0] - simplex[0][0] * simplex[1][1] * simplex[0][1];
+        const Float32 e1 = simplex[2][0] - simplex[1][0] * simplex[2][1] * simplex[1][1];
+        const Float32 e2 = simplex[0][0] - simplex[2][0] * simplex[0][1] * simplex[2][1];
+        const Bool clockwiseWinding = e0 + e1 + e2 >= 0;
+
+        std::vector<Vec2> vertices = { simplex[0], simplex[1], simplex[2] };
+
+        for(Int32 i = 0; i < 64; i++)
+        {
+            const Edge edge = FindClosestEdge(vertices, clockwiseWinding);
+            const Vec2 support = Polygon::FurthestPoint(a, edge.normal) - Polygon::FurthestPoint(b, -edge.normal);
+            const Float32 distance = Vector2F::DotProduct(support, edge.normal);
+
+            if(abs(distance - edge.distance) <= 0.00000001f)
+            {
+                manifold.normal = edge.normal;
+                manifold.depth *= distance;
+                return manifold;
             }
+            
+            vertices.insert(vertices.begin() + edge.index, support);
         }
 
         return manifold;
+    }
+ 
+    Bool PolygonPolygon(const Poly a, const Poly b)
+    {
+        return GJK2D(a, b).isCollision;
+    }
+
+    CollisionManifold PolygonPolygonManifold(const Poly a, const Poly b)
+    {
+        CollisionManifold manifold;
+        manifold.isCollision = false;
+
+        GJK2DManifold gjkManifold = GJK2D(a, b);
+        if(!gjkManifold.isCollision) return manifold;
+        
+        return EPA2D(a, b, gjkManifold.simplex);
+    }
+
+    Bool RectRect(const Rect a, const Rect b)
+    {
+        Array<Vec2, 4> aVertices = Rectangle::Vertices(a);
+        Array<Vec2, 4> bVertices = Rectangle::Vertices(b);
+        return PolygonPolygon({aVertices.memory, 4}, {bVertices.memory, 4});
     }
 
     CollisionManifold RectRectManifold(const Rect a, const Rect b)
