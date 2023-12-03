@@ -2,11 +2,32 @@
 
 #include "math.h"
 
+#include <stdio.h>
+
+namespace Base::Math::Vector3F
+{
+    Vec3 CrossProduct(Vec3 a, Vec3 b)
+    {
+        return { a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0] };
+    }
+}
+
 namespace Base::Math::Vector2F
 {
     Float32 DotProduct(Vec2 a, Vec2 b)
     {
         return a[0] * b[0] + a[1] * b[1];
+    }
+
+    Float32 CrossProduct(Vec2 a, Vec2 b)
+    {
+        return a[0] * b[1] - a[1] * b[0];
+    }
+
+    Vec2 TripleCrossProduct(Vec2 a, Vec2 b, Vec2 c)
+    {
+        const Float32 z = b[0] * c[1] - b[1] * c[0];
+        return { a[1] * z, -a[0] * z };
     }
 
     Float32 Magnitude(const Vec2 vec)
@@ -16,7 +37,8 @@ namespace Base::Math::Vector2F
 
     Vec2 Normalize(const Vec2 vec)
     {
-        return vec / Magnitude(vec);
+        const Float32 magnitude = Magnitude(vec);
+        return magnitude ? vec / Magnitude(vec) : (Vec2){ 0, 0 };
     }
 
     Vec2 Normal(const Vec2 vector)
@@ -72,6 +94,11 @@ namespace Base::Math::Vector2F
     {
         const Vec2 unitAB = Normalize(LineSegment(a, b));
         return a + unitAB * DotProduct(LineSegment(a, x), unitAB);
+    }
+
+    Bool SameDirection(const Vec2 a, const Vec2 b)
+    {
+        return DotProduct(a, b) > 0;
     }
 
     Vec2 TransformMat4(const Mat4 mat, const Vec2 vec)

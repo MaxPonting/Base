@@ -3,7 +3,7 @@
 #include "../platform/platform.h"
 #include "../type/type.h"
 #include "../log/log.h"
-#include "../array/static_array.h"
+#include "../array/array.h"
 #include "../math/struct.h"
 
 #if PLATFORM == PLATFORM_WINDOWS
@@ -79,13 +79,13 @@ namespace Base::Window
 
 #endif
 
-    StaticArray<Bool, (Int32)Event::Count> windowEvents;
-    StaticArray<Bool, (Int32)Key::Count>windowKeyboardDown;
-    StaticArray<Bool, (Int32)Key::Count> windowKeyboardUp;
-    StaticArray<Bool, (Int32)Key::Count> windowKeyboard;
-    StaticArray<Bool, (Int32)MouseButton::Count> windowMouseButtonDown;
-    StaticArray<Bool, (Int32)MouseButton::Count> windowMouseButtonUp;
-    StaticArray<Bool, (Int32)MouseButton::Count> windowMouseButton;
+    Array<Bool, (Int32)Event::Count> windowEvents;
+    Array<Bool, (Int32)Key::Count>windowKeyboardDown;
+    Array<Bool, (Int32)Key::Count> windowKeyboardUp;
+    Array<Bool, (Int32)Key::Count> windowKeyboard;
+    Array<Bool, (Int32)MouseButton::Count> windowMouseButtonDown;
+    Array<Bool, (Int32)MouseButton::Count> windowMouseButtonUp;
+    Array<Bool, (Int32)MouseButton::Count> windowMouseButton;
     Int32 windowMouseWheel = 0;
     IVec2 windowMousePosition = { 0, 0 };
     OutputType windowOutputType;
@@ -549,7 +549,13 @@ namespace Base::Window
         UInt32 numFormats;
         if(!wglChoosePixelFormatARB(hDeviceContext, pixelFormatAttribs, 0, 1, &pixelFormatIndex, &numFormats))
         {
-            Log::Print("Failed to set pixel format", Log::Type::Error, __LINE__, __FILE__);
+            Log::Print("Failed to choose pixel format", Log::Type::Error, __LINE__, __FILE__);
+            return 0;
+        }
+
+        if(numFormats == 0)
+        {
+            Log::Print("Failed to find pixel format", Log::Type::Error, __LINE__, __FILE__);
             return 0;
         }
 

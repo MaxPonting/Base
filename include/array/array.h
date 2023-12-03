@@ -4,50 +4,30 @@
 #include "../log/log.h"
 #include "../allocator/allocator.h"
 
-#include <memory.h> 
 #include <stdlib.h>
+#include <initializer_list>
 
 namespace Base
 {
-    template <typename T>
+    template <typename T, Int32 size>
     struct Array
     {
-        T* memory;
+        T memory[size];
         Int32 count;
-        Int32 size;
         
         Array()
         {
-            memory = 0;
             count = 0;
-            size = 0;
+            memset(memory, 0, size * sizeof(T));
         };
-  
-        Array(Int32 _size)
-        {
-            memory = (T*)Allocator::Allocate(_size * sizeof(T));
 
-            if(memory == 0)
-            {
-                Log::Print("Allocator has not been created, exiting application", Log::Type::Error, __LINE__, __FILE__);
+        Array(std::initializer_list<T> elements)
+        {
+            if(elements.size() > size)
                 exit(0);
-            }
 
-            count = 0;
-            size = _size;
-        };
-
-        Int32 Deallocate()
-        {
-            if(memory == 0 || size == 0)
-            {
-                Log::Print("Nothing to deallocate", Log::Type::Error, __LINE__, __FILE__);
-                return 0; 
-            }
-
-            Allocator::Deallocate(size * sizeof(T));
-
-            return 1;
+            memcpy(memory, elements.begin(), elements.size() * sizeof(T));
+            count = elements.size();
         }
 
         T& operator[](const Int32 index) 
@@ -71,7 +51,7 @@ namespace Base
 
             return memory[index]; 
         } 
-
+  
         Int32 Push(const T value)
         {
             if(count == size)
@@ -107,6 +87,9 @@ namespace Base
             return 1;
         }
 
-
+        Int32 GetSize() const
+        {
+            return size;
+        }
     };
 }

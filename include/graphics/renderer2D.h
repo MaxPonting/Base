@@ -2,11 +2,10 @@
 
 #include "../type/type.h"
 #include "../array/array.h"
-#include "../array/static_array.h"
+#include "../array/heap_array.h"
 #include "../math/math.h"
 #include "../math/vector.h"
 #include "../math/matrix.h"
-#include "../math/rect.h"
 #include "../allocator/allocator.h"
 #include "../time/performance_counter.h"
 #include "../opengl/opengl.h"
@@ -18,24 +17,6 @@
 
 namespace Base::Renderer2D
 {
-    enum class CoordinateSpace
-    {
-        World, Screen
-    };
-
-    struct SubTexture
-    {
-        Vec2 bottom;
-        Vec2 top;
-    };
-
-    struct Sprite 
-    {
-        Rect rect;
-        RGBA colour;
-        SubTexture subTexture;
-    };
-
     struct Vertex
     {
         Vec2 position;
@@ -170,43 +151,43 @@ namespace Base::Renderer2D
 
     Int32 Draw(const Sprite* const sprites, const Int32 count, const UInt32 texture, const CoordinateSpace space, const Vec2 anchor)
     {
-        Array<Vertex> vertices = Array<Vertex>(4 * count);
+        HeapArray<Vertex> vertices = HeapArray<Vertex>(4 * count);
 
         for(Int32 i = 0; i < count * 4; i+=4)
         {
             Sprite sprite = sprites[i / 4];
-            sprite.rect.size[0] *= global.screenScale;
-            sprite.rect.size[1] *= global.screenScale;
-            sprite.rect.position[0] *= global.screenScale;
-            sprite.rect.position[1] *= global.screenScale;
+            sprite.size[0] *= global.screenScale;
+            sprite.size[1] *= global.screenScale;
+            sprite.position[0] *= global.screenScale;
+            sprite.position[1] *= global.screenScale;
 
-            StaticArray<Vertex, 4> v;
+            Array<Vertex, 4> v;
             v[0] = {
-                VERTICES[0] * sprite.rect.size[0], VERTICES[1] * sprite.rect.size[1],
+                VERTICES[0] * sprite.size[0], VERTICES[1] * sprite.size[1],
                 sprite.subTexture.bottom[0], sprite.subTexture.bottom[1], 
                 sprite.colour[0], sprite.colour[1], sprite.colour[2], sprite.colour[3]
             };
 
             v[1] = {
-                VERTICES[4] * sprite.rect.size[0], VERTICES[5] * sprite.rect.size[1], 
+                VERTICES[4] * sprite.size[0], VERTICES[5] * sprite.size[1], 
                 sprite.subTexture.top[0], sprite.subTexture.bottom[1], 
                 sprite.colour[0], sprite.colour[1], sprite.colour[2], sprite.colour[3]
             };
 
             v[2] = {
-                VERTICES[8] * sprite.rect.size[0], VERTICES[9] * sprite.rect.size[1], 
+                VERTICES[8] * sprite.size[0], VERTICES[9] * sprite.size[1], 
                 sprite.subTexture.bottom[0], sprite.subTexture.top[1], 
                 sprite.colour[0], sprite.colour[1], sprite.colour[2], sprite.colour[3]
             };
 
             v[3] = {
-                VERTICES[12] * sprite.rect.size[0], VERTICES[13] * sprite.rect.size[1], 
+                VERTICES[12] * sprite.size[0], VERTICES[13] * sprite.size[1], 
                 sprite.subTexture.top[0], sprite.subTexture.top[1], 
                 sprite.colour[0], sprite.colour[1], sprite.colour[2], sprite.colour[3],
             };
 
-            const Float32 sin = sinf(Math::F32::Radians(sprite.rect.rotation));
-            const Float32 cos = cosf(Math::F32::Radians(sprite.rect.rotation));
+            const Float32 sin = sinf(Math::F32::Radians(sprite.rotation));
+            const Float32 cos = cosf(Math::F32::Radians(sprite.rotation));
 
             for(Int32 j = 0; j < 4; j++)
             {
@@ -216,8 +197,8 @@ namespace Base::Renderer2D
                 v[j].position[0] = cos * x - sin * y;
                 v[j].position[1] = sin * x + cos * y;
 
-                v[j].position[0] += sprite.rect.position[0] + (anchor[0] * global.screenResolution[0] / 2) + (-anchor[0] * sprite.rect.size[0] / 2);
-                v[j].position[1] += sprite.rect.position[1] + (anchor[1] * global.screenResolution[1] / 2) + (-anchor[1] * sprite.rect.size[1] / 2);
+                v[j].position[0] += sprite.position[0] + (anchor[0] * global.screenResolution[0] / 2) + (-anchor[0] * sprite.size[0] / 2);
+                v[j].position[1] += sprite.position[1] + (anchor[1] * global.screenResolution[1] / 2) + (-anchor[1] * sprite.size[1] / 2);
             }
 
             vertices[i + 0] = v[0];

@@ -85,8 +85,6 @@ Int32 main()
         sprites[0].rect.position = Renderer2D::WindowToWorldPoint(Window::GetMousePosition(), Window::GetSize(), camera);
         const Vec2 screenPoint = Renderer2D::WindowToScreenPoint(Window::GetMousePosition(), Window::GetSize());
         sprites[0].rect.position = Renderer2D::WorldToScreenPoint(sprites[0].rect.position, Window::GetSize(), camera); 
-        printf("%f, %f\n", screenPoint[0], screenPoint[1]);
-        printf("%f, %f\n\n", sprites[0].rect.position[0], sprites[0].rect.position[1]);
 
         Renderer2D::BeginScene(Window::GetSize(), camera);
         Renderer2D::Draw(sprites, 1, texture, Renderer2D::CoordinateSpace::World, {0, 0});

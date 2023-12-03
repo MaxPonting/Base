@@ -2,13 +2,13 @@
 
 #include "math.h"
 #include "vector.h"
-#include "../array/static_array.h"
+#include "../array/array.h"
 
 namespace Base::Math::Rectangle
 {
-    StaticArray<Vec2, 4> Vertices(const Rect rect)
+    Array<Vec2, 4> Vertices(const Rect rect)
     {
-        StaticArray<Vec2, 4> vertices;
+        Array<Vec2, 4> vertices;
 
         vertices[0] = {rect.position[0] + rect.size[0] / 2, rect.position[1] + rect.size[1] / 2};
         vertices[1] = {rect.position[0] + rect.size[0] / 2, rect.position[1] - rect.size[1] / 2};

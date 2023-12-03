@@ -1,0 +1,6 @@
+-------------------Functionality to be added-----------------------
+- PNG loading/decoder - Uses stb_image as of now
+- XML writing and reading
+- Text Rendering - Returns list of rects that represent each character of a string
+- Fix HDR not working in windows fullscreen
+
