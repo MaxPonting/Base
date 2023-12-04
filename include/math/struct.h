@@ -137,10 +137,4 @@ namespace Base
         Array<Vec2, 3> simplex;
     };
 
-    struct Edge
-    {
-        Float32 distance;
-        Vec2 normal;
-        Int32 index;
-    };
 }

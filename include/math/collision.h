@@ -5,6 +5,7 @@
 #include "rect.h"
 #include "vector.h"
 #include "polygon.h"
+#include "../array/heap_array.h"
 
 #include <vector>
 
@@ -87,62 +88,61 @@ namespace Base::Math::Collision
         }
     }
 
-    Edge FindClosestEdge(const std::vector<Vec2> vertices, const Bool clockwiseWinding)
-    {
-        Vec2 edge = vertices[1] - vertices[0];
-        Vec2 closestNormal = clockwiseWinding ? (Vec2){ edge[1], -edge[0] } : (Vec2){ -edge[1], edge[0] };
-        Float32 closestDistance = Vector2F::DotProduct(closestNormal, vertices[0]);
-        Int32 closestIndex = 1;
-
-        for(Int32 i = 1; i < vertices.size(); i++)
-        {
-            Int32 j = i + 1;
-            if(j >= vertices.size()) j = 0;
-
-            edge = vertices[j] - vertices[i];
-
-            Vec2 normal = clockwiseWinding ? (Vec2){ edge[1], -edge[0] } : (Vec2){ -edge[1], edge[0] };
-            normal = Vector2F::Normalize(normal);
-
-            Float32 distance = Vector2F::DotProduct(normal, vertices[i]);
-            if(distance >= closestDistance) continue;
-
-            closestDistance = distance;
-            closestNormal = normal;
-            closestIndex = j;
-        }
-
-        return { closestDistance, closestNormal, closestIndex };
-    }
-
     CollisionManifold EPA2D(const Poly a, const Poly b, const Array<Vec2, 3> simplex)
     {
         CollisionManifold manifold;
         manifold.isCollision = true;
 
-        const Float32 e0 = simplex[1][0] - simplex[0][0] * simplex[1][1] * simplex[0][1];
-        const Float32 e1 = simplex[2][0] - simplex[1][0] * simplex[2][1] * simplex[1][1];
-        const Float32 e2 = simplex[0][0] - simplex[2][0] * simplex[0][1] * simplex[2][1];
+        const Float32 e0 = (simplex[1][0] - simplex[0][0]) * (simplex[1][1] + simplex[0][1]);
+        const Float32 e1 = (simplex[2][0] - simplex[1][0]) * (simplex[2][1] + simplex[1][1]);
+        const Float32 e2 = (simplex[0][0] - simplex[2][0]) * (simplex[0][1] + simplex[2][1]);
         const Bool clockwiseWinding = e0 + e1 + e2 >= 0;
 
-        std::vector<Vec2> vertices = { simplex[0], simplex[1], simplex[2] };
+        HeapArray<Vec2> vertices = HeapArray<Vec2>(a.count * b.count * 2);
+        vertices.Push(simplex[0]);
+        vertices.Push(simplex[1]);
+        vertices.Push(simplex[2]);
 
-        for(Int32 i = 0; i < 64; i++)
+        for(Int32 i = 0; i < 32; i++)
         {
-            const Edge edge = FindClosestEdge(vertices, clockwiseWinding);
-            const Vec2 support = Polygon::FurthestPoint(a, edge.normal) - Polygon::FurthestPoint(b, -edge.normal);
-            const Float32 distance = Vector2F::DotProduct(support, edge.normal);
+            Vec2 edge = vertices[1] - vertices[0];
+            Vec2 minNormal = clockwiseWinding ? (Vec2){ edge[1], -edge[0] } : (Vec2){ -edge[1], edge[0] };
+            Float32 minDistance = Vector2F::DotProduct(minNormal, vertices[0]);
+            Int32 minIndex = 1;
 
-            if(abs(distance - edge.distance) <= 0.00000001f)
+            for(Int32 i = 1; i < vertices.count; i++)
             {
-                manifold.normal = edge.normal;
+                Int32 j = i + 1;
+                if(j >= vertices.count) j = 0;
+
+                edge = vertices[j] - vertices[i];
+
+                Vec2 normal = clockwiseWinding ? (Vec2){ edge[1], -edge[0] } : (Vec2){ -edge[1], edge[0] };
+                normal = Vector2F::Normalize(normal);
+
+                Float32 distance = Vector2F::DotProduct(normal, vertices[i]);
+                if(distance >= minDistance) continue;
+
+                minDistance = distance;
+                minNormal = normal;
+                minIndex = j;
+            }
+
+            const Vec2 support = Polygon::FurthestPoint(a, minNormal) - Polygon::FurthestPoint(b, -minNormal);
+            const Float32 distance = Vector2F::DotProduct(support, minNormal);
+
+            if(abs(distance - minDistance) <= 0.001f)
+            {
+                manifold.normal = minNormal;
                 manifold.depth *= distance;
+                vertices.Deallocate();
                 return manifold;
             }
             
-            vertices.insert(vertices.begin() + edge.index, support);
+            vertices.Insert(minIndex, support);
         }
 
+        vertices.Deallocate();
         return manifold;
     }
  

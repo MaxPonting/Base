@@ -77,14 +77,14 @@ namespace Base
 
             if(count == size)
             {
-                Log::Print("Array size reached, value was not inserted", Log::Type::Warning, __LINE__, __FILE__);
-                return 0;
+                memory[index] = value;
+                return 1;
             }
 
             if(index >= count)
             {
-                memory[count] = value;
-                count++;
+                memory[index] = value;
+                count = index + 1;
                 return 1;
             }
 

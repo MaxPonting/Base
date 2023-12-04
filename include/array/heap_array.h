@@ -86,6 +86,42 @@ namespace Base
             return 1;
         }
 
+        Int32 Insert(const Int32 index, const T value)
+        {
+            if(index >= size || index < 0)
+            {
+                Log::Print("Array index out of bounds", Log::Type::Error, __LINE__, __FILE__);
+                return 0;
+            }
+
+            if(count == size)
+            {
+                memory[index] = value;
+                return 1;
+            }
+
+            if(index >= count)
+            {
+                memory[index] = value;
+                count = index + 1;
+                return 1;
+            }
+
+            const UInt64 moveSize = (count - index) * sizeof(T);
+
+            T* temp = (T*)Allocator::Allocate(moveSize);
+
+            memcpy(temp, memory + index, moveSize);
+            memcpy(memory + index + 1, temp, moveSize);
+
+            memory[index] = value;
+            count++;
+
+            Allocator::Deallocate(moveSize);
+
+            return 1;
+        }
+
         Int32 Sort(Int32(&compare)(const void*, const void*))
         {
             if(count < 2)
