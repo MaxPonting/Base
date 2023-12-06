@@ -98,7 +98,7 @@ namespace Base::Math::Collision
         const Float32 e2 = (simplex[0][0] - simplex[2][0]) * (simplex[0][1] + simplex[2][1]);
         const Bool clockwiseWinding = e0 + e1 + e2 >= 0;
 
-        HeapArray<Vec2> vertices = HeapArray<Vec2>(a.count * b.count * 2);
+        HeapArray<Vec2> vertices = HeapArray<Vec2>(35);
         vertices.Push(simplex[0]);
         vertices.Push(simplex[1]);
         vertices.Push(simplex[2]);
@@ -133,8 +133,10 @@ namespace Base::Math::Collision
 
             if(abs(distance - minDistance) <= 0.001f)
             {
+                manifold.a = Polygon::FurthestPoint(a, minNormal);
+                manifold.b = Polygon::FurthestPoint(b, -minNormal);
                 manifold.normal = minNormal;
-                manifold.depth *= distance;
+                manifold.depth = distance + 0.001f;
                 vertices.Deallocate();
                 return manifold;
             }

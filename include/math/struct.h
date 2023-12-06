@@ -127,6 +127,8 @@ namespace Base
     struct CollisionManifold
     {
         Bool isCollision;
+        Vec2 a;
+        Vec2 b;
         Vec2 normal;
         Float32 depth;
     };

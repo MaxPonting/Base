@@ -38,14 +38,16 @@ Int32 main()
     Renderer2D::Create({ 1280, 720 }, 10);
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
 
-    UInt32 texture = OpenGL::Texture::CreateWithFile("res/texture/sub_texture_atlas.png");
-    Base::SubTexture plain = Renderer2D::CreateSubTexture({64, 64}, {0, 32}, {32, 32});
+    UInt32 texture = OpenGL::Texture::CreateWithFile("res/texture/collider.png");
+    Base::SubTexture plain = Renderer2D::CreateSubTexture({128, 128}, {0, 0}, {128, 128});
 
     Base::Sprite sprites[] = 
     {
         {0, 0, 128, 128, 0, 255, 255, 255, 255, plain}, 
-        {256, 0, 128, 128, 0, 255, 255, 255, 255, plain}, 
+        {128, 0, 128, 128, 20, 255, 255, 255, 255, plain} 
     };
 
     while(true)
@@ -57,15 +59,16 @@ Int32 main()
         if(Window::GetEvent(Window::Event::Resize)) glViewport(0, 0, Window::GetWidth(), Window::GetHeight());        
 
         sprites[0].position = Renderer2D::WindowToWorldPoint(Window::GetMousePosition(), Window::GetSize(), camera);
-        if(Window::GetMouseButton(Window::MouseButton::Left)) sprites[0].rotation += 0.4f;
+        if(Window::GetMouseButton(Window::MouseButton::Left)) sprites[0].rotation += 0.4f; 
 
         CollisionManifold manifold = Math::Collision::RectRectManifold(Graphics::Convert::SpriteToRect(sprites[0]), Graphics::Convert::SpriteToRect(sprites[1]));
 
         if(manifold.isCollision)
         {
-            sprites[0].colour = {0, 0, 255, 255};
-            sprites[1].colour = {0, 0, 255, 255};
-            printf("%f, %f\n", manifold.normal[0], manifold.normal[1]);
+            const Vec2 movementVector = manifold.normal * manifold.depth;
+
+            sprites[0].position -= movementVector;
+            sprites[1].position += movementVector;
         }
         else
         {
