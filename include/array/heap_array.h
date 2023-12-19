@@ -41,7 +41,6 @@ namespace Base
         {
             if(memory == 0 || size == 0)
             {
-                Log::Print("Nothing to deallocate", Log::Type::Error, __LINE__, __FILE__);
                 return 0; 
             }
 

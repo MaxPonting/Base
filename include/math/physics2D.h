@@ -5,12 +5,12 @@
 
 namespace Base::Math::Physics2D
 {
-    RigidBody2D Create(const Vec2 position, const Float32 mass, const Float32 elasticity)
+    RigidBody2D CreateBody(const Vec2 position, const Float32 mass, const Float32 restitution)
     {
-        RigidBody2D body;
+        RigidBody2D body = { 0 };
         body.position = position;
         body.mass = mass;
-        body.elasticity = elasticity;
+        body.restitution = restitution;
 
         return body;
     }
@@ -32,7 +32,7 @@ namespace Base::Math::Physics2D
     {
         if(body.mass == 0)
             return body;
-
+           
         body.acceleration += force / body.mass;
         return body;
     }
@@ -70,17 +70,28 @@ namespace Base::Math::Physics2D
         return body;
     }
 
-    void ResolveImpulse(RigidBody2D& a, RigidBody2D& b)
+    CollisionResolution2D ResolveCollision(const CollisionManifold2D manifold, RigidBody2D a, RigidBody2D b)
     {
-        const Float32 coefficientOfRestitution = Math::F32::Minimum(a.elasticity, b.elasticity);
-        const Vec2 normal = Math::Vector2F::Normalize(a.position - b.position);
-        const Vec2 relativeVelocity = a.velocity - b.velocity;
+        const Vec2 resolutionVector = manifold.normal * manifold.depth / 2;
+        a.position += resolutionVector;
+        b.position -= resolutionVector;
 
-        const Float32 impulseMagnitude = -(1 + coefficientOfRestitution) * Math::Vector2F::DotProduct(relativeVelocity, normal) / (1 / a.mass + 1 / b.mass);
-        const Vec2 impulse = normal * impulseMagnitude / 2;
+        return { a, b };
+    }
 
-        a.velocity += impulse;
-        b.velocity -= impulse;
+    CollisionResolution2D ResolveImpulse(const CollisionManifold2D manifold, RigidBody2D a, RigidBody2D b)
+    {
+        const Vec2 relativeVelocity = b.velocity - a.velocity;
+        const Float32 e = F32::Minimum(a.restitution, b.restitution);
+        const Float32 j = (-(1 + e) * Vector2F::DotProduct(relativeVelocity, manifold.normal)) / ( 1 / a.mass + 1 / b.mass);
+        const Vec2 impulse = manifold.normal * j;
+
+        a.velocity -= impulse / a.mass;
+        b.velocity += impulse / b.mass;
+
+        printf("Test\n");
+
+        return { a, b };
     }
 
 

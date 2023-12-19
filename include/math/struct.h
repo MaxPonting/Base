@@ -121,19 +121,24 @@ namespace Base
     struct RigidBody2D
     {
         Vec2 position, acceleration, velocity;
-        Float32 rotationalAcceleration, rotationalVelocity, rotation, mass, elasticity;
+        Float32 rotationalAcceleration, rotationalVelocity, rotation, mass, restitution;
     };
 
-    struct CollisionManifold
+    struct CollisionResolution2D
+    {
+        RigidBody2D a;
+        RigidBody2D b;
+    };
+
+    struct CollisionManifold2D
     {
         Bool isCollision;
-        Vec2 a;
-        Vec2 b;
+        Array<Vec2, 2> contactPoints;
         Vec2 normal;
         Float32 depth;
     };
 
-    struct GJK2DManifold
+    struct GJKManifold2D
     {
         Bool isCollision;
         Array<Vec2, 3> simplex;

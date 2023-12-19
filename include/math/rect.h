@@ -10,10 +10,10 @@ namespace Base::Math::Rectangle
     {
         Array<Vec2, 4> vertices;
 
-        vertices[0] = {rect.position[0] + rect.size[0] / 2, rect.position[1] + rect.size[1] / 2};
-        vertices[1] = {rect.position[0] + rect.size[0] / 2, rect.position[1] - rect.size[1] / 2};
-        vertices[2] = {rect.position[0] - rect.size[0] / 2, rect.position[1] + rect.size[1] / 2};
-        vertices[3] = {rect.position[0] - rect.size[0] / 2, rect.position[1] - rect.size[1] / 2};
+        vertices[0] = { rect.position[0] + rect.size[0] / 2, rect.position[1] + rect.size[1] / 2 };
+        vertices[1] = { rect.position[0] + rect.size[0] / 2, rect.position[1] - rect.size[1] / 2 };
+        vertices[2] = { rect.position[0] - rect.size[0] / 2, rect.position[1] - rect.size[1] / 2 };
+        vertices[3] = { rect.position[0] - rect.size[0] / 2, rect.position[1] + rect.size[1] / 2 };
 
         if(rect.rotation == 0)
             return vertices;

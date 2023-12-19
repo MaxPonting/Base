@@ -1,11 +1,12 @@
 #define BASE_DEBUG
 
-
 #include <allocator/allocator.h>
 #include <log/log.h>
 #include <io/file.h>
 #include <math/math.h>
-#include <math/collision.h>
+#include <math/collision2D.h>
+#include <math/physics2D.h>
+#include <math/convert.h>
 #include <time/time.h>
 #include <time/sleep.h>
 #include <time/performance_counter.h>
@@ -20,6 +21,7 @@
 #include <stdio.h>
 
 const static UInt64 ALLOCATION_SIZE = 1024 * 1024; // MB
+const static Float32 MOVE_FORCE = 4;
 static Base::Rect camera = { 0, 0, 1, 1, 0 };
 
 Int32 main()
@@ -44,10 +46,18 @@ Int32 main()
     UInt32 texture = OpenGL::Texture::CreateWithFile("res/texture/collider.png");
     Base::SubTexture plain = Renderer2D::CreateSubTexture({128, 128}, {0, 0}, {128, 128});
 
-    Base::Sprite sprites[] = 
+    Sprite sprites[] = 
     {
         {0, 0, 128, 128, 0, 255, 255, 255, 255, plain}, 
-        {128, 0, 128, 128, 20, 255, 255, 255, 255, plain} 
+        {0, 0, 128, 128, 0, 255, 255, 255, 255, plain},
+        {0, 0, 16, 16, 0, 0, 255, 0, 255, plain},
+        {0, 0, 16, 16, 0, 0, 255, 0, 255, plain}
+    };
+
+    RigidBody2D bodies[] = 
+    {
+        Base::Math::Physics2D::CreateBody({-400, 0}, 100, 0.5f),
+        Base::Math::Physics2D::CreateBody({0, 0}, 100, 0.5f)
     };
 
     while(true)
@@ -58,26 +68,45 @@ Int32 main()
         if(Window::GetKeyDown(Window::Key::Escape)) break;
         if(Window::GetEvent(Window::Event::Resize)) glViewport(0, 0, Window::GetWidth(), Window::GetHeight());        
 
-        sprites[0].position = Renderer2D::WindowToWorldPoint(Window::GetMousePosition(), Window::GetSize(), camera);
-        if(Window::GetMouseButton(Window::MouseButton::Left)) sprites[0].rotation += 0.4f; 
+        if(Window::GetKey(Window::Key::W)) bodies[0] = Math::Physics2D::AddForce(bodies[0], {0, MOVE_FORCE});
+        if(Window::GetKey(Window::Key::S)) bodies[0] = Math::Physics2D::AddForce(bodies[0], {0, -MOVE_FORCE});
+        if(Window::GetKey(Window::Key::D)) bodies[0] = Math::Physics2D::AddForce(bodies[0], {MOVE_FORCE, 0});
+        if(Window::GetKey(Window::Key::A)) bodies[0] = Math::Physics2D::AddForce(bodies[0], {-MOVE_FORCE, 0});
+        if(Window::GetKey(Window::Key::E)) bodies[0] = Math::Physics2D::AddTorque(bodies[0], 20);
 
-        CollisionManifold manifold = Math::Collision::RectRectManifold(Graphics::Convert::SpriteToRect(sprites[0]), Graphics::Convert::SpriteToRect(sprites[1]));
+        bodies[0] = Math::Physics2D::Step(bodies[0], 0.01f);
+        bodies[1] = Math::Physics2D::Step(bodies[1], 0.01f);
+
+        CollisionManifold2D manifold = Math::Collision2D::RectRectManifold(Math::Convert::RigidBody2DToRect(bodies[1], {128, 128}), 
+            Math::Convert::RigidBody2DToRect(bodies[0], { 128, 128 }));
 
         if(manifold.isCollision)
         {
-            const Vec2 movementVector = manifold.normal * manifold.depth;
-
-            sprites[0].position -= movementVector;
-            sprites[1].position += movementVector;
+            CollisionResolution2D resolution2D = Math::Physics2D::ResolveCollision(manifold, bodies[0], bodies[1]);
+            resolution2D = Math::Physics2D::ResolveImpulse(manifold, resolution2D.a, resolution2D.b);
+            bodies[0] = resolution2D.a;
+            bodies[1] = resolution2D.b;
+            //sprites[0].colour = { 255, 0, 0, 255 };
+            //sprites[1].colour = { 255, 0, 0, 255 };
         }
         else
         {
-            sprites[0].colour = {255, 255, 255, 255};
-            sprites[1].colour = {255, 255, 255, 255};
+            sprites[0].colour = { 255, 255, 255, 255 };
+            sprites[1].colour = { 255, 255, 255, 255 };
         }
+
+        sprites[0].position = bodies[0].position;
+        sprites[1].position = bodies[1].position;
+        sprites[0].rotation = bodies[0].rotation;
+        sprites[1].rotation = bodies[1].rotation;
+
+        sprites[2].position = manifold.contactPoints[0]; 
+        sprites[3].position = manifold.contactPoints[1];
 
         Renderer2D::BeginScene(Window::GetSize(), camera);
         Renderer2D::Draw(sprites, 2, texture, Base::CoordinateSpace::World, {0, 0});
+        if(manifold.isCollision)
+            Renderer2D::Draw(&sprites[2], 0, 0, Base::CoordinateSpace::World, {0, 0});
         Renderer2D::EndScene();
 
         Window::SwapBuffer();
