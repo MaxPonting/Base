@@ -21,7 +21,8 @@
 #include <stdio.h>
 
 const static UInt64 ALLOCATION_SIZE = 1024 * 1024; // MB
-const static Float32 MOVE_FORCE = 4;
+const static Float32 MOVE_FORCE = 10;
+const static Float32 FRICTION = 0.005f;
 static Base::Rect camera = { 0, 0, 1, 1, 0 };
 
 Int32 main()
@@ -49,7 +50,7 @@ Int32 main()
     Sprite sprites[] = 
     {
         {0, 0, 128, 128, 0, 255, 255, 255, 255, plain}, 
-        {0, 0, 128, 128, 0, 255, 255, 255, 255, plain},
+        {0, 0, 64, 64, 0, 255, 255, 255, 255, plain},
         {0, 0, 16, 16, 0, 0, 255, 0, 255, plain},
         {0, 0, 16, 16, 0, 0, 255, 0, 255, plain}
     };
@@ -57,7 +58,7 @@ Int32 main()
     RigidBody2D bodies[] = 
     {
         Base::Math::Physics2D::CreateBody({-400, 0}, 100, 0.5f),
-        Base::Math::Physics2D::CreateBody({0, 0}, 100, 0.5f)
+        Base::Math::Physics2D::CreateBody({0, 0}, 30, 0.5f)
     };
 
     while(true)
@@ -72,12 +73,12 @@ Int32 main()
         if(Window::GetKey(Window::Key::S)) bodies[0] = Math::Physics2D::AddForce(bodies[0], {0, -MOVE_FORCE});
         if(Window::GetKey(Window::Key::D)) bodies[0] = Math::Physics2D::AddForce(bodies[0], {MOVE_FORCE, 0});
         if(Window::GetKey(Window::Key::A)) bodies[0] = Math::Physics2D::AddForce(bodies[0], {-MOVE_FORCE, 0});
-        if(Window::GetKey(Window::Key::E)) bodies[0] = Math::Physics2D::AddTorque(bodies[0], 20);
+        if(Window::GetKey(Window::Key::E)) bodies[0] = Math::Physics2D::AddTorque(bodies[0], 1);
 
-        bodies[0] = Math::Physics2D::Step(bodies[0], 0.01f);
-        bodies[1] = Math::Physics2D::Step(bodies[1], 0.01f);
+        bodies[0] = Math::Physics2D::Step(bodies[0], FRICTION);
+        bodies[1] = Math::Physics2D::Step(bodies[1], FRICTION);
 
-        CollisionManifold2D manifold = Math::Collision2D::RectRectManifold(Math::Convert::RigidBody2DToRect(bodies[1], {128, 128}), 
+        CollisionManifold2D manifold = Math::Collision2D::RectRectManifold(Math::Convert::RigidBody2DToRect(bodies[1], {64, 64}), 
             Math::Convert::RigidBody2DToRect(bodies[0], { 128, 128 }));
 
         if(manifold.isCollision)
