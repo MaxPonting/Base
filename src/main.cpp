@@ -20,6 +20,8 @@
 
 #include <stdio.h>
 
+// TESTTT
+
 const static UInt64 ALLOCATION_SIZE = 1024 * 1024; // MB
 const static Float32 MOVE_FORCE = 10;
 const static Float32 FRICTION = 0.005f;
