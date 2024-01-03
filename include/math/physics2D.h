@@ -90,14 +90,14 @@ namespace Base::Math::Physics2D
 
         a.velocity -= impulse * aInverseMass;
         b.velocity += impulse * bInverseMass;
-        
-        printf("%f\n\n", j);
 
         return { a, b };
     }
 
     CollisionResolution2D ResolveImpulse(const CollisionManifold2D manifold, RigidBody2D a, RigidBody2D b)
     {
+        printf("Magnitude Before: %f\n", Vector2F::Magnitude(b.velocity) * b.mass + Vector2F::Magnitude(a.velocity) * a.mass);
+
         Vec2 impulses[2] = { 0 };
         Vec2 raArray[2] = { 0 };
         Vec2 rbArray[2] = { 0 };
@@ -138,6 +138,8 @@ namespace Base::Math::Physics2D
             b.rotationalVelocity += Vector2F::CrossProduct(rbArray[i], impulses[i]) * bInverseMass;
         }
 
+        printf("Magnitude After: %f\n\n", Vector2F::Magnitude(b.velocity) * b.mass + Vector2F::Magnitude(a.velocity) * a.mass);       
+        
         return { a, b };
     }
 

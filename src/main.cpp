@@ -20,8 +20,6 @@
 
 #include <stdio.h>
 
-// TESTTT
-
 const static UInt64 ALLOCATION_SIZE = 1024 * 1024; // MB
 const static Float32 MOVE_FORCE = 10;
 const static Float32 FRICTION = 0.005f;
@@ -59,8 +57,8 @@ Int32 main()
 
     RigidBody2D bodies[] = 
     {
-        Base::Math::Physics2D::CreateBody({-400, 0}, 100, 0.5f),
-        Base::Math::Physics2D::CreateBody({0, 0}, 30, 0.5f)
+        Base::Math::Physics2D::CreateBody({-400, 0}, 100, 1),
+        Base::Math::Physics2D::CreateBody({0, 0}, 30, 1)
     };
 
     while(true)
