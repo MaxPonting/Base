@@ -12,6 +12,11 @@ namespace Base::Math::F64
         return rotation * (PI / 180.0);
     }
 
+    Float64 Degrees(const Float64 rotation)
+    {
+        return rotation * (180 / PI);
+    }
+
     Float64 Minimum(const Float64 a, const Float64 b)
     {
         if(a <= b)
@@ -41,6 +46,11 @@ namespace Base::Math::F32
     Float32 Radians(const Float32 rotation)
     {
         return rotation * (PI / 180.0f);
+    }
+
+    Float32 Degrees(const Float32 rotation)
+    {
+        return rotation * (180 / PI);
     }
 
     Float32 Minimum(const Float32 a, const Float32 b)

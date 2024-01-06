@@ -5,11 +5,13 @@
 
 namespace Base::Math::Physics2D
 {
-    RigidBody2D CreateBody(const Vec2 position, const Float32 mass, const Float32 restitution)
+    RigidBody2D CreateBody(const Vec2 position, const Float32 rotation, const Float32 mass, const Float32 inhertia, const Float32 restitution)
     {
         RigidBody2D body = { 0 };
         body.position = position;
+        body.rotation = rotation;
         body.mass = mass;
+        body.inhertia = inhertia;
         body.restitution = restitution;
 
         return body;
@@ -39,10 +41,10 @@ namespace Base::Math::Physics2D
 
     RigidBody2D AddTorque(RigidBody2D body, const Float32 torque)
     {
-        if(body.mass == 0)
+        if(body.inhertia == 0)
             return body;
 
-        body.rotationalAcceleration += torque / body.mass;
+        body.rotationalAcceleration += torque / body.inhertia;
         return body;
     }
 
@@ -88,6 +90,9 @@ namespace Base::Math::Physics2D
         const Float32 j = (-(1 + e) * Vector2F::DotProduct(relativeVelocity, manifold.normal)) / ( aInverseMass + bInverseMass );
         const Vec2 impulse = manifold.normal * j;
 
+        printf("%f\n", j);
+        printf("%f\n", aInverseMass + bInverseMass);
+
         a.velocity -= impulse * aInverseMass;
         b.velocity += impulse * bInverseMass;
 
@@ -96,50 +101,51 @@ namespace Base::Math::Physics2D
 
     CollisionResolution2D ResolveImpulse(const CollisionManifold2D manifold, RigidBody2D a, RigidBody2D b)
     {
-        printf("Magnitude Before: %f\n", Vector2F::Magnitude(b.velocity) * b.mass + Vector2F::Magnitude(a.velocity) * a.mass);
+        const Float32 aInverseMass = 1 / a.mass;
+        const Float32 bInverseMass = 1 / b.mass;
+        const Float32 aInverseInhertia = 1 / a.inhertia;
+        const Float32 bInverseInhertia = 1 / b.inhertia;
 
-        Vec2 impulses[2] = { 0 };
-        Vec2 raArray[2] = { 0 };
-        Vec2 rbArray[2] = { 0 };
+        const Float32 aRotationalVelocityRadians = F32::Radians(a.rotationalVelocity);
+        const Float32 bRotationalVelocityRadians = F32::Radians(b.rotationalVelocity);
 
-        Float32 aInverseMass = 1 / a.mass;
-        Float32 bInverseMass = 1 / b.mass;
+        const Float32 e = F32::Minimum(a.restitution, b.restitution);
+
+        Vec2 raArray[2];
+        Vec2 rbArray[2];
+        Vec2 impulses[2];
 
         for(Int32 i = 0; i < manifold.contactPoints.count; i++)
         {
             raArray[i] = manifold.contactPoints[i] - a.position;
             rbArray[i] = manifold.contactPoints[i] - b.position;
 
-            const Vec2 raPerpendicular = { -raArray[i][1], raArray[i][0] };
-            const Vec2 rbPerpendicular = { -rbArray[i][1], rbArray[i][0] };
+            const Vec2 raPerp = {-raArray[i][1], raArray[i][0]};
+            const Vec2 rbPerp = {-rbArray[i][1], rbArray[i][0]};
 
-            const Vec2 aRotationalLinearVelocity = raPerpendicular * a.rotationalVelocity;
-            const Vec2 bRotationalLinearVelocity = rbPerpendicular * b.rotationalVelocity;
+            const Vec2 relativeVelocity = 
+                (b.velocity + rbPerp * bRotationalVelocityRadians) - 
+                (a.velocity + raPerp * aRotationalVelocityRadians);
 
-            const Vec2 relativeVelocity = (b.velocity + bRotationalLinearVelocity) - (a.velocity + aRotationalLinearVelocity);
+            const Float32 raPerpDotN = Vector2F::DotProduct(raPerp, manifold.normal);
+            const Float32 rbPerpDotN = Vector2F::DotProduct(rbPerp, manifold.normal);
 
-            const Float32 raPerpN = Vector2F::DotProduct(raPerpendicular, manifold.normal);
-            const Float32 rbPerpN = Vector2F::DotProduct(rbPerpendicular, manifold.normal);
-
-            const Float32 e = F32::Minimum(a.restitution, b.restitution);
-            Float32 j = -(1 + e) * Vector2F::DotProduct(relativeVelocity, manifold.normal);
-            j /= aInverseMass + bInverseMass + raPerpN * raPerpN * aInverseMass + rbPerpN * rbPerpN * bInverseMass;
+            Float32 j = (-(1 + e) * Vector2F::DotProduct(relativeVelocity, manifold.normal)) 
+            /  (aInverseMass + bInverseMass + raPerpDotN * raPerpDotN * aInverseInhertia + rbPerpDotN * rbPerpDotN * bInverseInhertia);
             j /= manifold.contactPoints.count;
 
-            impulses[i] = manifold.normal * j;           
+            impulses[i] = manifold.normal * j;
         }
 
         for(Int32 i = 0; i < manifold.contactPoints.count; i++)
         {
             a.velocity -= impulses[i] * aInverseMass;
-            a.rotationalVelocity -= Vector2F::CrossProduct(raArray[i], impulses[i]) * aInverseMass;
-
             b.velocity += impulses[i] * bInverseMass;
-            b.rotationalVelocity += Vector2F::CrossProduct(rbArray[i], impulses[i]) * bInverseMass;
+
+            a.rotationalVelocity -= F32::Degrees(Vector2F::CrossProduct(raArray[i], impulses[i]) * aInverseInhertia);
+            b.rotationalVelocity += F32::Degrees(Vector2F::CrossProduct(rbArray[i], impulses[i]) * bInverseInhertia);
         }
 
-        printf("Magnitude After: %f\n\n", Vector2F::Magnitude(b.velocity) * b.mass + Vector2F::Magnitude(a.velocity) * a.mass);       
-        
         return { a, b };
     }
 
