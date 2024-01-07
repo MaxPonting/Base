@@ -21,7 +21,7 @@
 #include <stdio.h>
 
 const static UInt64 ALLOCATION_SIZE = 1024 * 1024; // MB
-const static Float32 MOVE_FORCE = 2;
+const static Float32 MOVE_FORCE = 1;
 const static Float32 FRICTION = 0.005f;
 static Base::Rect camera = { 0, 0, 1, 1, 0 };
 
@@ -44,24 +44,25 @@ Int32 main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 
-    UInt32 texture = OpenGL::Texture::CreateWithFile("res/texture/collider.png");
-    Base::SubTexture plain = Renderer2D::CreateSubTexture({128, 128}, {0, 0}, {128, 128});
+    UInt32 circle = OpenGL::Texture::CreateWithFile("res/texture/circle_collider.png");
+    UInt32 rectangle = OpenGL::Texture::CreateWithFile("res/texture/collider.png");
+    Base::SubTexture plain = Renderer2D::CreateSubTexture({64, 64}, {0, 0}, {64, 64});
 
     Sprite sprites[] = 
     {
-        {0, 0, 64, 64, 0, 255, 255, 255, 255, plain}, 
-        {0, 0, 64, 64, 0, 255, 255, 255, 255, plain},
-        {0, 0, 16, 16, 0, 0, 255, 0, 255, plain},
-        {0, 0, 16, 16, 0, 0, 255, 0, 255, plain}
+        {0, 0, 128, 128, 0, 255, 255, 255, 255, plain}, 
+        {0, 0, 128, 128, 0, 255, 255, 255, 255, plain}
     };
 
     RigidBody2D bodies[] = 
     {
-        Base::Math::Physics2D::CreateBody({-400, 0}, 45, 30, 3000, 0.5),
-        Base::Math::Physics2D::CreateBody({0, 0}   , 0, 30, 3000, 0.5)
+        Base::Math::Physics2D::CreateBody({100, 0}, 0, 30, 34100, 0.25),
+        Base::Math::Physics2D::CreateBody({0, 0}   , 45, 30, 34100, 0.25)
     };
 
-    //bodies[0] = Math::Physics2D::AddForce(bodies[0], {300, 0});
+
+    //bodies[0] = Math::Physics2D::AddForce(bodies[0], {10, 0});
+    //bodies[1] = Math::Physics2D::AddForce(bodies[1], {-500, 0});
 
     while(true)
     {
@@ -80,22 +81,21 @@ Int32 main()
         bodies[0] = Math::Physics2D::Step(bodies[0], FRICTION);
         bodies[1] = Math::Physics2D::Step(bodies[1], FRICTION);
 
-        CollisionManifold2D manifold = Math::Collision2D::RectRectManifold(Math::Convert::RigidBody2DToRect(bodies[1], {64, 64}), 
-            Math::Convert::RigidBody2DToRect(bodies[0], { 64, 64 }));
+        CollisionManifold2D manifold = Math::Collision2D::CircleRectManifold({bodies[0].position, 64}, Math::Convert::RigidBody2DToRect(bodies[1], {128, 128}));
 
         if(manifold.isCollision)
         {
-            CollisionResolution2D resolution2D = Math::Physics2D::ResolveCollision(manifold, bodies[0], bodies[1]);
-            resolution2D = Math::Physics2D::ResolveImpulse(manifold, resolution2D.a, resolution2D.b);
-            bodies[0] = resolution2D.a;
-            bodies[1] = resolution2D.b;
+            CollisionResolution2D resolution = Math::Physics2D::ResolveCollision(manifold, bodies[0], bodies[1]);
+            resolution = Math::Physics2D::ResolveImpulse(manifold, resolution.a, resolution.b);
+            bodies[0] = resolution.a;
+            bodies[1] = resolution.b;
             //sprites[0].colour = { 255, 0, 0, 255 };
             //sprites[1].colour = { 255, 0, 0, 255 };
         }
         else
         {
-            sprites[0].colour = { 255, 255, 255, 255 };
-            sprites[1].colour = { 255, 255, 255, 255 };
+            //sprites[0].colour = { 255, 255, 255, 255 };
+            //sprites[1].colour = { 255, 255, 255, 255 }; 
         }
 
         sprites[0].position = bodies[0].position;
@@ -103,13 +103,9 @@ Int32 main()
         sprites[0].rotation = bodies[0].rotation;
         sprites[1].rotation = bodies[1].rotation;
 
-        sprites[2].position = manifold.contactPoints[0]; 
-        sprites[3].position = manifold.contactPoints[1];
-
         Renderer2D::BeginScene(Window::GetSize(), camera);
-        Renderer2D::Draw(sprites, 2, texture, Base::CoordinateSpace::World, {0, 0});
-        if(manifold.isCollision)
-            Renderer2D::Draw(&sprites[2], 0, 0, Base::CoordinateSpace::World, {0, 0});
+        Renderer2D::Draw(sprites, 1, circle, CoordinateSpace::World, {0, 0});
+        Renderer2D::Draw(&sprites[1], 1, rectangle, CoordinateSpace::World, {0, 0});
         Renderer2D::EndScene();
 
         Window::SwapBuffer();

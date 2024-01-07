@@ -28,9 +28,14 @@ namespace Base::Math::Vector2F
         return { triple[0], triple[1] };
     }
 
+    Float32 MagnitudeSquared(const Vec2 vec)
+    {
+        return vec[0] * vec[0] + vec[1] * vec[1];
+    }
+
     Float32 Magnitude(const Vec2 vec)
     {
-        return powf(vec[0] * vec[0] + vec[1] * vec[1], 0.5f);
+        return powf(MagnitudeSquared(vec), 0.5f);
     }
 
     Vec2 Normalize(const Vec2 vec)

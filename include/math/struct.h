@@ -105,6 +105,12 @@ namespace Base
         Vec4 operator[](const Int32 index) const { return data[index]; } 
     };
 
+    struct Circle
+    {
+        Vec2 center;
+        Float32 radius;
+    };
+
     struct Rect
     {
         Vec2 position;

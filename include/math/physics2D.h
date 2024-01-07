@@ -90,9 +90,6 @@ namespace Base::Math::Physics2D
         const Float32 j = (-(1 + e) * Vector2F::DotProduct(relativeVelocity, manifold.normal)) / ( aInverseMass + bInverseMass );
         const Vec2 impulse = manifold.normal * j;
 
-        printf("%f\n", j);
-        printf("%f\n", aInverseMass + bInverseMass);
-
         a.velocity -= impulse * aInverseMass;
         b.velocity += impulse * bInverseMass;
 
@@ -115,6 +112,8 @@ namespace Base::Math::Physics2D
         Vec2 rbArray[2];
         Vec2 impulses[2];
 
+        Float32 jSum = 0;
+
         for(Int32 i = 0; i < manifold.contactPoints.count; i++)
         {
             raArray[i] = manifold.contactPoints[i] - a.position;
@@ -131,10 +130,12 @@ namespace Base::Math::Physics2D
             const Float32 rbPerpDotN = Vector2F::DotProduct(rbPerp, manifold.normal);
 
             Float32 j = (-(1 + e) * Vector2F::DotProduct(relativeVelocity, manifold.normal)) 
-            /  (aInverseMass + bInverseMass + raPerpDotN * raPerpDotN * aInverseInhertia + rbPerpDotN * rbPerpDotN * bInverseInhertia);
+            /  (aInverseMass + bInverseMass + (raPerpDotN * raPerpDotN) * aInverseInhertia + (rbPerpDotN * rbPerpDotN) * bInverseInhertia);
             j /= manifold.contactPoints.count;
 
             impulses[i] = manifold.normal * j;
+
+            jSum+=j;
         }
 
         for(Int32 i = 0; i < manifold.contactPoints.count; i++)
