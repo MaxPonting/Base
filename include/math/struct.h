@@ -126,6 +126,7 @@ namespace Base
 
     struct RigidBody2D
     {
+        Bool isStatic;
         Vec2 position, acceleration, velocity;
         Float32 rotationalAcceleration, rotationalVelocity, rotation, mass, inhertia, restitution;
     };

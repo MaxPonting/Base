@@ -21,7 +21,7 @@
 #include <stdio.h>
 
 const static UInt64 ALLOCATION_SIZE = 1024 * 1024; // MB
-const static Float32 MOVE_FORCE = 1;
+const static Float32 MOVE_FORCE = 5;
 const static Float32 FRICTION = 0.005f;
 static Base::Rect camera = { 0, 0, 1, 1, 0 };
 
@@ -56,8 +56,8 @@ Int32 main()
 
     RigidBody2D bodies[] = 
     {
-        Base::Math::Physics2D::CreateBody({100, 0}, 0, 30, 34100, 0.25),
-        Base::Math::Physics2D::CreateBody({0, 0}   , 45, 30, 34100, 0.25)
+        Base::Math::Physics2D::CreateBody({-200, 0}, 0, 30, 34100, 0.25, false),
+        Base::Math::Physics2D::CreateBody({0, 0}   , 45, 30, 34100, 0.25, true)
     };
 
 

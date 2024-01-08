@@ -49,7 +49,7 @@ Int32 main()
 
     Sprite sprites[] = 
     {
-        {0, 0, 128, 128, 0, 255, 255, 255, 255, plain}, 
+        {0, 0, 64, 64, 0, 255, 255, 255, 255, plain}, 
         {0, 0, 64, 64, 0, 255, 255, 255, 255, plain},
         {0, 0, 16, 16, 0, 0, 255, 0, 255, plain},
         {0, 0, 16, 16, 0, 0, 255, 0, 255, plain}
@@ -57,12 +57,12 @@ Int32 main()
 
     RigidBody2D bodies[] = 
     {
-        Base::Math::Physics2D::CreateBody({-400, 0}, 0, 300, 136500, 0.25),
-        Base::Math::Physics2D::CreateBody({0, 0}   , 0, 30, 34100, 0.25)
+        Base::Math::Physics2D::CreateBody({-400, 0}, 0, 30, 34100, 0.25, false),
+        Base::Math::Physics2D::CreateBody({0, 0}   , 0, 30, 34100, 0.25, true)
     };
 
 
-    bodies[0] = Math::Physics2D::AddForce(bodies[0], {10, 0});
+    //bodies[0] = Math::Physics2D::AddForce(bodies[0], {10, 0});
     //bodies[1] = Math::Physics2D::AddForce(bodies[1], {-500, 0});
 
     while(true)
@@ -83,7 +83,7 @@ Int32 main()
         bodies[1] = Math::Physics2D::Step(bodies[1], FRICTION);
 
         CollisionManifold2D manifold = Math::Collision2D::RectRectManifold(Math::Convert::RigidBody2DToRect(bodies[1], {64, 64}), 
-            Math::Convert::RigidBody2DToRect(bodies[0], { 128, 128 }));
+            Math::Convert::RigidBody2DToRect(bodies[0], { 64, 64 }));
 
         if(manifold.isCollision)
         {

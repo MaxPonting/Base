@@ -130,7 +130,7 @@ namespace Base::Math::Collision2D
     CollisionManifold2D ContactPointsCirclePolygon(CollisionManifold2D manifold, const Circle a, const Poly b)
     {
         Vec2 closestPoint;
-        Float32 minimumDistanceSqr;
+        Float32 minimumDistanceSqr = 0;
 
         for(Int32 i = 0; i < b.count; i++)
         {

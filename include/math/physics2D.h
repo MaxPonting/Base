@@ -5,7 +5,8 @@
 
 namespace Base::Math::Physics2D
 {
-    RigidBody2D CreateBody(const Vec2 position, const Float32 rotation, const Float32 mass, const Float32 inhertia, const Float32 restitution)
+    RigidBody2D CreateBody(const Vec2 position, const Float32 rotation, const Float32 mass, const Float32 inhertia, const Float32 restitution,
+        const Bool isStatic)
     {
         RigidBody2D body = { 0 };
         body.position = position;
@@ -13,6 +14,7 @@ namespace Base::Math::Physics2D
         body.mass = mass;
         body.inhertia = inhertia;
         body.restitution = restitution;
+        body.isStatic = isStatic;
 
         return body;
     }
@@ -75,6 +77,19 @@ namespace Base::Math::Physics2D
     CollisionResolution2D ResolveCollision(const CollisionManifold2D manifold, RigidBody2D a, RigidBody2D b)
     {
         const Vec2 resolutionVector = manifold.normal * manifold.depth / 2;
+
+        if(a.isStatic)
+        {
+            b.position -= resolutionVector * 2;
+            return { a, b };
+        }
+
+        if(b.isStatic)
+        {
+            a.position += resolutionVector * 2;
+            return { a, b };
+        }
+
         a.position += resolutionVector;
         b.position -= resolutionVector;
 
@@ -83,12 +98,32 @@ namespace Base::Math::Physics2D
 
     CollisionResolution2D ResolveImpulseLinear(const CollisionManifold2D manifold, RigidBody2D a, RigidBody2D b)
     {
+        if(a.isStatic && b.isStatic) return { a, b };
+
         const Vec2 relativeVelocity = b.velocity - a.velocity;
         const Float32 aInverseMass = 1 / a.mass;
         const Float32 bInverseMass = 1 / b.mass;
         const Float32 e = F32::Minimum(a.restitution, b.restitution);
-        const Float32 j = (-(1 + e) * Vector2F::DotProduct(relativeVelocity, manifold.normal)) / ( aInverseMass + bInverseMass );
+
+        Float32 inverseMassSum;
+        if(a.isStatic) inverseMassSum = bInverseMass;
+        else if(b.isStatic) inverseMassSum = aInverseMass;
+        else inverseMassSum = aInverseMass + bInverseMass;
+
+        const Float32 j = (-(1 + e) * Vector2F::DotProduct(relativeVelocity, manifold.normal)) / inverseMassSum;
         const Vec2 impulse = manifold.normal * j;
+        
+        if(a.isStatic)
+        {
+            b.velocity += impulse * bInverseMass;
+            return { a, b };
+        }
+
+        if(b.isStatic)
+        {
+            a.velocity -= impulse * aInverseMass;
+            return { a, b };
+        }
 
         a.velocity -= impulse * aInverseMass;
         b.velocity += impulse * bInverseMass;
@@ -98,8 +133,16 @@ namespace Base::Math::Physics2D
 
     CollisionResolution2D ResolveImpulse(const CollisionManifold2D manifold, RigidBody2D a, RigidBody2D b)
     {
+        if(a.isStatic && b.isStatic) return { a, b };
+
         const Float32 aInverseMass = 1 / a.mass;
         const Float32 bInverseMass = 1 / b.mass;
+
+        Float32 inverseMassSum = 0;
+        if(a.isStatic) inverseMassSum = bInverseMass;
+        else if(b.isStatic) inverseMassSum = aInverseMass;
+        else inverseMassSum = aInverseMass + bInverseMass;
+
         const Float32 aInverseInhertia = 1 / a.inhertia;
         const Float32 bInverseInhertia = 1 / b.inhertia;
 
@@ -129,8 +172,14 @@ namespace Base::Math::Physics2D
             const Float32 raPerpDotN = Vector2F::DotProduct(raPerp, manifold.normal);
             const Float32 rbPerpDotN = Vector2F::DotProduct(rbPerp, manifold.normal);
 
+            Float32 inverseInhertiaSum = 0; 
+            if(a.isStatic) inverseInhertiaSum = rbPerpDotN * rbPerpDotN * bInverseInhertia;
+            else if(b.isStatic) inverseInhertiaSum = raPerpDotN * rbPerpDotN * aInverseInhertia;
+            else inverseInhertiaSum = (raPerpDotN * raPerpDotN) * aInverseInhertia + 
+                (rbPerpDotN * rbPerpDotN) * bInverseInhertia;
+
             Float32 j = (-(1 + e) * Vector2F::DotProduct(relativeVelocity, manifold.normal)) 
-            /  (aInverseMass + bInverseMass + (raPerpDotN * raPerpDotN) * aInverseInhertia + (rbPerpDotN * rbPerpDotN) * bInverseInhertia);
+            /  (inverseMassSum + inverseInhertiaSum);
             j /= manifold.contactPoints.count;
 
             impulses[i] = manifold.normal * j;
@@ -140,11 +189,24 @@ namespace Base::Math::Physics2D
 
         for(Int32 i = 0; i < manifold.contactPoints.count; i++)
         {
-            a.velocity -= impulses[i] * aInverseMass;
-            b.velocity += impulses[i] * bInverseMass;
+            if(a.isStatic)
+            {
+                b.velocity += impulses[i] * bInverseMass;
+                b.rotationalVelocity += F32::Degrees(Vector2F::CrossProduct(rbArray[i], impulses[i]) * bInverseInhertia);
+            }
+            else if(b.isStatic)
+            {
+                a.velocity -= impulses[i] * aInverseMass;
+                a.rotationalVelocity -= F32::Degrees(Vector2F::CrossProduct(raArray[i], impulses[i]) * aInverseInhertia);
+            }
+            else
+            {
+                a.velocity -= impulses[i] * aInverseMass;
+                b.velocity += impulses[i] * bInverseMass;
 
-            a.rotationalVelocity -= F32::Degrees(Vector2F::CrossProduct(raArray[i], impulses[i]) * aInverseInhertia);
-            b.rotationalVelocity += F32::Degrees(Vector2F::CrossProduct(rbArray[i], impulses[i]) * bInverseInhertia);
+                a.rotationalVelocity -= F32::Degrees(Vector2F::CrossProduct(raArray[i], impulses[i]) * aInverseInhertia);
+                b.rotationalVelocity += F32::Degrees(Vector2F::CrossProduct(rbArray[i], impulses[i]) * bInverseInhertia);
+            }
         }
 
         return { a, b };
