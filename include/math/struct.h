@@ -128,7 +128,7 @@ namespace Base
     {
         Bool isStatic;
         Vec2 position, acceleration, velocity;
-        Float32 rotationalAcceleration, rotationalVelocity, rotation, mass, inhertia, restitution;
+        Float32 rotationalAcceleration, rotationalVelocity, rotation, mass, inhertia, restitution, gravityScale;
     };
 
     struct CollisionResolution2D

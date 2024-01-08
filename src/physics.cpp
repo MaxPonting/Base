@@ -2,14 +2,10 @@
 
 #include <allocator/allocator.h>
 #include <log/log.h>
-#include <io/file.h>
 #include <math/math.h>
 #include <math/collision2D.h>
 #include <math/physics2D.h>
 #include <math/convert.h>
-#include <time/time.h>
-#include <time/sleep.h>
-#include <time/performance_counter.h>
 #include <opengl/opengl.h>
 #include <opengl/shader.h>
 #include <opengl/program.h>
@@ -21,9 +17,21 @@
 #include <stdio.h>
 
 const static UInt64 ALLOCATION_SIZE = 1024 * 1024; // MB
-const static Float32 MOVE_FORCE = 10;
-const static Float32 FRICTION = 0.005f;
+const static Float32 FRICTION = 0.000f;
 static Base::Rect camera = { 0, 0, 1, 1, 0 };
+
+Base::SubTexture plain = Base::Renderer2D::CreateSubTexture({128, 128}, {0, 0}, {128, 128});
+static Base::Array<Base::Sprite, 2> rectSprites = 
+{
+    { 0, 0, 64, 64, 0, 255, 255, 255, 255, plain }, 
+    { 0, 0, 1024, 128, 0, 0, 255, 0, 255, plain }
+};
+
+static Base::Array<Base::RigidBody2D, 2> bodies = 
+{
+    Base::Math::Physics2D::CreateBody({0, 300}, 0, 30, 34100, 0.25, 0.1f, false),
+    Base::Math::Physics2D::CreateBody({0, -200}   , 0, 30, 34100, 0.25, 0.1f, true)
+};
 
 Int32 main()
 {
@@ -44,27 +52,6 @@ Int32 main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 
-    UInt32 texture = OpenGL::Texture::CreateWithFile("res/texture/collider.png");
-    Base::SubTexture plain = Renderer2D::CreateSubTexture({128, 128}, {0, 0}, {128, 128});
-
-    Sprite sprites[] = 
-    {
-        {0, 0, 64, 64, 0, 255, 255, 255, 255, plain}, 
-        {0, 0, 64, 64, 0, 255, 255, 255, 255, plain},
-        {0, 0, 16, 16, 0, 0, 255, 0, 255, plain},
-        {0, 0, 16, 16, 0, 0, 255, 0, 255, plain}
-    };
-
-    RigidBody2D bodies[] = 
-    {
-        Base::Math::Physics2D::CreateBody({-400, 0}, 0, 30, 34100, 0.25, false),
-        Base::Math::Physics2D::CreateBody({0, 0}   , 0, 30, 34100, 0.25, true)
-    };
-
-
-    //bodies[0] = Math::Physics2D::AddForce(bodies[0], {10, 0});
-    //bodies[1] = Math::Physics2D::AddForce(bodies[1], {-500, 0});
-
     while(true)
     {
         Window::PollEvents();
@@ -73,46 +60,42 @@ Int32 main()
         if(Window::GetKeyDown(Window::Key::Escape)) break;
         if(Window::GetEvent(Window::Event::Resize)) glViewport(0, 0, Window::GetWidth(), Window::GetHeight());        
 
-        if(Window::GetKey(Window::Key::W)) bodies[0] = Math::Physics2D::AddForce(bodies[0], {0, MOVE_FORCE});
-        if(Window::GetKey(Window::Key::S)) bodies[0] = Math::Physics2D::AddForce(bodies[0], {0, -MOVE_FORCE});
-        if(Window::GetKey(Window::Key::D)) bodies[0] = Math::Physics2D::AddForce(bodies[0], {MOVE_FORCE, 0});
-        if(Window::GetKey(Window::Key::A)) bodies[0] = Math::Physics2D::AddForce(bodies[0], {-MOVE_FORCE, 0});
-        if(Window::GetKey(Window::Key::E)) bodies[0] = Math::Physics2D::AddTorque(bodies[0], 10);
-
-        bodies[0] = Math::Physics2D::Step(bodies[0], FRICTION);
-        bodies[1] = Math::Physics2D::Step(bodies[1], FRICTION);
-
-        CollisionManifold2D manifold = Math::Collision2D::RectRectManifold(Math::Convert::RigidBody2DToRect(bodies[1], {64, 64}), 
-            Math::Convert::RigidBody2DToRect(bodies[0], { 64, 64 }));
-
-        if(manifold.isCollision)
+        for(Int32 i = 0; i < bodies.count; i++) 
         {
-            CollisionResolution2D resolution2D = Math::Physics2D::ResolveCollision(manifold, bodies[0], bodies[1]);
-            resolution2D = Math::Physics2D::ResolveImpulse(manifold, resolution2D.a, resolution2D.b);
-            bodies[0] = resolution2D.a;
-            bodies[1] = resolution2D.b;
-            //sprites[0].colour = { 255, 0, 0, 255 };
-            //sprites[1].colour = { 255, 0, 0, 255 };
-            //break;
-        }
-        else
-        {
-            sprites[0].colour = { 255, 255, 255, 255 };
-            sprites[1].colour = { 255, 255, 255, 255 };
+            bodies[i] = Math::Physics2D::Step(bodies[i], FRICTION);
         }
 
-        sprites[0].position = bodies[0].position;
-        sprites[1].position = bodies[1].position;
-        sprites[0].rotation = bodies[0].rotation;
-        sprites[1].rotation = bodies[1].rotation;
+        for(Int32 i = 0; i < bodies.count; i++)
+        {
+            for(Int32 j = 0; j < bodies.count; j++)
+            {
+                if(i == j) continue;
 
-        sprites[2].position = manifold.contactPoints[0]; 
-        sprites[3].position = manifold.contactPoints[1];
+                CollisionManifold2D manifold = Math::Collision2D::RectRectManifold(
+                    Math::Convert::RigidBody2DToRect(bodies[i], rectSprites[j].size), 
+                    Math::Convert::RigidBody2DToRect(bodies[j], rectSprites[j].size));
+
+                if(!manifold.isCollision) continue;
+
+                printf("%d, %d\n", i, j);
+
+                CollisionResolution2D resolution2D = Math::Physics2D::ResolveCollision(manifold, bodies[i], bodies[j]);
+                resolution2D = Math::Physics2D::ResolveImpulse(manifold, resolution2D.a, resolution2D.b);
+                bodies[i] = resolution2D.a;
+                bodies[j] = resolution2D.b;
+            }
+        }
+
+        printf("\n");
+
+        for(Int32 i = 0; i < rectSprites.count; i++)
+        {
+            rectSprites[i].position = bodies[i].position;
+            rectSprites[i].rotation = bodies[i].rotation;
+        }
 
         Renderer2D::BeginScene(Window::GetSize(), camera);
-        Renderer2D::Draw(sprites, 2, texture, Base::CoordinateSpace::World, {0, 0});
-        if(manifold.isCollision)
-            Renderer2D::Draw(&sprites[2], 0, 0, Base::CoordinateSpace::World, {0, 0});
+        Renderer2D::Draw(rectSprites.memory, 2, 0, Base::CoordinateSpace::World, {0, 0});
         Renderer2D::EndScene();
 
         Window::SwapBuffer();

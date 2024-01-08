@@ -5,8 +5,10 @@
 
 namespace Base::Math::Physics2D
 {
+    const Float32 gravity = -9.18f;
+
     RigidBody2D CreateBody(const Vec2 position, const Float32 rotation, const Float32 mass, const Float32 inhertia, const Float32 restitution,
-        const Bool isStatic)
+        const Float32 gravityScale, const Bool isStatic)
     {
         RigidBody2D body = { 0 };
         body.position = position;
@@ -14,6 +16,7 @@ namespace Base::Math::Physics2D
         body.mass = mass;
         body.inhertia = inhertia;
         body.restitution = restitution;
+        body.gravityScale = gravityScale;
         body.isStatic = isStatic;
 
         return body;
@@ -21,6 +24,10 @@ namespace Base::Math::Physics2D
 
     RigidBody2D Step(RigidBody2D body, const Float32 friction)
     {
+        if(body.isStatic) return body;
+
+        body.acceleration[1] += gravity * body.gravityScale;
+
         body.velocity += body.acceleration - body.velocity * friction;
         body.position += body.velocity;
         body.acceleration = { 0, 0 };
@@ -174,7 +181,7 @@ namespace Base::Math::Physics2D
 
             Float32 inverseInhertiaSum = 0; 
             if(a.isStatic) inverseInhertiaSum = rbPerpDotN * rbPerpDotN * bInverseInhertia;
-            else if(b.isStatic) inverseInhertiaSum = raPerpDotN * rbPerpDotN * aInverseInhertia;
+            else if(b.isStatic) inverseInhertiaSum = raPerpDotN * raPerpDotN * aInverseInhertia;
             else inverseInhertiaSum = (raPerpDotN * raPerpDotN) * aInverseInhertia + 
                 (rbPerpDotN * rbPerpDotN) * bInverseInhertia;
 
